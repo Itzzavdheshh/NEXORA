@@ -1,0 +1,222 @@
+import forms from "@tailwindcss/forms";
+
+/** @type {import('tailwindcss').Config} */
+export default {
+  darkMode: "class",
+  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  theme: {
+    extend: {
+      colors: {
+        bg: {
+          base: "rgb(var(--bg-base-rgb) / <alpha-value>)",
+          surface: "rgb(var(--bg-surface-rgb) / <alpha-value>)",
+          elevated: "rgb(var(--bg-elevated-rgb) / <alpha-value>)",
+          floating: "rgb(var(--bg-floating-rgb) / <alpha-value>)",
+        },
+        border: {
+          subtle: "rgb(var(--border-subtle-rgb) / <alpha-value>)",
+          strong: "rgb(var(--border-strong-rgb) / <alpha-value>)",
+        },
+        text: {
+          primary: "rgb(var(--text-primary-rgb) / <alpha-value>)",
+          secondary: "rgb(var(--text-secondary-rgb) / <alpha-value>)",
+          tertiary: "rgb(var(--text-tertiary-rgb) / <alpha-value>)",
+        },
+        accent: {
+          primary: "rgb(var(--accent-primary-rgb) / <alpha-value>)",
+          "primary-hover": "rgb(var(--accent-primary-hover-rgb) / <alpha-value>)",
+          mentor: "rgb(var(--accent-mentor-rgb) / <alpha-value>)",
+          admin: "rgb(var(--accent-admin-rgb) / <alpha-value>)",
+          danger: "rgb(var(--accent-danger-rgb) / <alpha-value>)",
+          warning: "rgb(var(--accent-warning-rgb) / <alpha-value>)",
+        },
+        ink: {
+          50: "#f8fafc",
+          100: "#eef2f7",
+          200: "#dde5f0",
+          300: "#b8c4d6",
+          400: "#8290a6",
+          500: "#61708a",
+          600: "#445068",
+          700: "#2d3e57",
+          800: "#1e2d42",
+          900: "#111d30",
+          950: "#080e1c",
+        },
+        emerald: {
+          50: "#ecfdf5",
+          100: "#d1fae5",
+          200: "#a7f3d0",
+          400: "#34d399",
+          500: "#10b981",
+          600: "#059669",
+          700: "#047857",
+        },
+        amber: {
+          50: "#fffbeb",
+          100: "#fef3c7",
+          200: "#fde68a",
+          400: "#fbbf24",
+          500: "#f59e0b",
+          600: "#d97706",
+          700: "#b45309",
+        },
+        red: {
+          50: "#fff1f2",
+          100: "#ffe4e6",
+          200: "#fecdd3",
+          400: "#fb7185",
+          500: "#f43f5e",
+          600: "#e11d48",
+          700: "#be123c",
+        },
+        violet: {
+          50: "#f5f3ff",
+          100: "#ede9fe",
+          200: "#ddd6fe",
+          400: "#a78bfa",
+          500: "#8b5cf6",
+          600: "#7c3aed",
+          700: "#6d28d9",
+        },
+      },
+      fontFamily: {
+        display: ["var(--font-display)"],
+        body: ["var(--font-body)"],
+        sans: [
+          "Inter",
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif",
+        ],
+      },
+      boxShadow: {
+        "token-sm": "var(--shadow-sm)",
+        "token-md": "var(--shadow-md)",
+        "token-lg": "var(--shadow-lg)",
+        accent: "var(--shadow-accent-glow)",
+        // Glow shadows
+        "glow-xs": "0 0 0 1px rgba(245,166,35,0.12), 0 4px 16px rgba(245,166,35,0.12)",
+        glow: "0 0 0 1px rgba(245,166,35,0.15), 0 8px 32px rgba(245,166,35,0.18)",
+        "glow-lg": "0 0 0 1px rgba(245,166,35,0.12), 0 20px 64px rgba(245,166,35,0.22)",
+        // Surface elevations — neutral
+        "elevation-1": "0 1px 3px rgba(8,14,28,0.06), 0 1px 2px rgba(8,14,28,0.04)",
+        "elevation-2": "0 4px 12px rgba(8,14,28,0.08), 0 2px 4px rgba(8,14,28,0.05)",
+        "elevation-3": "0 8px 24px rgba(8,14,28,0.10), 0 4px 8px rgba(8,14,28,0.06)",
+        "elevation-4": "0 20px 60px rgba(8,14,28,0.14), 0 8px 20px rgba(8,14,28,0.08)",
+        panel: "0 8px 32px rgba(8,14,28,0.08), 0 2px 8px rgba(8,14,28,0.04)",
+        // Glass — for backdrop elements
+        glass: "0 8px 32px rgba(8,14,28,0.08), inset 0 1px 0 rgba(255,255,255,0.6)",
+        "glass-dark": "0 8px 40px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.06)",
+        // Danger/success tints
+        "glow-danger": "0 4px 24px rgba(244,63,94,0.20)",
+        "glow-success": "0 4px 24px rgba(16,185,129,0.18)",
+      },
+      borderRadius: {
+        sm: "var(--radius-sm)",
+        md: "var(--radius-md)",
+        lg: "var(--radius-lg)",
+        xl: "var(--radius-xl)",
+        full: "var(--radius-full)",
+        "token-sm": "var(--radius-sm)",
+        "token-md": "var(--radius-md)",
+        "token-lg": "var(--radius-lg)",
+        "token-xl": "var(--radius-xl)",
+        "token-full": "var(--radius-full)",
+        "4xl": "2rem",
+        "5xl": "2.5rem",
+      },
+      backgroundImage: {
+        "premium-radial":
+          "radial-gradient(circle at 20% 0%, rgba(245,166,35,.09) 0%, transparent 40%), radial-gradient(circle at 85% 90%, rgba(16,185,129,.07) 0%, transparent 40%)",
+        "grid-subtle":
+          "linear-gradient(rgba(130,144,166,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(130,144,166,0.06) 1px, transparent 1px)",
+        "gradient-brand":
+          "linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-hover) 100%)",
+        "gradient-brand-soft":
+          "linear-gradient(135deg, rgba(245,166,35,0.12) 0%, rgba(245,166,35,0.06) 100%)",
+      },
+      backgroundSize: {
+        "grid-48": "48px 48px",
+      },
+      fontSize: {
+        display: ["var(--type-display-size)", { lineHeight: "var(--type-display-line-height)" }],
+        section: ["var(--type-section-size)", { lineHeight: "var(--type-section-line-height)" }],
+        card: ["var(--type-card-size)", { lineHeight: "var(--type-card-line-height)" }],
+        body: ["var(--type-body-size)", { lineHeight: "var(--type-body-line-height)" }],
+        caption: ["var(--type-caption-size)", { lineHeight: "var(--type-caption-line-height)" }],
+        xxs: ["0.65rem", { lineHeight: "1rem" }],
+      },
+      letterSpacing: {
+        "token-caption": "var(--type-caption-letter-spacing)",
+        tightest: "-0.04em",
+        tighter: "-0.02em",
+      },
+      transitionDuration: {
+        "token-micro": "var(--motion-duration-micro)",
+        "token-standard": "var(--motion-duration-standard)",
+        "token-page": "var(--motion-duration-page)",
+        fast: "120ms",
+        base: "200ms",
+        slow: "350ms",
+      },
+      transitionTimingFunction: {
+        "token-enter": "var(--motion-ease-enter)",
+        "token-exit": "var(--motion-ease-exit)",
+        spring: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "ease-out-expo": "cubic-bezier(0.19, 1, 0.22, 1)",
+      },
+      spacing: {
+        "token-1": "var(--space-1)",
+        "token-2": "var(--space-2)",
+        "token-3": "var(--space-3)",
+        "token-4": "var(--space-4)",
+        "token-6": "var(--space-6)",
+        "token-8": "var(--space-8)",
+        "token-12": "var(--space-12)",
+        "token-16": "var(--space-16)",
+        "token-24": "var(--space-24)",
+        18: "4.5rem",
+        22: "5.5rem",
+        72: "18rem",
+        84: "21rem",
+        96: "24rem",
+      },
+      animation: {
+        "skeleton-sweep": "skeleton-sweep 1.8s ease-in-out infinite",
+        "float-slow": "float-slow 8s ease-in-out infinite",
+        "float-medium": "float-medium 6s ease-in-out infinite",
+        "aurora": "aurora-drift 16s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      keyframes: {
+        "skeleton-sweep": {
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
+        },
+        "float-slow": {
+          "0%, 100%": { transform: "translateY(0px) scale(1)" },
+          "50%": { transform: "translateY(-18px) scale(1.02)" },
+        },
+        "float-medium": {
+          "0%, 100%": { transform: "translateY(0px) scale(1)" },
+          "50%": { transform: "translateY(-12px) scale(1.01)" },
+        },
+        "aurora-drift": {
+          "0%": { opacity: "0.6", transform: "translate(0, 0) scale(1)" },
+          "33%": { opacity: "0.8", transform: "translate(30px, -20px) scale(1.05)" },
+          "66%": { opacity: "0.5", transform: "translate(-20px, 15px) scale(0.97)" },
+          "100%": { opacity: "0.6", transform: "translate(0, 0) scale(1)" },
+        },
+        "pulse-glow": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
+      },
+    },
+  },
+  plugins: [forms({ strategy: "class" })],
+};
