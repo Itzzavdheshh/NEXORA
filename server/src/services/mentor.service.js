@@ -2,13 +2,13 @@ const supabase = require("../config/supabase");
 
 const createMentorProfile = async (userId, profile) => {
 
-  const { data: existing } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from("mentor_profiles")
     .select("id")
     .eq("user_id", userId)
-    .maybeSingle();
+    .single();
 
-  if (existing) {
+  if (existing && !existingError) {
     throw new Error("Mentor profile already exists.");
   }
 

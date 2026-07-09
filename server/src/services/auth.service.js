@@ -36,20 +36,31 @@ const registerUser = async ({ fullName, email, password, role }) => {
 };
 
 const loginUser = async ({ email, password }) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
 
-    if (error) {
-      throw new Error(error.message);
-    }
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-    return {
-        session: data.session,
-        user: profile,
-    };
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from("users")
+    .select("*")
+    .eq("auth_id", data.user.id)
+    .single();
+
+  if (profileError) {
+    throw new Error(profileError.message);
+  }
+
+  return {
+    session: data.session,
+    user: profile,
   };
+};
 
 
 const getCurrentUser = async (userId) => {
@@ -66,20 +77,10 @@ const getCurrentUser = async (userId) => {
     return data;
 };
 
-const logoutUser = async (accessToken) => {
-    const { error } = await supabase.auth.signOut(accessToken);
 
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return { message: "logged out successfully." };
-
-};
   
 module.exports = {
   registerUser,
   loginUser,
   getCurrentUser,
-  logoutUser,
 };

@@ -2,13 +2,13 @@ const supabase = require("../config/supabase");
 
 const createStudentProfile = async (userId, profile) => {
 
-  const { data: existing} = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from("student_profiles")
     .select("id")
     .eq("user_id", userId)
-    .maybesingle();
+    .single();
 
-  if (existing.data) {
+  if (existing && !existingError) {
     throw new Error("Student profile already exists.");
   }
 

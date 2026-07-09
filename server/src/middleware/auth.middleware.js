@@ -12,12 +12,18 @@ const authenticate = async (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
+    console.log("Received token:", token.substring(0, 25));
 
     // Verify Supabase JWT
+
+    const result = await supabase.auth.getUser(token);
+
+    console.log("getUser result:", result);
+
     const {
       data: { user: authUser },
       error,
-    } = await supabase.auth.getUser(token);
+    } = result;
 
     if (error || !authUser) {
       return res.status(401).json({
