@@ -9,6 +9,7 @@ const healthRoutes = require("./routes/health.routes");
 const authRoutes = require("./routes/auth.routes");
 const studentRoutes = require("./routes/student.routes");
 const mentorRoutes = require("./routes/mentor.routes");
+const availabilityRoutes = require("./routes/availability.routes");
 
 const app = express();
 
@@ -21,6 +22,6 @@ app.use("/api/v1/health", healthRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/student", studentRoutes);
 app.use("/api/v1/mentor", mentorRoutes);
-
+app.use("/api/v1/availability", availabilityRoutes);
 
 module.exports = app;
