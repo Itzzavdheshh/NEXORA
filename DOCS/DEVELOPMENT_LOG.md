@@ -39,6 +39,17 @@
 - Added Mentor Profile Validation
 
 
+## Sprint 5 - Authentication & Student Profile
+
+### Completed
+- Implemented user registration
+- Implemented user login
+- Added JWT authentication middleware
+- Added /me endpoint
+- Created student profile APIs
+- Integrated Supabase Authentication
+- Successfully tested complete authentication flow
+
 
 ### Git Commits
 
