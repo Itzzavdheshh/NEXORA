@@ -40,6 +40,29 @@ const validateRegister = (req, res, next) => {
   next();
 };
 
+const validateLogin = (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Email and password are required.",
+    });
+  }
+
+  const emailRegex = /^\S+@\S+\.\S+$/;
+
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid email address.",
+    });
+  }
+
+  next();
+};
+
 module.exports = {
   validateRegister,
+  validateLogin,
 };

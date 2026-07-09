@@ -3,14 +3,16 @@ const supabase = require("../config/supabase");
 const registerUser = async ({ fullName, email, password, role }) => {
   // Create user in Supabase Authentication
   const { data: authData, error: authError } =
-    await supabase.auth.admin.createUser({
+    await supabase.auth.signUp({
       email,
       password,
-      email_confirm: true,
     });
 
   if (authError) {
     throw new Error(authError.message);
+  }
+  if (!authData.user) {
+  throw new Error("User registration failed.");
   }
 
   // Insert user into public.users
@@ -33,6 +35,51 @@ const registerUser = async ({ fullName, email, password, role }) => {
   return userData;
 };
 
+const loginUser = async ({ email, password }) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+        session: data.session,
+        user: profile,
+    };
+  };
+
+
+const getCurrentUser = async (userId) => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("auth_id", userId)
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data;
+};
+
+const logoutUser = async (accessToken) => {
+    const { error } = await supabase.auth.signOut(accessToken);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { message: "logged out successfully." };
+
+};
+  
 module.exports = {
   registerUser,
+  loginUser,
+  getCurrentUser,
+  logoutUser,
 };
