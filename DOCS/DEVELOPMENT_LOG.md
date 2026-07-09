@@ -28,6 +28,18 @@
 - Prevented duplicate profile creation
 
 
+## Sprint 4 - Mentor Profile
+
+### Completed
+
+- Created mentor_profiles table
+- Added Mentor Profile Service
+- Added Mentor Profile Controller
+- Added Mentor Profile Routes
+- Added Mentor Profile Validation
+
+
+
 ### Git Commits
 
 - chore: initialize backend project with express setup
