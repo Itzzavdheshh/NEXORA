@@ -48,8 +48,25 @@ const markAsRead = async (notificationId) => {
   return data;
 };
 
+const markAllAsRead = async (userId) => {
+
+  const { data, error } = await supabase
+    .from("notifications")
+    .update({ is_read: true })
+    .eq("user_id", userId)
+    .eq("is_read", false)
+    .select();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return { updated: data?.length ?? 0 };
+};
+
 module.exports = {
   createNotification,
   getNotifications,
   markAsRead,
+  markAllAsRead,
 };

@@ -43,10 +43,19 @@ const authenticate = async (req, res, next) => {
       });
     }
 
+    // Reject users with restricted status (inactive, suspended, rejected)
+    if (appUser.status !== "active") {
+      return res.status(403).json({
+        success: false,
+        message: `Access denied. Your account status is currently ${appUser.status}.`,
+      });
+    }
+
     // Attach complete application user
     req.user = appUser;
 
     next();
+
   } catch (err) {
     return res.status(500).json({
       success: false,

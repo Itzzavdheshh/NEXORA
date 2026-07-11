@@ -6,6 +6,7 @@ const authenticate = require("../middleware/auth.middleware");
 const {
   createProfile,
   getProfile,
+  updateProfile,
 } = require("../controllers/student.controller");
 
 const {
@@ -15,5 +16,7 @@ const {
 router.post("/", authenticate, validateStudentProfile, createProfile);
 
 router.get("/", authenticate, getProfile);
+
+router.patch("/", authenticate, validateStudentProfile, updateProfile);
 
 module.exports = router;

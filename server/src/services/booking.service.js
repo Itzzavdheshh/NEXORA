@@ -123,7 +123,7 @@ try {
 
 const getBookings = async (userId) => {
 
-  const { data, error } = await supabase
+  const { data: bookings, error } = await supabase
     .from("bookings")
     .select("*")
     .or(`student_id.eq.${userId},mentor_id.eq.${userId}`);
@@ -132,10 +132,83 @@ const getBookings = async (userId) => {
     throw new Error(error.message);
   }
 
-  return data;
+  if (!bookings || bookings.length === 0) return [];
+
+  // Extract all unique user IDs for students and mentors associated with these bookings
+  const userIds = [...new Set(bookings.flatMap((b) => [b.student_id, b.mentor_id]))].filter(Boolean);
+
+  if (userIds.length > 0) {
+    const { data: users, error: usersError } = await supabase
+      .from("users")
+      .select("id, email, full_name, avatar_url, role")
+      .in("id", userIds);
+
+    if (!usersError && users) {
+      // Filter out student user IDs
+      const studentIds = users.filter((u) => u.role === "student").map((u) => u.id);
+
+      let studentProfilesMap = new Map();
+      if (studentIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from("student_profiles")
+          .select("user_id, college, degree, branch, skills, bio")
+          .in("user_id", studentIds);
+
+        if (!profilesError && profiles) {
+          studentProfilesMap = new Map(profiles.map((p) => [p.user_id, p]));
+        }
+      }
+
+      const userMap = new Map(
+        users.map((u) => {
+          if (u.role === "student") {
+            const profile = studentProfilesMap.get(u.id) || null;
+            return [u.id, { ...u, profile }];
+          }
+          return [u.id, u];
+        }),
+      );
+
+      return bookings.map((b) => ({
+        ...b,
+        student: userMap.get(b.student_id) || null,
+        mentor: userMap.get(b.mentor_id) || null,
+      }));
+    }
+  }
+
+
+  return bookings.map((b) => ({ ...b, student: null, mentor: null }));
+};
+
+
+const ALLOWED_TRANSITIONS = {
+  pending: ["confirmed", "cancelled"],
+  confirmed: ["completed", "cancelled"],
+  completed: [],
+  cancelled: [],
 };
 
 const updateBookingStatus = async (bookingId, status) => {
+  // Fetch the current booking details to verify its current status
+  const { data: existingBooking, error: fetchError } = await supabase
+    .from("bookings")
+    .select("status, student_id")
+    .eq("id", bookingId)
+    .single();
+
+  if (fetchError || !existingBooking) {
+    throw new Error("Booking record not found.");
+  }
+
+  const currentStatus = existingBooking.status || "pending";
+  const allowed = ALLOWED_TRANSITIONS[currentStatus] || [];
+
+  if (!allowed.includes(status)) {
+    throw new Error(
+      `Invalid booking status transition from '${currentStatus}' to '${status}'.`
+    );
+  }
 
   const { data, error } = await supabase
     .from("bookings")
@@ -179,6 +252,7 @@ const updateBookingStatus = async (bookingId, status) => {
 
   return data;
 };
+
 
 module.exports = {
   createBooking,

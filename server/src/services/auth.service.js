@@ -77,10 +77,29 @@ const getCurrentUser = async (userId) => {
     return data;
 };
 
+const logoutUser = async (token) => {
+  if (!token) {
+    throw new Error("Authorization token is required.");
+  }
+
+  if (supabase.auth.admin?.signOut) {
+    const { error } = await supabase.auth.admin.signOut(token);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  return {
+    message: "Logged out successfully.",
+  };
+};
+
 
   
 module.exports = {
   registerUser,
   loginUser,
   getCurrentUser,
+  logoutUser,
 };

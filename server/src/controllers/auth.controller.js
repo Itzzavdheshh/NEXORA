@@ -1,4 +1,9 @@
-const { registerUser, loginUser, getCurrentUser,} = require("../services/auth.service");
+const {
+  registerUser,
+  loginUser,
+  getCurrentUser,
+  logoutUser,
+} = require("../services/auth.service");
 
 const register = async (req, res) => {
   try {
@@ -56,11 +61,11 @@ const logout = async (req, res) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
 
-    const result = await logoutUser(token);
+    await logoutUser(token);
 
     return res.status(200).json({
       success: true,
-      message: result.message,
+      message: "Logged out successfully.",
     });
   } catch (error) {
     return res.status(400).json({

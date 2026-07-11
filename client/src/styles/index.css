@@ -1,0 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-ink-50 font-sans text-ink-900 antialiased dark:bg-[#050812] dark:text-ink-50;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-ink-950;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply border border-white/70 bg-white/85 shadow-panel backdrop-blur-xl dark:border-white/10 dark:bg-[#101827]/90 dark:shadow-[0_24px_80px_rgba(0,0,0,0.42)];
+  }
+
+  .surface-muted {
+    @apply border border-ink-200/80 bg-white/65 dark:border-white/10 dark:bg-white/6;
+  }
+
+  .text-muted {
+    @apply text-ink-500 dark:text-ink-300;
+  }
+
+  .nexora-toast {
+    @apply border border-ink-200/80 bg-white/90 text-sm font-medium text-ink-900 shadow-panel backdrop-blur-xl dark:border-white/10 dark:bg-ink-900/90 dark:text-ink-50;
+  }
+}

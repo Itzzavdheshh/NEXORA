@@ -12,6 +12,7 @@ const mentorRoutes = require("./routes/mentor.routes");
 const availabilityRoutes = require("./routes/availability.routes");
 const bookingRoutes = require("./routes/booking.routes");
 const notificationRoutes = require("./routes/notification.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 
@@ -24,8 +25,12 @@ app.use("/api/v1/health", healthRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/student", studentRoutes);
 app.use("/api/v1/mentor", mentorRoutes);
+app.use("/api/v1/mentors", mentorRoutes);
 app.use("/api/v1/availability", availabilityRoutes);
 app.use("/api/v1/bookings", bookingRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
+
+app.use("/api/v1/admin", adminRoutes);
+
 
 module.exports = app;

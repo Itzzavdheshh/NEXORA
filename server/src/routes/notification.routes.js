@@ -8,6 +8,7 @@ const {
   create,
   getAll,
   read,
+  readAll,
 } = require("../controllers/notification.controller");
 
 const {
@@ -26,4 +27,10 @@ router.patch(
   read
 );
 
-module.exports = router;
+router.patch(
+  "/mark-all-read",
+  authenticate,
+  readAll
+);
+
+module.exports = router;
