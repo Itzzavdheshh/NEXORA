@@ -1,5 +1,5 @@
 const supabase = require("../config/supabase");
-
+const handleSupabaseError = require("../utils/handleSupabaseError");
 const createStudentProfile = async (userId, profile) => {
 
   const { data: existing, error: existingError } = await supabase
@@ -29,7 +29,9 @@ const createStudentProfile = async (userId, profile) => {
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    handleSupabaseError(error);
+  }
 
   return data;
 };
@@ -41,7 +43,9 @@ const getStudentProfile = async (userId) => {
     .eq("user_id", userId)
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    handleSupabaseError(error);
+  }
 
   return data;
 };

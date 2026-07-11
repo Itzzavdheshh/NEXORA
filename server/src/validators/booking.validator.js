@@ -23,6 +23,13 @@ const validateBooking = (req, res, next) => {
 
   }
 
+  if (start_time >= end_time) {
+    return res.status(400).json({
+        success: false,
+        message: "End time must be after start time.",
+    });
+}
+
   next();
 };
 

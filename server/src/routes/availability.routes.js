@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const authorizeRoles = require("../middleware/role.middleware");
 const authenticate = require("../middleware/auth.middleware");
 
 const {
@@ -15,6 +15,7 @@ const {
 router.post(
   "/",
   authenticate,
+  authorizeRoles("mentor"),
   validateAvailability,
   createAvailability
 );

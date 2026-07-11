@@ -11,6 +11,7 @@ const studentRoutes = require("./routes/student.routes");
 const mentorRoutes = require("./routes/mentor.routes");
 const availabilityRoutes = require("./routes/availability.routes");
 const bookingRoutes = require("./routes/booking.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 const app = express();
 
@@ -25,5 +26,6 @@ app.use("/api/v1/student", studentRoutes);
 app.use("/api/v1/mentor", mentorRoutes);
 app.use("/api/v1/availability", availabilityRoutes);
 app.use("/api/v1/bookings", bookingRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
 module.exports = app;

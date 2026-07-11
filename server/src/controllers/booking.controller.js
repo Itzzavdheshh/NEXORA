@@ -1,7 +1,10 @@
 const {
   createBooking,
   getBookings,
+  updateBookingStatus,
 } = require("../services/booking.service");
+
+
 
 const create = async (req, res) => {
   try {
@@ -46,7 +49,27 @@ const getAll = async (req, res) => {
   }
 };
 
+const updateStatus = async (req, res) => {
+  try {
+    const booking = await updateBookingStatus(
+      req.params.id,
+      req.body.status
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: booking,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   create,
   getAll,
+  updateStatus,
 };

@@ -1,4 +1,6 @@
 const supabase = require("../config/supabase");
+const { sendEmail } = require("../utils/email");
+const { createNotification } = require("./notification.service");
 
 const createMentorProfile = async (userId, profile) => {
 
@@ -47,7 +49,47 @@ const getMentorProfile = async (userId) => {
   return data;
 };
 
+
+const verifyMentor = async (userId) => {
+
+  const { data, error } = await supabase
+    .from("users")
+    .update({
+      mentor_verified: true,
+      is_verified: true,
+    })
+    .eq("id", userId)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+try {
+  await createNotification({
+    user_id: userId,
+    title: "Mentor Verified",
+    message: "Congratulations! Your mentor account has been verified."
+  });
+
+  await sendEmail({
+    to: data.email,
+    subject: "Mentor Verification",
+    html: `
+      <h2>Congratulations!</h2>
+      <p>Your mentor account has been verified successfully.</p>
+    `,
+  });
+} catch (err) {
+  console.error("Notification/Email Error:", err.message);
+}
+
+  return data;
+};
+
 module.exports = {
   createMentorProfile,
   getMentorProfile,
+  verifyMentor,
 };

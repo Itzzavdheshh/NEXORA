@@ -1,62 +1,52 @@
 const {
-  createMentorProfile,
-  getMentorProfile,
-  verifyMentor,
-} = require("../services/mentor.service");
+  createNotification,
+  getNotifications,
+  markAsRead,
+} = require("../services/notification.service");
 
-const createProfile = async (req, res) => {
-
+const create = async (req, res) => {
   try {
-
-    const profile = await createMentorProfile(
-      req.user.id,
-      req.body
-    );
+    const notification = await createNotification({
+      user_id: req.user.id,
+      title: req.body.title,
+      message: req.body.message,
+    });
 
     return res.status(201).json({
       success: true,
-      data: profile,
+      data: notification,
     });
-
   } catch (error) {
-
     return res.status(400).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 
-const getProfile = async (req, res) => {
-
+const getAll = async (req, res) => {
   try {
-
-    const profile = await getMentorProfile(req.user.id);
+    const notifications = await getNotifications(req.user.id);
 
     return res.status(200).json({
       success: true,
-      data: profile,
+      data: notifications,
     });
-
   } catch (error) {
-
     return res.status(400).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 
-const verify = async (req, res) => {
+const read = async (req, res) => {
   try {
-    const mentor = await verifyMentor(req.params.id);
+    const notification = await markAsRead(req.params.id);
 
     return res.status(200).json({
       success: true,
-      message: "Mentor verified successfully.",
-      data: mentor,
+      data: notification,
     });
   } catch (error) {
     return res.status(400).json({
@@ -67,7 +57,7 @@ const verify = async (req, res) => {
 };
 
 module.exports = {
-  createProfile,
-  getProfile,
-  verify,
+  create,
+  getAll,
+  read,
 };
