@@ -4,11 +4,8 @@ const {
   updateBookingStatus,
 } = require("../services/booking.service");
 
-
-
-const create = async (req, res) => {
+const create = async (req, res, next) => {
   try {
-
     const booking = await createBooking(
       req.user.id,
       req.body
@@ -18,38 +15,25 @@ const create = async (req, res) => {
       success: true,
       data: booking,
     });
-
   } catch (error) {
-
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-
+    next(error);
   }
 };
 
-const getAll = async (req, res) => {
+const getAll = async (req, res, next) => {
   try {
-
     const bookings = await getBookings(req.user.id);
 
     return res.status(200).json({
       success: true,
       data: bookings,
     });
-
   } catch (error) {
-
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-
+    next(error);
   }
 };
 
-const updateStatus = async (req, res) => {
+const updateStatus = async (req, res, next) => {
   try {
     const booking = await updateBookingStatus(
       req.params.id,
@@ -61,10 +45,7 @@ const updateStatus = async (req, res) => {
       data: booking,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 

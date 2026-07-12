@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
+    "seed": "node src/database/seed.js",
     "test": "echo \"No tests yet\""
   },
   "keywords": [],
@@ -14,12 +15,18 @@
   "type": "commonjs",
   "dependencies": {
     "@supabase/supabase-js": "^2.110.0",
+    "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "helmet": "^8.2.0",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.3.0",
     "morgan": "^1.11.0",
-    "resend": "^6.17.2"
+    "multer": "^2.2.0",
+    "resend": "^6.17.2",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

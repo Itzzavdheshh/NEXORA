@@ -5,7 +5,7 @@ const {
   deleteSlot,
 } = require("../services/availability.service");
 
-const createAvailability = async (req, res) => {
+const createAvailability = async (req, res, next) => {
   try {
     const slot = await createSlot(req.user.id, req.body);
 
@@ -14,14 +14,11 @@ const createAvailability = async (req, res) => {
       data: slot,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const getAvailability = async (req, res) => {
+const getAvailability = async (req, res, next) => {
   try {
     const slots = await getSlots(req.user.id);
 
@@ -30,14 +27,11 @@ const getAvailability = async (req, res) => {
       data: slots,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const updateAvailability = async (req, res) => {
+const updateAvailability = async (req, res, next) => {
   try {
     const slot = await updateSlot(req.user.id, req.params.id, req.body);
 
@@ -46,14 +40,11 @@ const updateAvailability = async (req, res) => {
       data: slot,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const deleteAvailability = async (req, res) => {
+const deleteAvailability = async (req, res, next) => {
   try {
     const result = await deleteSlot(req.user.id, req.params.id);
 
@@ -62,10 +53,7 @@ const deleteAvailability = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 

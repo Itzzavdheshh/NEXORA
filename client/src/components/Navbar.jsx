@@ -14,16 +14,18 @@ function NotificationBell({ role }) {
     queryKey: ["notifications"],
     queryFn: notificationService.list,
     select: (res) => (res?.data ?? []).filter((n) => !n.is_read).length,
-    enabled: role === "student",
+    enabled: role === "student" || role === "mentor",
   });
 
   const unreadCount = notificationsQuery.data ?? 0;
 
-  if (role !== "student") return null;
+  if (role !== "student" && role !== "mentor") return null;
+
+  const notificationPath = role === "student" ? "/student/notifications" : "/mentor/notifications";
 
   return (
     <Link
-      to="/student/notifications"
+      to={notificationPath}
       aria-label={
         unreadCount > 0
           ? `${unreadCount} unread notification${unreadCount !== 1 ? "s" : ""}`
@@ -53,6 +55,7 @@ function NotificationBell({ role }) {
     </Link>
   );
 }
+
 
 export function Navbar({ onMenuClick }) {
   const { isDark, toggleTheme } = useTheme();

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { cn } from "../../../utils/cn";
+import { useFocusTrap } from "../../../hooks/useFocusTrap";
 
 const roleColors = {
   student: "bg-brand-500/10 text-brand-700 dark:bg-brand-300/10 dark:text-brand-200",
@@ -29,6 +30,11 @@ const statusColors = {
 };
 
 export function UserDrawer({ isOpen, onClose, user, onStatusUpdate, isUpdating }) {
+  const drawerRef = useRef(null);
+
+  // Trap focus inside drawer when open
+  useFocusTrap(drawerRef, isOpen);
+
   // Prevent scrolling
   useEffect(() => {
     if (isOpen) {
@@ -90,7 +96,9 @@ export function UserDrawer({ isOpen, onClose, user, onStatusUpdate, isUpdating }
 
         {/* Panel */}
         <motion.div
+          ref={drawerRef}
           initial={{ x: "100%" }}
+
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 220 }}

@@ -7,10 +7,8 @@ const {
   rejectMentor,
 } = require("../services/mentor.service");
 
-const createProfile = async (req, res) => {
-
+const createProfile = async (req, res, next) => {
   try {
-
     const profile = await createMentorProfile(
       req.user.id,
       req.body
@@ -20,39 +18,25 @@ const createProfile = async (req, res) => {
       success: true,
       data: profile,
     });
-
   } catch (error) {
-
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-
+    next(error);
   }
 };
 
-const getProfile = async (req, res) => {
-
+const getProfile = async (req, res, next) => {
   try {
-
     const profile = await getMentorProfile(req.user.id);
 
     return res.status(200).json({
       success: true,
       data: profile,
     });
-
   } catch (error) {
-
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-
+    next(error);
   }
 };
 
-const updateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
   try {
     const profile = await updateMentorProfile(req.user.id, req.body);
 
@@ -61,14 +45,11 @@ const updateProfile = async (req, res) => {
       data: profile,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const pendingMentors = async (req, res) => {
+const pendingMentors = async (req, res, next) => {
   try {
     const mentors = await getPendingMentors();
 
@@ -77,14 +58,11 @@ const pendingMentors = async (req, res) => {
       data: mentors,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const verify = async (req, res) => {
+const verify = async (req, res, next) => {
   try {
     if (req.user.id === req.params.id) {
       return res.status(400).json({
@@ -101,14 +79,11 @@ const verify = async (req, res) => {
       data: mentor,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const reject = async (req, res) => {
+const reject = async (req, res, next) => {
   try {
     if (req.user.id === req.params.id) {
       return res.status(400).json({
@@ -125,11 +100,7 @@ const reject = async (req, res) => {
       data: mentor,
     });
   } catch (error) {
-
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 

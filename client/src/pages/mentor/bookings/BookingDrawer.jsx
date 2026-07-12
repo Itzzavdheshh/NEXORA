@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,6 +17,7 @@ import {
 import { format } from "date-fns";
 import { Button } from "../../../components/ui/Button";
 import { cn } from "../../../utils/cn";
+import { useFocusTrap } from "../../../hooks/useFocusTrap";
 
 const statusColors = {
   pending: "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-100",
@@ -26,6 +27,11 @@ const statusColors = {
 };
 
 export function BookingDrawer({ isOpen, onClose, booking, onStatusUpdate, isUpdating }) {
+  const drawerRef = useRef(null);
+
+  // Trap focus inside drawer
+  useFocusTrap(drawerRef, isOpen);
+
   // Prevent scrolling background when drawer is open
   useEffect(() => {
     if (isOpen) {
@@ -80,7 +86,9 @@ export function BookingDrawer({ isOpen, onClose, booking, onStatusUpdate, isUpda
 
         {/* Drawer panel */}
         <motion.div
+          ref={drawerRef}
           initial={{ x: "100%" }}
+
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 220 }}

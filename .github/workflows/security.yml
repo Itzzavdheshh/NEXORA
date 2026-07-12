@@ -1,0 +1,25 @@
+name: Security Analysis
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  npm-audit:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Backend Audit Scan
+        run: |
+          cd server
+          npm audit --audit-level=high
+
+      - name: Frontend Audit Scan
+        run: |
+          cd client
+          npm audit --audit-level=high

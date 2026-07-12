@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, X } from "lucide-react";
 import { Button } from "./Button";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 export function ConfirmationModal({
   isOpen,
@@ -15,6 +16,11 @@ export function ConfirmationModal({
   variant = "danger",
   isLoading = false,
 }) {
+  const modalRef = useRef(null);
+
+  // Trap focus inside modal
+  useFocusTrap(modalRef, isOpen);
+
   // Prevent scrolling background when open
   useEffect(() => {
     if (isOpen) {
@@ -56,7 +62,9 @@ export function ConfirmationModal({
 
         {/* Modal content */}
         <motion.div
+          ref={modalRef}
           initial={{ opacity: 0, scale: 0.95, y: 16 }}
+
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 16 }}
           transition={{ type: "spring", duration: 0.35 }}

@@ -4,7 +4,7 @@ const {
   updateStudentProfile,
 } = require("../services/student.service");
 
-const createProfile = async (req, res) => {
+const createProfile = async (req, res, next) => {
   try {
     const profile = await createStudentProfile(
       req.user.id,
@@ -16,14 +16,11 @@ const createProfile = async (req, res) => {
       data: profile,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const getProfile = async (req, res) => {
+const getProfile = async (req, res, next) => {
   try {
     const profile = await getStudentProfile(req.user.id);
 
@@ -37,14 +34,11 @@ const getProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const updateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
   try {
     const profile = await updateStudentProfile(
       req.user.id,
@@ -62,10 +56,7 @@ const updateProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 

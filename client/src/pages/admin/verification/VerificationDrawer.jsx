@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -11,8 +11,14 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
+import { useFocusTrap } from "../../../hooks/useFocusTrap";
 
 export function VerificationDrawer({ isOpen, onClose, mentor, onVerify, onReject, isMutating }) {
+  const drawerRef = useRef(null);
+
+  // Trap focus inside drawer
+  useFocusTrap(drawerRef, isOpen);
+
   // Prevent scrolling when drawer is open
   useEffect(() => {
     if (isOpen) {
@@ -63,7 +69,9 @@ export function VerificationDrawer({ isOpen, onClose, mentor, onVerify, onReject
 
         {/* Drawer Panel */}
         <motion.div
+          ref={drawerRef}
           initial={{ x: "100%" }}
+
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 220 }}

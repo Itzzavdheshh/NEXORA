@@ -1,11 +1,10 @@
 const {
   registerUser,
   loginUser,
-  getCurrentUser,
   logoutUser,
 } = require("../services/auth.service");
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   try {
     const { fullName, email, password, role } = req.body;
 
@@ -22,14 +21,11 @@ const register = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const login = async ( req, res) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -40,15 +36,10 @@ const login = async ( req, res) => {
       message: "Login successfully.",
       data,
     });
-  }
-  catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+  } catch (error) {
+    next(error);
   }
 };
-
 
 const me = async (req, res) => {
   return res.status(200).json({
@@ -57,7 +48,7 @@ const me = async (req, res) => {
   });
 };
 
-const logout = async (req, res) => {
+const logout = async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
 
@@ -68,13 +59,9 @@ const logout = async (req, res) => {
       message: "Logged out successfully.",
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
-
 
 module.exports = {
   register,

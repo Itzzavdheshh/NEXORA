@@ -4,7 +4,7 @@ const {
   modifyUserStatus,
 } = require("../services/admin.service");
 
-const getDashboardStats = async (req, res) => {
+const getDashboardStats = async (req, res, next) => {
   try {
     const stats = await fetchStats();
     return res.status(200).json({
@@ -12,14 +12,11 @@ const getDashboardStats = async (req, res) => {
       data: stats,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const listUsers = async (req, res) => {
+const listUsers = async (req, res, next) => {
   try {
     const { search, role, status, verified, sort, page, limit } = req.query;
 
@@ -43,14 +40,11 @@ const listUsers = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const updateUserStatus = async (req, res) => {
+const updateUserStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -77,11 +71,7 @@ const updateUserStatus = async (req, res) => {
       data: user,
     });
   } catch (error) {
-
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 

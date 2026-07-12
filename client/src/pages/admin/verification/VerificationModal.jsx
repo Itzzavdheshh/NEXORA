@@ -1,8 +1,15 @@
+import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, ShieldAlert, X } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
+import { useFocusTrap } from "../../../hooks/useFocusTrap";
 
 export function VerificationModal({ isOpen, onClose, mode, mentorName, onConfirm, isMutating }) {
+  const modalRef = useRef(null);
+
+  // Trap focus inside modal
+  useFocusTrap(modalRef, isOpen);
+
   if (!isOpen) return null;
 
   const isVerify = mode === "verify";
@@ -21,7 +28,9 @@ export function VerificationModal({ isOpen, onClose, mode, mentorName, onConfirm
 
         {/* Panel Modal */}
         <motion.div
+          ref={modalRef}
           initial={{ opacity: 0, scale: 0.96, y: 8 }}
+
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 8 }}
           role="dialog"

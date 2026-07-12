@@ -5,7 +5,7 @@ const {
   markAllAsRead,
 } = require("../services/notification.service");
 
-const create = async (req, res) => {
+const create = async (req, res, next) => {
   try {
     const notification = await createNotification({
       user_id: req.user.id,
@@ -18,14 +18,11 @@ const create = async (req, res) => {
       data: notification,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const getAll = async (req, res) => {
+const getAll = async (req, res, next) => {
   try {
     const notifications = await getNotifications(req.user.id);
 
@@ -34,14 +31,11 @@ const getAll = async (req, res) => {
       data: notifications,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const read = async (req, res) => {
+const read = async (req, res, next) => {
   try {
     const notification = await markAsRead(req.params.id);
 
@@ -50,14 +44,11 @@ const read = async (req, res) => {
       data: notification,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const readAll = async (req, res) => {
+const readAll = async (req, res, next) => {
   try {
     const result = await markAllAsRead(req.user.id);
 
@@ -66,10 +57,7 @@ const readAll = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
