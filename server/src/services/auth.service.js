@@ -12,7 +12,7 @@ const registerUser = async ({ fullName, email, password, role }) => {
     throw new Error(authError.message);
   }
   if (!authData.user) {
-  throw new Error("User registration failed.");
+    throw new Error("User registration failed.");
   }
 
   // Insert user into public.users
@@ -26,7 +26,7 @@ const registerUser = async ({ fullName, email, password, role }) => {
         role,
       })
       .select()
-      .single();
+      .maybeSingle();
 
   if (userError) {
     throw new Error(userError.message);
@@ -36,7 +36,6 @@ const registerUser = async ({ fullName, email, password, role }) => {
 };
 
 const loginUser = async ({ email, password }) => {
-
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -46,14 +45,37 @@ const loginUser = async ({ email, password }) => {
     throw new Error(error.message);
   }
 
-  const { data: profile, error: profileError } = await supabase
+  let { data: profile, error: profileError } = await supabase
     .from("users")
     .select("*")
     .eq("auth_id", data.user.id)
-    .single();
+    .maybeSingle();
 
   if (profileError) {
     throw new Error(profileError.message);
+  }
+
+  // Self-healing: if auth succeeds but public.users profile is missing, generate it dynamically
+  if (!profile) {
+    const fullName = data.user.user_metadata?.full_name || email.split("@")[0];
+    const role = data.user.user_metadata?.role || "student";
+
+    const { data: newProfile, error: createError } = await supabase
+      .from("users")
+      .insert({
+        auth_id: data.user.id,
+        full_name: fullName,
+        email: email,
+        role: role,
+        status: "active",
+      })
+      .select()
+      .maybeSingle();
+
+    if (createError) {
+      throw new Error(`Profile synchronization failed: ${createError.message}`);
+    }
+    profile = newProfile;
   }
 
   return {
@@ -62,19 +84,18 @@ const loginUser = async ({ email, password }) => {
   };
 };
 
-
 const getCurrentUser = async (userId) => {
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("auth_id", userId)
-      .single();
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("auth_id", userId)
+    .maybeSingle();
 
-    if (error) {
-      throw new Error(error.message);
-    }
+  if (error) {
+    throw new Error(error.message);
+  }
 
-    return data;
+  return data;
 };
 
 const logoutUser = async (token) => {
@@ -95,8 +116,6 @@ const logoutUser = async (token) => {
   };
 };
 
-
-  
 module.exports = {
   registerUser,
   loginUser,

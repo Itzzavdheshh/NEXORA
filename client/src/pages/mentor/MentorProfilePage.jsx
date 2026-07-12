@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -13,6 +13,7 @@ import {
   Save,
   Sparkles,
   UserRound,
+  BadgeCheck,
 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { EmptyState } from "../../components/ui/EmptyState";
@@ -22,6 +23,7 @@ import { Skeleton } from "../../components/ui/Skeleton";
 import { useAuth } from "../../hooks/useAuth";
 import { useMentorProfile } from "../../hooks/useMentorProfile";
 import { createZodResolver } from "../../utils/zodForm";
+import { cn } from "../../utils/cn";
 
 const profileSchema = z.object({
   fullName: z.string().trim().min(2, "Full name must be at least 2 characters."),
@@ -98,16 +100,16 @@ function getCompletion(values) {
 function ProfileSkeleton() {
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <Skeleton className="h-56 w-full" />
+      <Skeleton className="h-56 w-full rounded-2xl" />
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.4fr]">
-        <Skeleton className="h-96 w-full" />
-        <Skeleton className="h-[34rem] w-full" />
+        <Skeleton className="h-96 w-full rounded-2xl" />
+        <Skeleton className="h-[34rem] w-full rounded-2xl" />
       </div>
     </div>
   );
 }
 
-function ProfileSummary({ user, values, completion }) {
+function ProfileSummary({ user, values, completion, isVerified }) {
   const initials = (values.fullName || user?.full_name || "M")
     .split(" ")
     .map((part) => part[0])
@@ -115,60 +117,94 @@ function ProfileSummary({ user, values, completion }) {
     .slice(0, 2)
     .toUpperCase();
 
+  const expertiseChips = useMemo(() => {
+    return (values.expertiseText || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }, [values.expertiseText]);
+
   return (
-    <aside className="glass-panel h-fit rounded-3xl p-6">
-      <div className="flex items-start gap-4">
+    <aside className="h-fit rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 flex flex-col gap-6">
+      <div className="flex items-center gap-3">
         {values.avatar_url ? (
           <img
             src={values.avatar_url}
             alt=""
-            className="h-16 w-16 rounded-3xl border border-ink-200 object-cover dark:border-white/10"
+            className="h-16 w-16 rounded-xl border border-[var(--border-subtle)] object-cover"
           />
         ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-ink-950 text-xl font-extrabold text-white shadow-glow dark:bg-brand-300 dark:text-ink-950">
-            {initials || <UserRound className="h-6 w-6" aria-hidden="true" />}
+          <div
+            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl text-base font-bold text-[var(--bg-base)] shadow-md"
+            style={{ backgroundColor: "var(--accent-mentor)" }}
+          >
+            {initials || <UserRound className="h-5 w-5" aria-hidden="true" />}
           </div>
         )}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-xl font-extrabold tracking-tight text-ink-950 dark:text-white">
+        <div className="min-w-0">
+          <p className="truncate text-base font-bold text-[var(--text-primary)]">
             {values.fullName || "Mentor"}
           </p>
-          <p className="mt-1 truncate text-sm font-medium text-ink-600 dark:text-ink-300">
-            {user?.email || "Email from account"}
+          <p className="mt-0.5 truncate text-xs text-[var(--text-secondary)]">
+            {user?.email || ""}
           </p>
         </div>
       </div>
 
-      <div className="mt-7 rounded-3xl border border-ink-200/80 bg-white/65 p-4 dark:border-white/10 dark:bg-white/8">
+      {/* Completion score indicator */}
+      <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-4">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-bold text-ink-950 dark:text-white">Profile completion</p>
-          <p className="text-sm font-extrabold text-brand-700 dark:text-brand-200">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Profile completion</p>
+          <p className="text-xs font-bold tabular-nums text-[var(--accent-mentor)]">
             {completion}%
           </p>
         </div>
-        <div className="mt-3 h-2 rounded-full bg-ink-200 dark:bg-white/10">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-brand-600 to-mint-500"
-            style={{ width: `${completion}%` }}
+        <div className="w-full bg-[var(--bg-elevated)] rounded-full h-1.5 overflow-hidden mt-2.5">
+          <motion.div
+            className="h-full rounded-full"
+            style={{ backgroundColor: "var(--accent-mentor)" }}
+            initial={{ width: 0 }}
+            animate={{ width: `${completion}%` }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
           />
         </div>
       </div>
 
-      <div className="mt-5 space-y-3 text-sm">
+      {/* Details summary */}
+      <div className="space-y-3">
         {[
           ["Designation", values.designation],
           ["Company", values.company],
-          ["Experience", `${values.experience} years`],
-          ["Hourly Rate", `$${values.hourly_rate}/hr`],
+          ["Experience", values.experience ? `${values.experience} years` : ""],
+          ["Hourly Rate", values.hourly_rate ? `$${values.hourly_rate}/hr` : ""],
+          ["Verified", isVerified ? "Yes" : "Pending"],
         ].map(([label, value]) => (
-          <div key={label} className="flex items-center justify-between gap-4">
-            <span className="text-ink-500 dark:text-ink-300">{label}</span>
-            <span className="truncate font-bold text-ink-950 dark:text-white">
-              {value || "Not set"}
+          <div key={label} className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)]/40 pb-2 last:border-b-0 last:pb-0">
+            <span className="shrink-0 text-xs text-[var(--text-secondary)]">{label}</span>
+            <span className="text-right text-xs font-semibold text-[var(--text-primary)]">
+              {value || <span className="text-[var(--text-tertiary)] font-normal italic">Not set</span>}
             </span>
           </div>
         ))}
       </div>
+
+      {/* Live interactive expertise chips */}
+      {expertiseChips.length > 0 && (
+        <div className="border-t border-[var(--border-subtle)] pt-4">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)] mb-2.5">Expertise Areas</p>
+          <div className="flex flex-wrap gap-1.5">
+            {expertiseChips.map((chip, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center rounded px-2.5 py-0.5 text-[10px] font-bold"
+                style={{ backgroundColor: "rgba(16,185,129,0.12)", color: "var(--accent-mentor)" }}
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </aside>
   );
 }
@@ -177,7 +213,9 @@ export default function MentorProfilePage() {
   const { user } = useAuth();
   const { profile, isMissingProfile, isLoading, isError, error, refetch, saveProfile } =
     useMentorProfile();
+
   const defaults = useMemo(() => getDefaultValues(user, profile), [profile, user]);
+
   const {
     register,
     handleSubmit,
@@ -188,9 +226,14 @@ export default function MentorProfilePage() {
     resolver: createZodResolver(profileSchema),
     values: defaults,
   });
+
   const values = watch();
   const completion = getCompletion(values);
   const isSaving = saveProfile.isPending || isSubmitting;
+  const isVerified = Boolean(profile?.is_verified);
+
+  // Tab State
+  const [activeTab, setActiveTab] = useState("general"); // "general" | "professional" | "links"
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -223,93 +266,211 @@ export default function MentorProfilePage() {
     );
   }
 
+  const tabOptions = [
+    { id: "general", label: "General details", icon: UserRound },
+    { id: "professional", label: "Professional stats", icon: Briefcase },
+    { id: "links", label: "Social linkages", icon: LinkIcon },
+  ];
+
   return (
     <PageTransition>
       <div className="mx-auto max-w-7xl space-y-6">
+        
+        {/* Header section */}
         <motion.section
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-panel rounded-[2rem] p-6 sm:p-7"
+          className="relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6"
         >
+          {/* emerald shimmer */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-px"
+            style={{ background: "linear-gradient(90deg, transparent, var(--accent-mentor), transparent)" }}
+          />
+
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-brand-700 dark:border-brand-300/20 dark:bg-brand-300/10 dark:text-brand-100">
+              <p
+                className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider"
+                style={{ background: "rgba(16,185,129,0.12)", color: "var(--accent-mentor)" }}
+              >
                 <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-                Mentor profile
+                Mentor Profile Setup
               </p>
-              <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-950 sm:text-4xl dark:text-white">
-                Share your expertise with the next generation.
+              <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--text-primary)] sm:text-4xl">
+                Share your expertise with others.
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-600 dark:text-ink-200">
-                Keep your details up to date so students can find you and book mentorship sessions with confidence.
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-secondary)]">
+                Keep your details complete so students can discover your skills and schedule booking requests with confidence.
               </p>
             </div>
-            {isDirty ? (
-              <div className="inline-flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-100">
-                <AlertTriangle className="h-4 w-4" aria-hidden="true" />
-                Unsaved changes
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-100">
-                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                Saved state
-              </div>
-            )}
+            
+            <div className="flex shrink-0 items-center gap-3">
+              {isVerified && (
+                <div
+                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold"
+                  style={{ background: "rgba(16,185,129,0.12)", color: "var(--accent-mentor)" }}
+                >
+                  <BadgeCheck className="h-4 w-4" aria-hidden="true" />
+                  Verified
+                </div>
+              )}
+              <AnimatePresence mode="wait" initial={false}>
+                {isDirty ? (
+                  <motion.div
+                    key="unsaved"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    className="badge border border-[var(--accent-danger)]/20 bg-[var(--accent-danger)]/10 text-[var(--accent-danger)] text-[10px] uppercase font-bold tracking-wider"
+                  >
+                    <AlertTriangle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
+                    Unsaved changes
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="saved"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    className="badge border border-[var(--accent-mentor)]/20 bg-[var(--accent-mentor)]/10 text-[var(--accent-mentor)] text-[10px] uppercase font-bold tracking-wider"
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
+                    Saved
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </motion.section>
 
+        {/* Layout Grid */}
         <div className="grid gap-6 lg:grid-cols-[0.82fr_1.35fr]">
-          <ProfileSummary user={user} values={values} completion={completion} />
+          <ProfileSummary user={user} values={values} completion={completion} isVerified={isVerified} />
 
-          <form className="glass-panel rounded-3xl p-5 sm:p-6" onSubmit={handleSubmit(onSubmit)}>
-            {isMissingProfile ? (
-              <div className="mb-5 rounded-2xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-medium text-brand-800 dark:border-brand-300/20 dark:bg-brand-300/10 dark:text-brand-100">
-                No mentor profile exists yet. Save this form once to create it.
+          {/* Form */}
+          <form className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 sm:p-6 flex flex-col justify-between" onSubmit={handleSubmit(onSubmit)}>
+            <div>
+              {isMissingProfile && (
+                <div className="mb-5 rounded border border-[var(--accent-mentor)]/20 bg-[var(--accent-mentor)]/10 px-4 py-3 text-xs font-semibold text-[var(--accent-mentor)]">
+                  No mentor profile exists yet. Save this form once to register it.
+                </div>
+              )}
+
+              {/* Animated sliding tab header */}
+              <div className="flex border-b border-[var(--border-subtle)] mb-6 gap-2">
+                {tabOptions.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id)}
+                      className={cn(
+                        "relative pb-3 px-3 text-xs font-semibold flex items-center gap-1.5 transition duration-150",
+                        isActive ? "text-[var(--accent-mentor)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                      )}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      <span>{tab.label}</span>
+                      {isActive && (
+                        <motion.span
+                          layoutId="profile-tab-indicator"
+                          className="absolute bottom-0 inset-x-0 h-0.5"
+                          style={{ backgroundColor: "var(--accent-mentor)" }}
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
-            ) : null}
 
-            <div className="grid gap-5 md:grid-cols-2">
-              <FormField id="fullName" label="Full name" error={errors.fullName} {...register("fullName")} />
-              <FormField id="email" label="Email" value={user?.email || ""} disabled helper="Email is managed by authentication." />
-              <FormField id="designation" label="Designation" error={errors.designation} {...register("designation")} />
-              <FormField id="company" label="Company" error={errors.company} {...register("company")} />
-              <FormField id="experience" label="Experience (years)" type="number" error={errors.experience} {...register("experience")} />
-              <FormField id="hourly_rate" label="Hourly rate ($)" type="number" error={errors.hourly_rate} {...register("hourly_rate")} />
+              {/* Tab Contents */}
+              <div className="mt-4 min-h-[300px]">
+                <AnimatePresence mode="wait">
+                  {activeTab === "general" && (
+                    <motion.div
+                      key="general"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="space-y-5"
+                    >
+                      <div className="grid gap-5 md:grid-cols-2">
+                        <FormField id="fullName" label="Full name" error={errors.fullName} {...register("fullName")} />
+                        <FormField id="email" label="Email" value={user?.email || ""} disabled helper="Email is managed by authentication." />
+                      </div>
+                      <FormField
+                        id="bio"
+                        label="Bio"
+                        as="textarea"
+                        rows={4}
+                        error={errors.bio}
+                        helper="A clean summary of your professional journey and mentoring focus."
+                        {...register("bio")}
+                      />
+                      <FormField
+                        id="expertiseText"
+                        label="Expertise / Skills"
+                        error={errors.expertiseText}
+                        helper="Separate skills with commas (e.g. JavaScript, System Design, Career Growth)"
+                        {...register("expertiseText")}
+                      />
+                    </motion.div>
+                  )}
+
+                  {activeTab === "professional" && (
+                    <motion.div
+                      key="professional"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="grid gap-5 md:grid-cols-2"
+                    >
+                      <FormField id="designation" label="Designation" error={errors.designation} {...register("designation")} />
+                      <FormField id="company" label="Company" error={errors.company} {...register("company")} />
+                      <FormField id="experience" label="Experience (years)" type="number" error={errors.experience} {...register("experience")} />
+                      <FormField id="hourly_rate" label="Hourly rate ($)" type="number" error={errors.hourly_rate} {...register("hourly_rate")} />
+                    </motion.div>
+                  )}
+
+                  {activeTab === "links" && (
+                    <motion.div
+                      key="links"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="space-y-6"
+                    >
+                      <div className="flex items-center gap-2 border-b border-[var(--border-subtle)]/40 pb-2">
+                        <LinkIcon className="h-4 w-4" style={{ color: "var(--accent-mentor)" }} aria-hidden="true" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Social links</span>
+                      </div>
+                      <div className="grid gap-5 md:grid-cols-2">
+                        <FormField id="linkedin_url" label="LinkedIn URL" error={errors.linkedin_url} {...register("linkedin_url")} />
+                        <FormField id="github_url" label="GitHub URL" error={errors.github_url} {...register("github_url")} />
+                        <FormField id="portfolio_url" label="Portfolio URL" error={errors.portfolio_url} {...register("portfolio_url")} />
+                        <FormField id="avatar_url" label="Avatar URL" error={errors.avatar_url} helper="Supported by backend through users.avatar_url." {...register("avatar_url")} />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Alert constraint */}
+              <div className="mt-8 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-4 text-xs text-[var(--text-secondary)] leading-relaxed">
+                Certificates and specific verifications are stored by admin reviews. To preserve database schemas, this console updates standard users profile values.
+              </div>
             </div>
 
-            <div className="mt-5 grid gap-5">
-              <FormField
-                id="bio"
-                label="Bio"
-                as="textarea"
-                rows={5}
-                error={errors.bio}
-                helper="Share your journey, topics you cover, and how you help students succeed."
-                {...register("bio")}
-              />
-              <FormField
-                id="expertiseText"
-                label="Expertise / Skills"
-                error={errors.expertiseText}
-                helper="Comma separated, for example: Frontend, System Design, Career Growth"
-                {...register("expertiseText")}
-              />
-            </div>
-
-            <div className="mt-6 rounded-3xl border border-ink-200/80 bg-white/65 p-4 dark:border-white/10 dark:bg-white/8">
-              <div className="mb-4 flex items-center gap-2">
-                <LinkIcon className="h-4 w-4 text-brand-700 dark:text-brand-200" aria-hidden="true" />
-                <h2 className="font-extrabold text-ink-950 dark:text-white">Professional & social links</h2>
-              </div>
-              <div className="grid gap-5 md:grid-cols-2">
-                <FormField id="linkedin_url" label="LinkedIn URL" error={errors.linkedin_url} {...register("linkedin_url")} />
-                <FormField id="github_url" label="GitHub URL" error={errors.github_url} {...register("github_url")} />
-                <FormField id="portfolio_url" label="Portfolio URL" error={errors.portfolio_url} {...register("portfolio_url")} />
-                <FormField id="avatar_url" label="Avatar URL" error={errors.avatar_url} helper="Supported by backend through users.avatar_url." {...register("avatar_url")} />
-              </div>
-            </div>
-
-            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            {/* Action buttons */}
+            <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[var(--border-subtle)] pt-5 sm:flex-row sm:justify-end">
               <Button type="button" variant="secondary" onClick={() => reset(defaults)} disabled={!isDirty || isSaving}>
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
                 Cancel changes
@@ -322,22 +483,31 @@ export default function MentorProfilePage() {
           </form>
         </div>
 
+        {/* Informative cards */}
         <section className="grid gap-4 md:grid-cols-3">
           {[
             ["Professional clarity", "Designation and company build credibility with students.", Briefcase],
             ["Trusted connections", "Social links let students verify your experience offline.", ExternalLink],
             ["Skills matchmaking", "Expertise helps student dashboards recommend you.", Sparkles],
-          ].map(([title, text, icon]) => {
+          ].map(([title, text, icon], i) => {
             const IconComponent = icon;
-
             return (
-              <div key={title} className="glass-panel rounded-3xl p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-700 dark:bg-brand-300/10 dark:text-brand-100">
-                  <IconComponent className="h-5 w-5" aria-hidden="true" />
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + i * 0.06 }}
+                className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5"
+              >
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-xl"
+                  style={{ backgroundColor: "rgba(16,185,129,0.12)", color: "var(--accent-mentor)" }}
+                >
+                  <IconComponent className="h-4 w-4" aria-hidden="true" />
                 </div>
-                <h3 className="mt-4 font-extrabold text-ink-950 dark:text-white">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-ink-600 dark:text-ink-300">{text}</p>
-              </div>
+                <h3 className="mt-4 text-sm font-semibold text-[var(--text-primary)]">{title}</h3>
+                <p className="mt-1.5 text-xs leading-5 text-[var(--text-secondary)]">{text}</p>
+              </motion.div>
             );
           })}
         </section>

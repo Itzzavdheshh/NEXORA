@@ -26,6 +26,7 @@ const MentorNotificationsPage = lazy(() => import("../pages/mentor/MentorNotific
 const AdminDashboardPage = lazy(() => import("../pages/admin/AdminDashboardPage"));
 const MentorVerificationPage = lazy(() => import("../pages/admin/MentorVerificationPage"));
 const UserManagementPage = lazy(() => import("../pages/admin/UserManagementPage"));
+const StyleGuidePage = import.meta.env.DEV ? lazy(() => import("../pages/StyleGuide")) : null;
 
 function RouteFallback() {
   return (
@@ -175,6 +176,16 @@ export default function AppRoutes({ location }) {
       </Route>
 
       <Route path="/" element={<Navigate to="/login" replace />} />
+      {import.meta.env.DEV && StyleGuidePage ? (
+        <Route
+          path="/style-guide"
+          element={
+            <LazyRoute>
+              <StyleGuidePage />
+            </LazyRoute>
+          }
+        />
+      ) : null}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

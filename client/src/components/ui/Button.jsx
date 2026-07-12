@@ -4,37 +4,54 @@ import { cn } from "../../utils/cn";
 
 const variants = {
   primary:
-    "bg-ink-950 text-white shadow-glow hover:bg-ink-800 dark:bg-brand-300 dark:text-ink-950 dark:hover:bg-brand-200",
+    "border border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--bg-base)] hover:bg-[var(--accent-primary-hover)] hover:shadow-accent",
   secondary:
-    "border border-ink-200 bg-white/80 text-ink-800 shadow-sm hover:bg-white dark:border-white/10 dark:bg-white/10 dark:text-ink-50 dark:hover:bg-white/20",
+    "border border-[var(--border-strong)] bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-floating)]",
   danger:
-    "border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-100 dark:hover:bg-red-500/20",
-  ghost: "text-ink-600 hover:bg-ink-100 dark:text-ink-200 dark:hover:bg-white/10",
+    "border border-[var(--accent-danger)]/40 bg-[var(--accent-danger)]/10 text-[var(--accent-danger)] hover:bg-[var(--accent-danger)]/15",
+  ghost:
+    "border border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]",
+  success:
+    "border border-[var(--accent-mentor)]/40 bg-[var(--accent-mentor)]/10 text-[var(--accent-mentor)] hover:bg-[var(--accent-mentor)]/15",
+};
+
+const sizes = {
+  sm: "h-8 px-3 text-xs gap-1.5 rounded-sm",
+  md: "h-10 px-4 text-sm gap-2 rounded-md",
+  lg: "h-11 px-5 text-sm gap-2 rounded-lg",
 };
 
 export function Button({
   children,
   className,
   variant = "primary",
+  size = "md",
   loading = false,
   disabled,
   type = "button",
   ...props
 }) {
+  const isDisabled = disabled || loading;
+
   return (
     <motion.button
-      whileHover={{ y: disabled || loading ? 0 : -1 }}
-      whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
+      whileHover={isDisabled ? {} : { y: -1 }}
+      whileTap={isDisabled ? {} : { scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
       type={type}
-      disabled={disabled || loading}
+      disabled={isDisabled}
       className={cn(
-        "inline-flex h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
+        "relative inline-flex items-center justify-center font-semibold transition-all duration-150",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        sizes[size] ?? sizes.md,
         variants[variant],
         className,
       )}
       {...props}
     >
-      {loading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
+      {loading ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+      ) : null}
       {children}
     </motion.button>
   );

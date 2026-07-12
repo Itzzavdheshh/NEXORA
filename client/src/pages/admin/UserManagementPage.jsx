@@ -11,16 +11,16 @@ import { PageTransition } from "../../components/ui/PageTransition";
 import { cn } from "../../utils/cn";
 
 const statusStyles = {
-  active: "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-400/10 dark:text-emerald-200 dark:border-emerald-400/20",
-  inactive: "bg-ink-50 text-ink-700 border-ink-200 dark:bg-white/5 dark:text-ink-300 dark:border-white/10",
-  suspended: "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-400/10 dark:text-amber-200 dark:border-amber-400/20",
-  rejected: "bg-red-50 text-red-800 border-red-200 dark:bg-red-400/10 dark:text-red-200 dark:border-red-400/20",
+  active: "badge-success",
+  inactive: "badge-muted",
+  suspended: "badge-warning",
+  rejected: "badge-danger",
 };
 
 const roleStyles = {
-  student: "bg-brand-500/10 text-brand-700 dark:text-brand-200",
-  mentor: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-200",
-  admin: "bg-violet-500/10 text-violet-700 dark:text-violet-200",
+  student: "badge-brand",
+  mentor: "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-400/20 dark:bg-violet-400/10 dark:text-violet-200", // Violet accent for mentors in Admin view
+  admin: "border-brand-200 bg-brand-50 text-brand-700 dark:border-brand-300/20 dark:bg-brand-300/10 dark:text-brand-100",
 };
 
 export default function UserManagementPage() {
@@ -33,12 +33,14 @@ export default function UserManagementPage() {
 
   if (um.isError) {
     return (
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-2xl pt-8">
         <EmptyState
+          icon={Users}
           title="Failed to load users list"
           description={um.error?.message || "Could not retrieve platform user list."}
           actionLabel="Retry"
           onAction={um.refetch}
+          size="lg"
         />
       </div>
     );
@@ -55,22 +57,23 @@ export default function UserManagementPage() {
     <PageTransition>
       <div className="mx-auto max-w-6xl space-y-5">
         {/* Header */}
-        <div className="glass-panel flex flex-col gap-4 rounded-[2rem] p-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between">
+        <div className="glass-panel flex flex-col gap-4 rounded-3xl p-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-brand-700 dark:border-brand-300/20 dark:bg-brand-300/10 dark:text-brand-200">
+            <p className="badge badge-brand">
               <Users className="h-3.5 w-3.5" />
               Identity Management
             </p>
-            <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-950 sm:text-4xl dark:text-white">
-              User profiles.
+            <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-950 sm:text-3xl dark:text-white">
+              User profiles
             </h1>
-            <p className="mt-2 text-sm text-ink-600 dark:text-ink-200">
+            <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">
               Manage accounts list, review verification state, and activate or deactivate memberships.
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <Button
               variant="secondary"
+              size="sm"
               onClick={um.refetch}
               loading={um.isFetching}
               disabled={um.isFetching}
@@ -99,6 +102,7 @@ export default function UserManagementPage() {
         {/* User Card List */}
         {um.users.length === 0 ? (
           <EmptyState
+            icon={Users}
             title="No matching users"
             description="Adjust search tags or filter choices to find matching accounts."
           />
@@ -120,7 +124,7 @@ export default function UserManagementPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.04 }}
                   onClick={() => setSelectedUser(user)}
-                  className="glass-panel group flex flex-col justify-between rounded-3xl p-5 hover:shadow-glow hover:-translate-y-0.5 transition duration-200 cursor-pointer"
+                  className="glass-panel group flex flex-col justify-between rounded-2xl p-5 hover:shadow-elevation-2 hover:-translate-y-0.5 transition duration-200 cursor-pointer"
                 >
                   <div>
                     {/* Top profile row */}
@@ -132,15 +136,15 @@ export default function UserManagementPage() {
                           className="h-10 w-10 rounded-xl object-cover border border-ink-200 dark:border-white/10"
                         />
                       ) : (
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ink-950 text-xs font-extrabold text-white dark:bg-brand-300 dark:text-ink-950">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ink-950 text-xs font-bold text-white dark:bg-brand-300 dark:text-ink-950">
                           {initials}
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <h3 className="truncate text-sm font-extrabold text-ink-950 dark:text-white">
+                        <h3 className="truncate text-sm font-semibold text-ink-950 dark:text-white">
                           {full_name}
                         </h3>
-                        <p className="truncate text-xxs font-semibold text-ink-500 dark:text-ink-300">
+                        <p className="truncate text-xxs font-medium text-ink-500 dark:text-ink-400">
                           {email}
                         </p>
                       </div>
@@ -148,14 +152,14 @@ export default function UserManagementPage() {
 
                     {/* Metadata tags */}
                     <div className="mt-4 flex flex-wrap gap-1.5">
-                      <span className={cn("rounded-full px-2.5 py-0.5 text-xxs font-bold capitalize", roleStyles[role] || "bg-ink-100 text-ink-600")}>
+                      <span className={cn("badge text-[10px] capitalize", roleStyles[role] || "badge-muted")}>
                         {role}
                       </span>
-                      <span className={cn("rounded-full border px-2.5 py-0.5 text-xxs font-extrabold capitalize tracking-[0.04em]", statusStyles[status] || "border-ink-200 bg-ink-50 text-ink-700")}>
+                      <span className={cn("badge text-[10px] capitalize", statusStyles[status] || "badge-muted")}>
                         {status}
                       </span>
                       {is_verified && (
-                        <span className="rounded-full bg-emerald-500/10 text-emerald-700 px-2.5 py-0.5 text-xxs font-bold dark:text-emerald-300">
+                        <span className="badge badge-success text-[10px]">
                           Verified
                         </span>
                       )}
@@ -163,7 +167,7 @@ export default function UserManagementPage() {
                   </div>
 
                   {/* Actions preview */}
-                  <div className="mt-5 border-t border-ink-200/50 pt-3 dark:border-white/10 flex items-center justify-between text-xxs font-bold text-brand-600 dark:text-brand-300">
+                  <div className="mt-5 border-t border-ink-200/60 pt-3 dark:border-white/6 flex items-center justify-between text-xxs font-bold text-brand-600 dark:text-brand-300">
                     <span className="inline-flex items-center gap-1">
                       <Eye className="h-3.5 w-3.5" />
                       View Details
@@ -180,6 +184,7 @@ export default function UserManagementPage() {
           <div className="flex items-center justify-center gap-4 mt-6">
             <Button
               variant="secondary"
+              size="sm"
               disabled={um.page === 1}
               onClick={() => um.setPage((prev) => Math.max(prev - 1, 1))}
               aria-label="Previous Page"
@@ -192,6 +197,7 @@ export default function UserManagementPage() {
             </span>
             <Button
               variant="secondary"
+              size="sm"
               disabled={um.page === totalPages}
               onClick={() => um.setPage((prev) => Math.min(prev + 1, totalPages))}
               aria-label="Next Page"

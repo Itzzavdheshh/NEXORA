@@ -9,23 +9,24 @@ import { BookingCard } from "./bookings/BookingCard";
 import { BookingFilters } from "./bookings/BookingFilters";
 import { BookingSkeleton } from "./bookings/BookingSkeleton";
 import { BookingDrawer } from "./bookings/BookingDrawer";
+import { cn } from "../../utils/cn";
 
 // ── HeaderStats ──────────────────────────────────────────────────────────────
 function BookingHeaderStats({ stats, isFetching, onRefresh }) {
   return (
-    <div className="glass-panel rounded-[2rem] p-6 sm:p-7">
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+    <div className="glass-panel rounded-3xl p-6">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-brand-700 dark:border-brand-300/20 dark:bg-brand-300/10 dark:text-brand-200">
+          <p className="badge badge-brand">
             <CalendarRange className="h-3.5 w-3.5" aria-hidden="true" />
             Booking Management
           </p>
 
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-950 sm:text-4xl dark:text-white">
-            Manage your student sessions.
+          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-950 sm:text-3xl dark:text-white">
+            Manage your student sessions
           </h1>
 
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-600 dark:text-ink-200">
+          <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">
             Confirm incoming session requests, mark active sessions completed, or manage student cancellations.
           </p>
         </div>
@@ -33,6 +34,7 @@ function BookingHeaderStats({ stats, isFetching, onRefresh }) {
         <div className="flex flex-wrap items-center gap-3">
           <Button
             variant="secondary"
+            size="sm"
             onClick={onRefresh}
             loading={isFetching}
             disabled={isFetching}
@@ -54,16 +56,16 @@ function BookingHeaderStats({ stats, isFetching, onRefresh }) {
         ].map(({ label, value, key, accent }) => (
           <div
             key={key}
-            className="rounded-2xl border border-ink-200/80 bg-white/65 p-4 dark:border-white/10 dark:bg-white/8"
+            className="rounded-xl border border-ink-200/60 bg-ink-50/50 p-4 dark:border-white/6 dark:bg-white/3"
           >
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-300">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-ink-500 dark:text-ink-400">
               {label}
             </p>
             <p
-              className={className(
-                "mt-2 text-2xl font-extrabold",
+              className={cn(
+                "mt-1 text-2xl font-extrabold tabular-nums",
                 accent && value > 0
-                  ? "text-brand-600 dark:text-brand-200"
+                  ? "text-brand-600 dark:text-brand-300"
                   : "text-ink-950 dark:text-white",
               )}
             >
@@ -76,18 +78,15 @@ function BookingHeaderStats({ stats, isFetching, onRefresh }) {
   );
 }
 
-// Helper to handle helper className
-function className(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
 // ── Empty States ──────────────────────────────────────────────────────────────
 function BookingsEmptyState({ filter, onClear }) {
   if (filter === "pending") {
     return (
       <EmptyState
+        icon={CalendarRange}
         title="No pending requests"
         description="Great! You have cleared all student booking requests. No actions needed."
+        size="sm"
       />
     );
   }
@@ -95,8 +94,10 @@ function BookingsEmptyState({ filter, onClear }) {
   if (filter === "confirmed") {
     return (
       <EmptyState
+        icon={CalendarRange}
         title="No confirmed sessions"
         description="Once you accept pending requests, they'll show up in this view."
+        size="sm"
       />
     );
   }
@@ -104,8 +105,10 @@ function BookingsEmptyState({ filter, onClear }) {
   if (filter === "completed") {
     return (
       <EmptyState
+        icon={CalendarRange}
         title="No completed sessions yet"
         description="Completed sessions will be logged here once you wrap them up."
+        size="sm"
       />
     );
   }
@@ -113,8 +116,10 @@ function BookingsEmptyState({ filter, onClear }) {
   if (filter === "cancelled") {
     return (
       <EmptyState
+        icon={CalendarRange}
         title="No cancelled sessions"
         description="No sessions have been cancelled by you or your students."
+        size="sm"
       />
     );
   }
@@ -141,10 +146,12 @@ function BookingsEmptyState({ filter, onClear }) {
 
   return (
     <EmptyState
+      icon={CalendarRange}
       title="No bookings match filters"
       description="Adjust your query search, sort direction, or status selectors."
       actionLabel="Clear all filters"
       onAction={onClear}
+      size="sm"
     />
   );
 }
@@ -166,12 +173,14 @@ export default function MentorBookingsPage() {
 
   if (mb.isError) {
     return (
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-2xl pt-8">
         <EmptyState
+          icon={CalendarRange}
           title="Bookings could not load"
           description={mb.error?.message || "Failed to fetch student booking records."}
           actionLabel="Retry"
           onAction={mb.refetch}
+          size="lg"
         />
       </div>
     );

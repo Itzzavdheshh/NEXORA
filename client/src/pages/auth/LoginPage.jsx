@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Mail, ShieldCheck } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
+import { motion } from "framer-motion";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { Button } from "../../components/ui/Button";
 import { FormField, PasswordToggle } from "../../components/ui/FormField";
@@ -31,10 +32,7 @@ export function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: createZodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (values) => {
@@ -46,85 +44,97 @@ export function LoginPage() {
 
   return (
     <PageTransition>
-      <div className="glass-panel w-full max-w-md rounded-3xl p-7 shadow-glow sm:p-8">
-        <div className="mb-8 flex items-start justify-between gap-4">
-          <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-brand-700 dark:border-brand-400/20 dark:bg-brand-400/10 dark:text-brand-200">
-              <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-              Secure access
-            </p>
-            <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-950 dark:text-white">
-              Sign in to Nexora
+      <div className="w-full">
+        {/* Card Panel */}
+        <div 
+          className="rounded-lg p-6 sm:p-8 border border-[var(--border-subtle)] shadow-md"
+          style={{ backgroundColor: "var(--bg-elevated)", backdropFilter: "none" }}
+        >
+          {/* Header */}
+          <div className="mb-6">
+            <div className="badge badge-brand mb-4">
+              <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+              Secure sign-in
+            </div>
+            <h1 className="font-display text-section font-semibold text-text-primary tracking-tight">
+              Welcome back
             </h1>
-            <p className="mt-3 text-sm leading-6 text-ink-600 dark:text-ink-200">
-              Continue to your role-based workspace using your registered email and password.
+            <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+              Sign in to your role-based workspace.
             </p>
           </div>
-        </div>
 
-        {login.isError ? (
-          <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-400/20 dark:bg-red-400/10 dark:text-red-200">
-            {login.error.message}
-          </div>
-        ) : null}
-
-        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <FormField
-            id="email"
-            label="Email address"
-            type="email"
-            autoComplete="email"
-            placeholder="you@nexora.dev"
-            error={errors.email}
-            helper="Use the email connected to your Nexora account."
-            rightSlot={
-              <Mail
-                className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"
-                aria-hidden="true"
-              />
-            }
-            {...register("email")}
-          />
-
-          <FormField
-            id="password"
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            autoComplete="current-password"
-            placeholder="Enter your password"
-            error={errors.password}
-            rightSlot={
-              <PasswordToggle
-                visible={showPassword}
-                onClick={() => setShowPassword((value) => !value)}
-              />
-            }
-            {...register("password")}
-          />
-
-          <div className="flex items-center justify-between gap-3 text-sm">
-            <span className="text-ink-600 dark:text-ink-300">JWT sessions are remembered securely.</span>
-            <Link
-              className="font-semibold text-brand-700 hover:text-brand-900 dark:text-brand-200 dark:hover:text-white"
-              to="/forgot-password"
+          {/* Error Banner */}
+          {login.isError && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="mb-5 rounded-md border border-accent-danger/20 bg-accent-danger/10 px-4 py-3 text-xs font-semibold text-accent-danger"
+              role="alert"
             >
-              Forgot?
+              {login.error.message}
+            </motion.div>
+          )}
+
+          {/* Form */}
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+            <FormField
+              id="email"
+              label="Email address"
+              type="email"
+              autoComplete="email"
+              placeholder="you@nexora.dev"
+              error={errors.email}
+              {...register("email")}
+            />
+
+            <FormField
+              id="password"
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              placeholder="••••••••"
+              error={errors.password}
+              rightSlot={
+                <PasswordToggle
+                  visible={showPassword}
+                  onClick={() => setShowPassword((v) => !v)}
+                />
+              }
+              {...register("password")}
+            />
+
+            <div className="flex items-center justify-end">
+              <Link
+                className="text-xs font-semibold text-accent-primary hover:text-accent-primary-hover transition duration-token-micro"
+                to="/forgot-password"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <Button
+              className="w-full mt-2"
+              size="lg"
+              loading={isLoading}
+              type="submit"
+            >
+              {isLoading ? "Signing in…" : "Sign in"}
+              {!isLoading && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
+            </Button>
+          </form>
+
+          {/* Footer */}
+          <div className="mt-6 border-t border-border-subtle pt-5 text-center text-sm text-text-secondary">
+            New to NEXORA?{" "}
+            <Link
+              className="font-semibold text-text-primary hover:text-accent-primary transition duration-token-micro"
+              to="/register"
+            >
+              Create account
             </Link>
           </div>
-
-          <Button className="h-12 w-full rounded-2xl" loading={isLoading} type="submit">
-            {isLoading ? "Signing in" : "Sign in"}
-          </Button>
-        </form>
-
-        <div className="mt-7 border-t border-ink-200/70 pt-5 text-center text-sm text-ink-500 dark:border-white/10 dark:text-ink-300">
-          New to Nexora?{" "}
-          <Link
-            className="font-bold text-ink-950 hover:text-brand-700 dark:text-white dark:hover:text-brand-200"
-            to="/register"
-          >
-            Create an account
-          </Link>
         </div>
       </div>
     </PageTransition>

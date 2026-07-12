@@ -1,68 +1,70 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Sun, UserRound } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu, UserRound, Search, Check, Command, Sparkles, X, Info } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
-import { useTheme } from "../hooks/useTheme";
 import { useAuth } from "../hooks/useAuth";
 import { useLogout } from "../hooks/useAuthActions";
-import { notificationService } from "../services/notificationService";
+import { useNotifications } from "../hooks/useNotifications";
 import { cn } from "../utils/cn";
+import { formatDistanceToNow } from "date-fns";
 
-function NotificationBell({ role }) {
-  const notificationsQuery = useQuery({
-    queryKey: ["notifications"],
-    queryFn: notificationService.list,
-    select: (res) => (res?.data ?? []).filter((n) => !n.is_read).length,
-    enabled: role === "student" || role === "mentor",
-  });
-
-  const unreadCount = notificationsQuery.data ?? 0;
-
-  if (role !== "student" && role !== "mentor") return null;
-
-  const notificationPath = role === "student" ? "/student/notifications" : "/mentor/notifications";
-
-  return (
-    <Link
-      to={notificationPath}
-      aria-label={
-        unreadCount > 0
-          ? `${unreadCount} unread notification${unreadCount !== 1 ? "s" : ""}`
-          : "Notifications"
-      }
-      className="relative rounded-xl border border-ink-200 bg-white/80 p-2 text-ink-700 shadow-sm transition hover:bg-white dark:border-white/10 dark:bg-white/10 dark:text-ink-100 dark:hover:bg-white/20"
-    >
-      <Bell className="h-5 w-5" aria-hidden="true" />
-
-      <AnimatePresence>
-        {unreadCount > 0 && (
-          <motion.span
-            key="badge"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            className={cn(
-              "absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand-500 text-[10px] font-extrabold text-white shadow",
-              unreadCount > 9 ? "w-6 px-1" : "",
-            )}
-            aria-hidden="true"
-          >
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </Link>
-  );
+// Relative time formatting helper
+function TimeAgo({ dateStr }) {
+  if (!dateStr) return null;
+  try {
+    const date = new Date(dateStr);
+    const dist = formatDistanceToNow(date, { addSuffix: true });
+    return <span className="text-[10px] font-semibold text-[var(--text-tertiary)]">{dist}</span>;
+  } catch {
+    return null;
+  }
 }
 
+// Group notifications helper
+function groupNotifications(notifications) {
+  const groups = { Today: [], Yesterday: [], Earlier: [] };
+  const todayStr = new Date().toDateString();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toDateString();
+
+  notifications.forEach((n) => {
+    const d = new Date(n.created_at);
+    const dStr = d.toDateString();
+    if (dStr === todayStr) {
+      groups.Today.push(n);
+    } else if (dStr === yesterdayStr) {
+      groups.Yesterday.push(n);
+    } else {
+      groups.Earlier.push(n);
+    }
+  });
+  return groups;
+}
 
 export function Navbar({ onMenuClick }) {
-  const { isDark, toggleTheme } = useTheme();
-  const { user, role } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { user, role = "student" } = useAuth();
   const navigate = useNavigate();
   const logoutMutation = useLogout();
+  
+  // Custom hooks
+  const {
+    notifications,
+    unreadCount,
+    markRead,
+    markAllRead,
+    isLoading
+  } = useNotifications();
+
+  // Component state
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const profileRef = useRef(null);
+  const notifRef = useRef(null);
+
   const displayName = user?.full_name || user?.name || "Nexora User";
   const initials = displayName
     .split(" ")
@@ -71,88 +73,370 @@ export function Navbar({ onMenuClick }) {
     .slice(0, 2)
     .toUpperCase();
 
+  // Search items list
+  const searchOptions = useMemo(() => {
+    const options = [
+      { name: "Dashboard", path: `/${role}/dashboard`, category: "Navigation" },
+      { name: "Profile", path: `/${role}/profile`, category: "Navigation" },
+      { name: "Notifications", path: `/${role}/notifications`, category: "Navigation" },
+    ];
+
+    if (role === "student") {
+      options.push({ name: "Bookings & Sessions", path: "/student/bookings", category: "Navigation" });
+    } else if (role === "mentor") {
+      options.push({ name: "Availability Calendar", path: "/mentor/availability", category: "Navigation" });
+      options.push({ name: "Manage Bookings", path: "/mentor/bookings", category: "Navigation" });
+    } else if (role === "admin") {
+      options.push({ name: "Verify Mentors", path: "/admin/verify-mentors", category: "Navigation" });
+      options.push({ name: "User Directory Management", path: "/admin/users", category: "Navigation" });
+    }
+
+    options.push({ name: "Sign Out", action: "logout", category: "System Actions" });
+    return options;
+  }, [role]);
+
+  // Filter search matches
+  const filteredSearch = useMemo(() => {
+    if (!searchQuery.trim()) return searchOptions;
+    return searchOptions.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
+    );
+  }, [searchQuery, searchOptions]);
+
+  // Close drop-downs on click outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (profileOpen && profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+      if (notifOpen && notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [profileOpen, notifOpen]);
+
+  // Keyboard shortcut listener for Command Palette (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+        setSearchQuery("");
+      }
+      if (e.key === "Escape") {
+        setSearchOpen(false);
+        setProfileOpen(false);
+        setNotifOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const handleLogout = async () => {
     await logoutMutation.mutateAsync().catch(() => null);
-    setMenuOpen(false);
+    setProfileOpen(false);
     navigate("/login", { replace: true });
   };
 
+  const handleSearchAction = (item) => {
+    setSearchOpen(false);
+    if (item.action === "logout") {
+      handleLogout();
+    } else if (item.path) {
+      navigate(item.path);
+    }
+  };
+
+  const grouped = groupNotifications(notifications);
+
   return (
-    <header className="sticky top-0 z-30 border-b border-ink-200/70 bg-white/82 backdrop-blur-2xl dark:border-white/10 dark:bg-[#07101d]/86">
-      <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
-        <button
-          type="button"
-          onClick={onMenuClick}
-          className="rounded-xl p-2 text-ink-600 hover:bg-ink-100 lg:hidden dark:text-ink-200 dark:hover:bg-white/10"
-          aria-label="Open navigation"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-
-        <div className="hidden min-w-0 flex-1 items-center gap-3 rounded-2xl border border-ink-200 bg-white/75 px-4 py-2 text-sm text-ink-500 shadow-sm md:flex dark:border-white/10 dark:bg-white/10 dark:text-ink-200">
-          <Search className="h-4 w-4" aria-hidden="true" />
-          <span className="truncate">Search mentors, bookings, notifications...</span>
-        </div>
-
-        {/* Notification bell — students only */}
-        <NotificationBell role={role} />
-
-        <motion.button
-          whileHover={{ y: -1 }}
-          whileTap={{ scale: 0.98 }}
-          type="button"
-          onClick={toggleTheme}
-          className="rounded-xl border border-ink-200 bg-white/80 p-2 text-ink-700 shadow-sm hover:bg-white dark:border-white/10 dark:bg-white/10 dark:text-ink-100 dark:hover:bg-white/20"
-          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-        >
-          {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </motion.button>
-
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setMenuOpen((value) => !value)}
-            className="flex h-10 items-center gap-2 rounded-2xl border border-ink-200 bg-white/80 px-2.5 text-sm font-bold text-ink-800 shadow-sm transition hover:bg-white dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
-            aria-haspopup="menu"
-            aria-expanded={menuOpen}
-            aria-label="Open user menu"
-          >
-            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-ink-950 text-xs text-white dark:bg-brand-300 dark:text-ink-950">
-              {initials || <UserRound className="h-4 w-4" aria-hidden="true" />}
-            </span>
-            <span className="hidden max-w-32 truncate sm:inline">{displayName}</span>
-            <ChevronDown className="h-4 w-4 text-ink-500 dark:text-ink-300" aria-hidden="true" />
-          </button>
-
-          {menuOpen ? (
-            <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              className="absolute right-0 mt-3 w-64 rounded-3xl border border-ink-200 bg-white/95 p-2 shadow-panel backdrop-blur-xl dark:border-white/10 dark:bg-[#101827]/95"
-              role="menu"
+    <>
+      <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-[var(--bg-base)] text-[var(--text-primary)]">
+        <div className="flex h-14 items-center justify-between px-4 sm:px-6">
+          
+          {/* Left panel triggers */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onMenuClick}
+              className="rounded-sm p-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] lg:hidden"
+              aria-label="Open navigation"
             >
-              <div className="px-3 py-3">
-                <p className="truncate text-sm font-extrabold text-ink-950 dark:text-white">
-                  {displayName}
-                </p>
-                <p className="mt-1 truncate text-xs font-medium capitalize text-ink-500 dark:text-ink-300">
-                  {user?.role || "workspace"} account
-                </p>
-              </div>
+              <Menu className="h-5 w-5" />
+            </button>
+
+            {/* Global search trigger */}
+            <button
+              type="button"
+              onClick={() => {
+                setSearchOpen(true);
+                setSearchQuery("");
+              }}
+              className="flex h-9 w-44 sm:w-56 items-center gap-2 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 text-left text-xs text-[var(--text-tertiary)] hover:border-[var(--border-strong)] hover:text-[var(--text-secondary)] transition duration-token-micro"
+            >
+              <Search className="h-3.5 w-3.5 shrink-0" />
+              <span className="flex-1 truncate">Search pages...</span>
+              <kbd className="pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-0.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-1.5 font-mono text-[9px] font-semibold text-[var(--text-tertiary)]">
+                <span>⌘</span>K
+              </kbd>
+            </button>
+          </div>
+
+          {/* Right panel triggers */}
+          <div className="flex items-center gap-3">
+            
+            {/* Notification trigger dropdown */}
+            <div className="relative" ref={notifRef}>
               <button
                 type="button"
-                onClick={handleLogout}
-                disabled={logoutMutation.isPending}
-                className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 dark:text-red-100 dark:hover:bg-red-500/10"
-                role="menuitem"
+                onClick={() => setNotifOpen((v) => !v)}
+                className={cn(
+                  "relative rounded-sm border p-2 text-[var(--text-secondary)] bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition",
+                  notifOpen && "border-[var(--border-strong)] text-[var(--text-primary)]"
+                )}
+                aria-label="Notifications"
               >
-                <LogOut className="h-4 w-4" aria-hidden="true" />
-                {logoutMutation.isPending ? "Signing out..." : "Logout"}
+                <Bell className="h-4 w-4" />
+                <AnimatePresence>
+                  {unreadCount > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-[var(--accent-primary)]"
+                    />
+                  )}
+                </AnimatePresence>
               </button>
-            </motion.div>
-          ) : null}
+
+              {/* Notification dropdown details */}
+              <AnimatePresence>
+                {notifOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-80 sm:w-96 overflow-hidden rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-token-lg z-40"
+                  >
+                    <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
+                      <span className="text-xs font-bold text-[var(--text-primary)]">Notifications</span>
+                      {unreadCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => markAllRead()}
+                          className="text-[11px] font-semibold text-[var(--accent-primary)] hover:text-[var(--accent-primary-hover)] transition"
+                        >
+                          Mark all read
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="max-h-80 overflow-y-auto divide-y divide-[var(--border-subtle)]">
+                      {isLoading ? (
+                        <div className="px-4 py-6 text-center text-xs text-[var(--text-tertiary)]">Loading updates...</div>
+                      ) : notifications.length === 0 ? (
+                        <div className="px-4 py-8 text-center text-xs text-[var(--text-tertiary)]">No notifications yet.</div>
+                      ) : (
+                        ["Today", "Yesterday", "Earlier"].map((groupName) => {
+                          const items = grouped[groupName] || [];
+                          if (items.length === 0) return null;
+                          return (
+                            <div key={groupName} className="p-2">
+                              <span className="px-2 py-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--text-tertiary)]">{groupName}</span>
+                              <div className="space-y-1 mt-1">
+                                {items.map((n) => (
+                                  <div
+                                    key={n.id}
+                                    className={cn(
+                                      "group flex gap-3 rounded px-2 py-2 transition",
+                                      !n.is_read ? "bg-[var(--bg-elevated)]/40" : "hover:bg-[var(--bg-elevated)]/25"
+                                    )}
+                                  >
+                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
+                                      <Info className="h-3.5 w-3.5" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-start justify-between gap-1">
+                                        <p className={cn("text-xs font-semibold truncate", !n.is_read ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]")}>
+                                          {n.title}
+                                        </p>
+                                        <TimeAgo dateStr={n.created_at} />
+                                      </div>
+                                      <p className="text-[11px] text-[var(--text-secondary)] mt-0.5 leading-relaxed line-clamp-2">{n.message}</p>
+                                    </div>
+                                    {!n.is_read && (
+                                      <button
+                                        type="button"
+                                        onClick={() => markRead(n.id)}
+                                        className="h-5 w-5 shrink-0 flex items-center justify-center rounded border border-[var(--border-subtle)] text-[var(--text-tertiary)] hover:border-[var(--accent-mentor)] hover:text-[var(--accent-mentor)] transition"
+                                        title="Mark as read"
+                                      >
+                                        <Check className="h-3 w-3" />
+                                      </button>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Profile menu dropdown */}
+            <div className="relative" ref={profileRef}>
+              <button
+                type="button"
+                onClick={() => setProfileOpen((v) => !v)}
+                className={cn(
+                  "flex h-9 items-center gap-2 rounded-sm border px-2.5 text-xs font-medium bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition duration-token-micro",
+                  profileOpen && "border-[var(--border-strong)] text-[var(--text-primary)]"
+                )}
+              >
+                <div
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-[var(--bg-elevated)] text-[10px] font-bold border border-[var(--border-subtle)]"
+                  aria-hidden="true"
+                >
+                  {initials}
+                </div>
+                <span className="hidden max-w-24 truncate sm:inline">{displayName}</span>
+                <ChevronDown className="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+              </button>
+
+              <AnimatePresence>
+                {profileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-52 overflow-hidden rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-token-lg z-40"
+                  >
+                    <div className="border-b border-[var(--border-subtle)] px-4 py-3">
+                      <p className="truncate text-xs font-bold text-[var(--text-primary)]">
+                        {displayName}
+                      </p>
+                      <p className="mt-0.5 truncate text-[10px] uppercase tracking-wider font-semibold text-[var(--text-tertiary)]">
+                        {role} account
+                      </p>
+                    </div>
+
+                    <div className="p-1">
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        disabled={logoutMutation.isPending}
+                        className="flex w-full items-center gap-2 rounded px-3 py-2 text-xs font-medium text-[var(--accent-danger)] hover:bg-[var(--accent-danger)]/10 transition"
+                      >
+                        <LogOut className="h-3.5 w-3.5" />
+                        <span>Log out</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Global Command Palette Overlay (Cmd+K) */}
+      <AnimatePresence>
+        {searchOpen && (
+          <div className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] px-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-[var(--bg-base)]/75 backdrop-blur-sm"
+              onClick={() => setSearchOpen(false)}
+            />
+
+            {/* Dialog Container */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: -8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: -6 }}
+              className="relative w-full max-w-lg overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-token-lg z-10 flex flex-col"
+            >
+              {/* Input header */}
+              <div className="flex h-12 items-center gap-3 border-b border-[var(--border-subtle)] px-4 bg-[var(--bg-surface)]">
+                <Search className="h-4.5 w-4.5 text-[var(--text-tertiary)] shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Type a command or page search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                  className="w-full bg-transparent text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] border-0 focus:ring-0 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(false)}
+                  className="rounded-sm p-1 text-[var(--text-tertiary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] transition"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              {/* Options list */}
+              <div className="max-h-72 overflow-y-auto p-2 divide-y divide-[var(--border-subtle)]/40">
+                {filteredSearch.length === 0 ? (
+                  <div className="px-4 py-8 text-center text-xs text-[var(--text-tertiary)]">No matching results found.</div>
+                ) : (
+                  // Group results by category
+                  ["Navigation", "System Actions"].map((category) => {
+                    const categoryItems = filteredSearch.filter((item) => item.category === category);
+                    if (categoryItems.length === 0) return null;
+                    return (
+                      <div key={category} className="py-1">
+                        <span className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[var(--text-tertiary)] block">
+                          {category}
+                        </span>
+                        <div className="space-y-0.5 mt-1">
+                          {categoryItems.map((item) => (
+                            <button
+                              key={item.name}
+                              type="button"
+                              onClick={() => handleSearchAction(item)}
+                              className="w-full flex items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition"
+                            >
+                              <div className="flex items-center gap-2">
+                                <Command className="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+                                <span>{item.name}</span>
+                              </div>
+                              {item.path && (
+                                <span className="text-[10px] font-semibold text-[var(--text-tertiary)] tracking-tight">
+                                  {item.path}
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Palette footer info */}
+              <div className="border-t border-[var(--border-subtle)] px-4 py-2 text-center text-[10px] font-medium text-[var(--text-tertiary)] bg-[var(--bg-elevated)]/30">
+                Use <kbd className="font-semibold px-1 py-0.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)]">Esc</kbd> to exit · Select command with mouse or click
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

@@ -4,9 +4,7 @@ import {
   CalendarClock,
   Plus,
   RefreshCw,
-  Search,
-  SlidersHorizontal,
-  X,
+  Trash2,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button } from "../../components/ui/Button";
@@ -15,35 +13,171 @@ import { PageTransition } from "../../components/ui/PageTransition";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { ConfirmationModal } from "../../components/ui/ConfirmationModal";
 import { useMentorAvailability } from "../../hooks/useMentorAvailability";
+import { SlotForm } from "./availability/AvailabilityComponents";
 import { cn } from "../../utils/cn";
-import {
-  SlotCard,
-  SlotForm,
-} from "./availability/AvailabilityComponents";
 
-// ── Loading skeleton ──────────────────────────────────────────────────────────
+// ── Constants ─────────────────────────────────────────────────────────────
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const DAY_SHORT = {
+  Monday: "Mon",
+  Tuesday: "Tue",
+  Wednesday: "Wed",
+  Thursday: "Thu",
+  Friday: "Fri",
+  Saturday: "Sat",
+  Sunday: "Sun"
+};
+
+// Hour rows for the weekly planner
+const HOURS = [
+  "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
+  "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"
+];
+
+function calculateEndTime(timeStr) {
+  if (!timeStr) return "";
+  const [h, m] = timeStr.split(":").map(Number);
+  const newH = (h + 1) % 24;
+  return `${String(newH).padStart(2, "0")}:${String(m || 0).padStart(2, "0")}`;
+}
+
+// ── Loading skeleton ───────────────────────────────────────────────────────
 function AvailabilitySkeleton() {
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <Skeleton className="h-48 w-full" />
-      <Skeleton className="h-24 w-full" />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Skeleton key={i} className="h-44 w-full" />
-        ))}
+    <div className="mx-auto max-w-7xl space-y-5">
+      <Skeleton className="h-40 w-full rounded-2xl" />
+      <Skeleton className="h-[520px] w-full rounded-2xl" />
+    </div>
+  );
+}
+
+// ── Slot Pill (inside calendar cell) ──────────────────────────────────────
+function SlotPill({ slot, onEdit, onDelete, isDeleting }) {
+  const isAvailable = slot.is_available;
+  return (
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        onEdit(slot);
+      }}
+      className={cn(
+        "group relative flex cursor-pointer items-center justify-between rounded-lg border px-2 py-1 text-[10px] font-bold leading-tight transition duration-150",
+        isAvailable
+          ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
+          : "border-amber-500/20 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20",
+      )}
+      title={`${slot.start_time?.slice(0, 5)} – ${slot.end_time?.slice(0, 5)}`}
+    >
+      <span>{slot.start_time?.slice(0, 5)} – {slot.end_time?.slice(0, 5)}</span>
+      
+      <button
+        type="button"
+        disabled={isDeleting}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(slot);
+        }}
+        className="opacity-0 group-hover:opacity-100 p-1 text-[var(--accent-danger)] hover:bg-red-500/20 rounded transition-opacity duration-150"
+      >
+        <Trash2 className="h-3 w-3" />
+      </button>
+    </div>
+  );
+}
+
+// ── Weekly Calendar ────────────────────────────────────────────────────────
+function WeeklyCalendar({ slots, onAddSlot, onEdit, onDelete, isDeleting }) {
+  // Group slots by day
+  const byDay = {};
+  DAYS.forEach(d => { byDay[d] = []; });
+  slots.forEach(s => {
+    if (byDay[s.day_of_week]) byDay[s.day_of_week].push(s);
+  });
+
+  return (
+    <div className="overflow-x-auto">
+      <div className="min-w-[800px] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden">
+        {/* Header Row */}
+        <div className="grid border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]/40" style={{ gridTemplateColumns: "80px repeat(7, 1fr)" }}>
+          <div className="flex items-center justify-center p-3 border-r border-[var(--border-subtle)]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Time</span>
+          </div>
+          {DAYS.map(day => (
+            <div key={day} className="p-3 text-center border-r border-[var(--border-subtle)] last:border-r-0">
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">{DAY_SHORT[day]}</span>
+              <span className="mt-1 inline-flex items-center justify-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-[var(--accent-mentor)]">
+                {byDay[day].length} slot{byDay[day].length !== 1 ? "s" : ""}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Hour Rows */}
+        <div className="divide-y divide-[var(--border-subtle)]/50">
+          {HOURS.map(hr => (
+            <div key={hr} className="grid" style={{ gridTemplateColumns: "80px repeat(7, 1fr)" }}>
+              {/* Hour Label */}
+              <div className="flex items-center justify-center p-2 bg-[var(--bg-elevated)]/20 border-r border-[var(--border-subtle)]">
+                <span className="text-[10px] font-semibold text-[var(--text-tertiary)]">{hr}</span>
+              </div>
+
+              {/* Day Cells */}
+              {DAYS.map(day => {
+                const hrPrefix = hr.slice(0, 2);
+                const cellSlots = byDay[day].filter(s => s.start_time?.startsWith(hrPrefix));
+
+                return (
+                  <div
+                    key={day}
+                    className="relative min-h-[48px] border-r border-[var(--border-subtle)]/50 last:border-r-0 p-1 flex flex-col justify-center gap-1"
+                  >
+                    {cellSlots.length > 0 ? (
+                      <div className="flex flex-col gap-1 w-full">
+                        {cellSlots.map(slot => (
+                          <SlotPill
+                            key={slot.id}
+                            slot={slot}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                            isDeleting={isDeleting}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onAddSlot(day, hr)}
+                        className="absolute inset-0 w-full h-full flex items-center justify-center group hover:bg-[var(--bg-elevated)]/30 transition-colors"
+                        title={`Add slot on ${day} at ${hr}`}
+                      >
+                        <Plus className="h-3.5 w-3.5 text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────────
+// ── Main Page ─────────────────────────────────────────────────────────────────
 export default function MentorAvailabilityPage() {
   const av = useMentorAvailability();
   const [showForm, setShowForm] = useState(false);
   const [editingSlot, setEditingSlot] = useState(null);
+  const [defaultDay, setDefaultDay] = useState("Monday");
+  const [defaultStartTime, setDefaultStartTime] = useState("");
+  const [defaultEndTime, setDefaultEndTime] = useState("");
   const [slotToDelete, setSlotToDelete] = useState(null);
 
-  function openCreate() {
+  function openCreate(day = "Monday", time = "") {
+    setDefaultDay(day);
+    setDefaultStartTime(time);
+    setDefaultEndTime(time ? calculateEndTime(time) : "");
     setEditingSlot(null);
     setShowForm(true);
     setTimeout(() => {
@@ -65,29 +199,14 @@ export default function MentorAvailabilityPage() {
   }
 
   async function handleFormSubmit(values) {
-    // Helper to convert time format (HH:MM) to total minutes
-    const toMinutes = (timeStr) => {
-      if (!timeStr) return 0;
-      const parts = timeStr.split(":");
-      const h = parseInt(parts[0] || "0", 10);
-      const m = parseInt(parts[1] || "0", 10);
-      return h * 60 + m;
-    };
+    const toMin = t => { if (!t) return 0; const [h, m] = t.split(":"); return Number(h) * 60 + Number(m || 0); };
+    const newStart = toMin(values.start_time);
+    const newEnd   = toMin(values.end_time);
 
-    const newStart = toMinutes(values.start_time);
-    const newEnd = toMinutes(values.end_time);
-
-    // Client-side overlap validation
-    const hasOverlap = av.slots.some((s) => {
-      // If editing, skip comparing the slot with itself
+    const hasOverlap = av.slots.some(s => {
       if (editingSlot && s.id === editingSlot.id) return false;
       if (s.day_of_week !== values.day_of_week) return false;
-
-      const existStart = toMinutes(s.start_time);
-      const existEnd = toMinutes(s.end_time);
-
-      // Overlap condition: startA < endB AND endA > startB
-      return newStart < existEnd && newEnd > existStart;
+      return newStart < toMin(s.end_time) && newEnd > toMin(s.start_time);
     });
 
     if (hasOverlap) {
@@ -102,41 +221,50 @@ export default function MentorAvailabilityPage() {
         await av.createSlot.mutateAsync(values);
       }
       closeForm();
-    } catch {
-      // Error handled by mutation toast
-    }
+    } catch { /* handled by mutation */ }
   }
-
-  const hasActiveFilters =
-    av.search.trim() || av.dayFilter !== "all" || av.statusFilter !== "all";
 
   if (av.isLoading) return <AvailabilitySkeleton />;
 
+  const totalAvailable = av.slots.filter(s => s.is_available).length;
+  const totalBooked    = av.slots.filter(s => !s.is_available).length;
+
   return (
     <PageTransition>
-      <div className="mx-auto max-w-5xl space-y-5">
+      <div className="mx-auto max-w-7xl space-y-5">
+
         {/* ── Header ── */}
         <motion.section
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-panel rounded-[2rem] p-6 sm:p-7"
+          className="relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6"
         >
+          {/* emerald shimmer */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-px"
+            style={{ background: "linear-gradient(90deg, transparent, var(--accent-mentor), transparent)" }}
+          />
+
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-brand-700 dark:border-brand-300/20 dark:bg-brand-300/10 dark:text-brand-200">
+              <span
+                className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider"
+                style={{ background: "rgba(16,185,129,0.12)", color: "var(--accent-mentor)" }}
+              >
                 <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />
                 Availability management
-              </p>
-              <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-950 sm:text-4xl dark:text-white">
+              </span>
+              <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--text-primary)] sm:text-4xl">
                 Define when students can book you.
               </h1>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-ink-600 dark:text-ink-200">
-                Add your available time slots for each day of the week. Students will see these when booking mentorship sessions.
+              <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--text-secondary)]">
+                Click any cell with a `+` in the calendar to add a slot for that day and hour, or click an existing slot to edit it. Hover a slot to reveal the remove button.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Button onClick={openCreate} disabled={showForm && !editingSlot}>
+              <Button onClick={() => openCreate()} disabled={showForm && !editingSlot}>
                 <Plus className="h-4 w-4" aria-hidden="true" />
                 Add slot
               </Button>
@@ -150,25 +278,19 @@ export default function MentorAvailabilityPage() {
           {/* Stats strip */}
           <div className="mt-6 grid grid-cols-3 gap-3">
             {[
-              { label: "Total slots", value: av.slots.length },
-              { label: "Available", value: av.slots.filter((s) => s.is_available).length, accent: true },
-              { label: "Booked", value: av.slots.filter((s) => !s.is_available).length },
+              { label: "Total slots",  value: av.slots.length,  accent: false },
+              { label: "Available",    value: totalAvailable,   accent: true  },
+              { label: "Booked",       value: totalBooked,      accent: false },
             ].map(({ label, value, accent }) => (
               <div
                 key={label}
-                className="rounded-2xl border border-ink-200/80 bg-white/65 p-4 dark:border-white/10 dark:bg-white/8"
+                className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4"
               >
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-300">
-                  {label}
-                </p>
-                <p
-                  className={cn(
-                    "mt-2 text-2xl font-extrabold",
-                    accent && value > 0
-                      ? "text-brand-600 dark:text-brand-200"
-                      : "text-ink-950 dark:text-white",
-                  )}
-                >
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">{label}</p>
+                <p className={cn(
+                  "mt-2 text-2xl font-extrabold tabular-nums",
+                  accent && value > 0 ? "text-[var(--accent-mentor)]" : "text-[var(--text-primary)]",
+                )}>
                   {value}
                 </p>
               </div>
@@ -176,99 +298,51 @@ export default function MentorAvailabilityPage() {
           </div>
         </motion.section>
 
-        {/* ── Create/Edit form ── */}
+        {/* ── Create / Edit form ── */}
         <AnimatePresence>
           {showForm && (
-            <div id="availability-form">
+            <motion.div
+              key="slot-form"
+              id="availability-form"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              style={{ overflow: "hidden" }}
+            >
               <SlotForm
                 editSlot={editingSlot}
+                defaultDay={!editingSlot ? defaultDay : undefined}
+                defaultStartTime={!editingSlot ? defaultStartTime : undefined}
+                defaultEndTime={!editingSlot ? defaultEndTime : undefined}
                 onSubmit={handleFormSubmit}
                 onCancel={closeForm}
                 isSubmitting={av.isCreating || av.isUpdating}
               />
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ── Filters ── */}
+        {/* ── Weekly Calendar ── */}
         <motion.section
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.06 }}
-          className="glass-panel rounded-3xl p-4 sm:p-5"
-          aria-label="Availability filters"
+          transition={{ delay: 0.08 }}
+          className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5"
         >
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            {/* Search */}
-            <label className="relative flex-1">
-              <Search
-                className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"
-                aria-hidden="true"
-              />
-              <input
-                type="search"
-                value={av.search}
-                onChange={(e) => av.setSearch(e.target.value)}
-                placeholder="Search by day or time…"
-                aria-label="Search slots"
-                className="h-11 w-full rounded-2xl border border-ink-200 bg-white/80 pl-11 pr-4 text-sm font-medium text-ink-900 shadow-sm transition placeholder:text-ink-400 dark:border-white/10 dark:bg-white/10 dark:text-white dark:placeholder:text-ink-400"
-              />
-            </label>
-
-            {/* Day filter */}
-            <select
-              value={av.dayFilter}
-              onChange={(e) => av.setDayFilter(e.target.value)}
-              aria-label="Filter by day"
-              className="h-11 rounded-2xl border border-ink-200 bg-white/80 px-4 text-sm font-bold text-ink-800 shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-white"
-            >
-              <option value="all">All days</option>
-              {av.DAYS.map((d) => (
-                <option key={d} value={d}>{d}</option>
-              ))}
-            </select>
-
-            {/* Status filter */}
-            <select
-              value={av.statusFilter}
-              onChange={(e) => av.setStatusFilter(e.target.value)}
-              aria-label="Filter by status"
-              className="h-11 rounded-2xl border border-ink-200 bg-white/80 px-4 text-sm font-bold text-ink-800 shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-white"
-            >
-              <option value="all">All statuses</option>
-              <option value="available">Available</option>
-              <option value="booked">Booked</option>
-            </select>
-
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={() => {
-                  av.setSearch("");
-                  av.setDayFilter("all");
-                  av.setStatusFilter("all");
-                }}
-                aria-label="Clear filters"
-                className="inline-flex h-11 items-center gap-2 rounded-2xl border border-ink-200 bg-white/80 px-4 text-sm font-bold text-ink-700 shadow-sm transition hover:bg-white dark:border-white/10 dark:bg-white/10 dark:text-ink-100 dark:hover:bg-white/20"
-              >
-                <X className="h-4 w-4" />
-                Clear
-              </button>
-            )}
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-sm font-bold text-[var(--text-primary)]">Weekly planner</h2>
+            <div className="flex items-center gap-4 text-[10px] font-semibold text-[var(--text-tertiary)]">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-sm bg-emerald-500/10 border border-emerald-500/20" />
+                Available
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-sm bg-amber-500/10 border border-amber-500/20" />
+                Booked
+              </span>
+            </div>
           </div>
 
-          <p className="mt-3 flex items-center gap-2 text-xs font-semibold text-ink-500 dark:text-ink-300">
-            <SlidersHorizontal className="h-3.5 w-3.5" />
-            Showing {av.filteredSlots.length} of {av.slots.length} slots
-          </p>
-        </motion.section>
-
-        {/* ── Slot list ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
           {av.isError ? (
             <EmptyState
               title="Could not load slots"
@@ -276,47 +350,18 @@ export default function MentorAvailabilityPage() {
               actionLabel="Retry"
               onAction={av.refetch}
             />
-          ) : av.filteredSlots.length === 0 ? (
-            <EmptyState
-              title={hasActiveFilters ? "No slots match your filters" : "No availability slots yet"}
-              description={
-                hasActiveFilters
-                  ? "Try clearing your search or changing the filters."
-                  : "Add your first slot using the button above. Students will see available slots when booking."
-              }
-              actionLabel={hasActiveFilters ? "Clear filters" : "Add slot"}
-              onAction={
-                hasActiveFilters
-                  ? () => {
-                      av.setSearch("");
-                      av.setDayFilter("all");
-                      av.setStatusFilter("all");
-                    }
-                  : openCreate
-              }
-            />
           ) : (
-            <ul
-              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-              role="list"
-              aria-label="Availability slots"
-            >
-              {av.filteredSlots.map((slot, index) => (
-                <li key={slot.id}>
-                  <SlotCard
-                    slot={slot}
-                    index={index}
-                    onEdit={openEdit}
-                    onDelete={(s) => setSlotToDelete(s)}
-                    isDeleting={av.isDeleting}
-                  />
-                </li>
-              ))}
-            </ul>
+            <WeeklyCalendar
+              slots={av.slots}
+              onAddSlot={openCreate}
+              onEdit={openEdit}
+              onDelete={slot => setSlotToDelete(slot)}
+              isDeleting={av.isDeleting}
+            />
           )}
-        </motion.div>
+        </motion.section>
 
-        {/* Confirmation Modal */}
+        {/* ── Confirmation Modal ── */}
         <ConfirmationModal
           isOpen={Boolean(slotToDelete)}
           onClose={() => setSlotToDelete(null)}
@@ -329,10 +374,7 @@ export default function MentorAvailabilityPage() {
           title="Delete availability slot"
           message={
             slotToDelete
-              ? `Are you sure you want to delete the slot on ${slotToDelete.day_of_week} from ${slotToDelete.start_time?.slice(
-                  0,
-                  5,
-                )} to ${slotToDelete.end_time?.slice(0, 5)}? This action cannot be undone.`
+              ? `Delete the ${slotToDelete.day_of_week} slot from ${slotToDelete.start_time?.slice(0, 5)} to ${slotToDelete.end_time?.slice(0, 5)}? This cannot be undone.`
               : ""
           }
           confirmLabel="Delete slot"

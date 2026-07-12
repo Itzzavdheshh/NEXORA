@@ -45,14 +45,18 @@ const slotSchema = z
   );
 
 // ── Slot form (create / edit) ─────────────────────────────────────────────────
-export function SlotForm({ editSlot, onSubmit, onCancel, isSubmitting }) {
+export function SlotForm({ editSlot, defaultDay, defaultStartTime, defaultEndTime, onSubmit, onCancel, isSubmitting }) {
   const defaults = editSlot
     ? {
         day_of_week: editSlot.day_of_week,
         start_time: editSlot.start_time?.slice(0, 5) ?? "",
         end_time: editSlot.end_time?.slice(0, 5) ?? "",
       }
-    : { day_of_week: "Monday", start_time: "", end_time: "" };
+    : {
+        day_of_week: defaultDay || "Monday",
+        start_time: defaultStartTime || "",
+        end_time: defaultEndTime || "",
+      };
 
   const {
     register,
@@ -68,7 +72,7 @@ export function SlotForm({ editSlot, onSubmit, onCancel, isSubmitting }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
-      className="glass-panel rounded-3xl p-5 sm:p-6"
+      className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 sm:p-6"
     >
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-lg font-extrabold tracking-tight text-ink-950 dark:text-white">

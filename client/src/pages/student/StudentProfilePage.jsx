@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -13,6 +13,8 @@ import {
   Save,
   Sparkles,
   UserRound,
+  Briefcase,
+  BookOpen
 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { EmptyState } from "../../components/ui/EmptyState";
@@ -22,6 +24,7 @@ import { Skeleton } from "../../components/ui/Skeleton";
 import { useAuth } from "../../hooks/useAuth";
 import { useStudentProfile } from "../../hooks/useStudentProfile";
 import { createZodResolver } from "../../utils/zodForm";
+import { cn } from "../../utils/cn";
 
 const profileSchema = z.object({
   fullName: z.string().trim().min(2, "Full name must be at least 2 characters."),
@@ -89,17 +92,16 @@ function getCompletion(values) {
     values.portfolio_url,
     values.avatar_url,
   ];
-
   return Math.round((fields.filter(Boolean).length / fields.length) * 100);
 }
 
 function ProfileSkeleton() {
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <Skeleton className="h-56 w-full" />
+      <Skeleton className="h-56 w-full rounded-md" />
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.4fr]">
-        <Skeleton className="h-96 w-full" />
-        <Skeleton className="h-[34rem] w-full" />
+        <Skeleton className="h-96 w-full rounded-md" />
+        <Skeleton className="h-[34rem] w-full rounded-md" />
       </div>
     </div>
   );
@@ -113,60 +115,87 @@ function ProfileSummary({ user, values, completion }) {
     .slice(0, 2)
     .toUpperCase();
 
+  const skillChips = useMemo(() => {
+    return (values.skillsText || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }, [values.skillsText]);
+
   return (
-    <aside className="glass-panel h-fit rounded-3xl p-6">
-      <div className="flex items-start gap-4">
+    <aside className="rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 h-fit flex flex-col gap-6">
+      <div className="flex items-center gap-3">
         {values.avatar_url ? (
           <img
             src={values.avatar_url}
             alt=""
-            className="h-16 w-16 rounded-3xl border border-ink-200 object-cover dark:border-white/10"
+            className="h-16 w-16 rounded object-cover border border-[var(--border-subtle)]"
           />
         ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-ink-950 text-xl font-extrabold text-white shadow-glow dark:bg-brand-300 dark:text-ink-950">
-            {initials || <UserRound className="h-6 w-6" aria-hidden="true" />}
+          <div className="flex h-16 w-16 items-center justify-center rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-base font-bold text-[var(--text-primary)]">
+            {initials || <UserRound className="h-5 w-5" aria-hidden="true" />}
           </div>
         )}
         <div className="min-w-0">
-          <p className="truncate text-xl font-extrabold tracking-tight text-ink-950 dark:text-white">
+          <p className="truncate text-base font-bold text-[var(--text-primary)]">
             {values.fullName || "Student"}
           </p>
-          <p className="mt-1 truncate text-sm font-medium text-ink-600 dark:text-ink-300">
-            {user?.email || "Email from account"}
+          <p className="mt-0.5 truncate text-xs text-[var(--text-secondary)]">
+            {user?.email || ""}
           </p>
         </div>
       </div>
 
-      <div className="mt-7 rounded-3xl border border-ink-200/80 bg-white/65 p-4 dark:border-white/10 dark:bg-white/8">
+      {/* Completion score indicator */}
+      <div className="rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-4">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-bold text-ink-950 dark:text-white">Profile completion</p>
-          <p className="text-sm font-extrabold text-brand-700 dark:text-brand-200">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Profile completion</p>
+          <p className="text-xs font-bold tabular-nums text-[var(--accent-primary)]">
             {completion}%
           </p>
         </div>
-        <div className="mt-3 h-2 rounded-full bg-ink-200 dark:bg-white/10">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-brand-600 to-mint-500"
-            style={{ width: `${completion}%` }}
+        <div className="w-full bg-[var(--bg-elevated)] rounded-full h-1.5 overflow-hidden mt-2.5">
+          <motion.div
+            className="bg-[var(--accent-primary)] h-1.5 rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${completion}%` }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
           />
         </div>
       </div>
 
-      <div className="mt-5 space-y-3 text-sm">
+      <div className="space-y-3">
         {[
           ["College", values.college],
           ["Degree", values.degree],
           ["Branch", values.branch],
           ["Graduation", values.graduation_year],
         ].map(([label, value]) => (
-          <div key={label} className="flex items-center justify-between gap-4">
-            <span className="text-ink-500 dark:text-ink-300">{label}</span>
-            <span className="truncate font-bold text-ink-950 dark:text-white">
-              {value || "Not set"}
+          <div key={label} className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)]/40 pb-2 last:border-b-0 last:pb-0">
+            <span className="shrink-0 text-xs text-[var(--text-secondary)]">{label}</span>
+            <span className="text-right text-xs font-semibold text-[var(--text-primary)]">
+              {value || <span className="text-[var(--text-tertiary)] font-normal italic">Not set</span>}
             </span>
           </div>
         ))}
       </div>
+
+      {/* Real-time interactive skill chips display */}
+      {skillChips.length > 0 && (
+        <div className="border-t border-[var(--border-subtle)] pt-4">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)] mb-2.5">Identified Skills</p>
+          <div className="flex flex-wrap gap-1.5">
+            {skillChips.map((skill, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center rounded border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-bold text-[var(--accent-primary)]"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </aside>
   );
 }
@@ -175,7 +204,9 @@ export default function StudentProfilePage() {
   const { user } = useAuth();
   const { profile, isMissingProfile, isLoading, isError, error, refetch, saveProfile } =
     useStudentProfile();
+  
   const defaults = useMemo(() => getDefaultValues(user, profile), [profile, user]);
+  
   const {
     register,
     handleSubmit,
@@ -186,9 +217,13 @@ export default function StudentProfilePage() {
     resolver: createZodResolver(profileSchema),
     values: defaults,
   });
+
   const values = watch();
   const completion = getCompletion(values);
   const isSaving = saveProfile.isPending || isSubmitting;
+  
+  // Custom Tabs state for the editable sections
+  const [activeTab, setActiveTab] = useState("general"); // "general" | "education" | "links"
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -196,7 +231,6 @@ export default function StudentProfilePage() {
       event.preventDefault();
       event.returnValue = "";
     };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty]);
@@ -224,97 +258,191 @@ export default function StudentProfilePage() {
     );
   }
 
+  const tabOptions = [
+    { id: "general", label: "General details", icon: Briefcase },
+    { id: "education", label: "Education stats", icon: BookOpen },
+    { id: "links", label: "Social linkages", icon: LinkIcon }
+  ];
+
   return (
     <PageTransition>
       <div className="mx-auto max-w-7xl space-y-6">
+        
+        {/* Hero Header Banner */}
         <motion.section
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-panel rounded-[2rem] p-6 sm:p-7"
+          className="rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6"
         >
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-brand-700 dark:border-brand-300/20 dark:bg-brand-300/10 dark:text-brand-100">
+              <p className="inline-flex items-center gap-2 rounded border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">
                 <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-                Student profile
+                Student Profile Setup
               </p>
-              <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-950 sm:text-4xl dark:text-white">
-                Shape the profile mentors will trust.
+              <h1 className="font-display text-display font-semibold text-[var(--text-primary)] leading-tight mt-4">
+                Shape your profile credentials.
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-600 dark:text-ink-200">
-                Keep your education, links, and strengths clear so future booking flows can match you with better mentorship.
+              <p className="mt-2 text-xs text-[var(--text-secondary)] max-w-xl">
+                Keep your details complete so mentors can understand your context and prepare for session topics.
               </p>
             </div>
-            {isDirty ? (
-              <div className="inline-flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-100">
-                <AlertTriangle className="h-4 w-4" aria-hidden="true" />
-                Unsaved changes
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-100">
-                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                Saved state
-              </div>
-            )}
+            
+            <AnimatePresence mode="wait" initial={false}>
+              {isDirty ? (
+                <motion.div
+                  key="unsaved"
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="badge border border-[var(--accent-danger)]/20 bg-[var(--accent-danger)]/10 text-[var(--accent-danger)] text-[10px] uppercase font-bold tracking-wider"
+                >
+                  <AlertTriangle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
+                  Unsaved changes
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="saved"
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="badge border border-[var(--accent-mentor)]/20 bg-[var(--accent-mentor)]/10 text-[var(--accent-mentor)] text-[10px] uppercase font-bold tracking-wider"
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
+                  Profile saved
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.section>
 
+        {/* Layout Grid */}
         <div className="grid gap-6 lg:grid-cols-[0.82fr_1.35fr]">
+          
+          {/* Summary Sidebar Card */}
           <ProfileSummary user={user} values={values} completion={completion} />
 
-          <form className="glass-panel rounded-3xl p-5 sm:p-6" onSubmit={handleSubmit(onSubmit)}>
-            {isMissingProfile ? (
-              <div className="mb-5 rounded-2xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-medium text-brand-800 dark:border-brand-300/20 dark:bg-brand-300/10 dark:text-brand-100">
-                No student profile exists yet. Save this form once to create it.
+          {/* Tabbed Form Panel */}
+          <form className="rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 sm:p-6 flex flex-col justify-between" onSubmit={handleSubmit(onSubmit)}>
+            <div>
+              {isMissingProfile ? (
+                <div className="mb-5 rounded border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-4 py-3 text-xs font-semibold text-[var(--accent-primary)]">
+                  No student profile exists yet. Save this form once to register it.
+                </div>
+              ) : null}
+
+              {/* Custom Animated Sliding Tab Header */}
+              <div className="flex border-b border-[var(--border-subtle)] mb-6 gap-2">
+                {tabOptions.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id)}
+                      className={cn(
+                        "relative pb-3 px-3 text-xs font-semibold flex items-center gap-1.5 transition duration-150",
+                        isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                      )}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      <span>{tab.label}</span>
+                      {isActive && (
+                        <motion.span
+                          layoutId="profile-tab-indicator"
+                          className="absolute bottom-0 inset-x-0 h-0.5 bg-[var(--accent-primary)]"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
-            ) : null}
 
-            <div className="grid gap-5 md:grid-cols-2">
-              <FormField id="fullName" label="Full name" error={errors.fullName} {...register("fullName")} />
-              <FormField id="email" label="Email" value={user?.email || ""} disabled helper="Email is managed by authentication." />
-              <FormField id="college" label="College" error={errors.college} {...register("college")} />
-              <FormField id="degree" label="Degree" error={errors.degree} {...register("degree")} />
-              <FormField id="branch" label="Branch" error={errors.branch} {...register("branch")} />
-              <FormField id="graduation_year" label="Graduation year" type="number" error={errors.graduation_year} {...register("graduation_year")} />
-            </div>
+              {/* Tab Contents */}
+              <div className="mt-4 min-h-[300px]">
+                <AnimatePresence mode="wait">
+                  {activeTab === "general" && (
+                    <motion.div
+                      key="general"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="space-y-5"
+                    >
+                      <div className="grid gap-5 md:grid-cols-2">
+                        <FormField id="fullName" label="Full name" error={errors.fullName} {...register("fullName")} />
+                        <FormField id="email" label="Email" value={user?.email || ""} disabled helper="Email cannot be modified directly." />
+                      </div>
+                      <FormField
+                        id="bio"
+                        label="Bio"
+                        as="textarea"
+                        rows={4}
+                        error={errors.bio}
+                        helper="A clear summary of academic goals and mentorship expectations."
+                        {...register("bio")}
+                      />
+                      <FormField
+                        id="skillsText"
+                        label="Skills"
+                        error={errors.skillsText}
+                        helper="Separate skills with commas (e.g. JavaScript, Python, Algorithm Design)"
+                        {...register("skillsText")}
+                      />
+                    </motion.div>
+                  )}
 
-            <div className="mt-5 grid gap-5">
-              <FormField
-                id="bio"
-                label="Bio"
-                as="textarea"
-                rows={5}
-                error={errors.bio}
-                helper="A focused summary of your goals, background, and mentorship needs."
-                {...register("bio")}
-              />
-              <FormField
-                id="skillsText"
-                label="Skills"
-                error={errors.skillsText}
-                helper="Comma separated, for example: React, DSA, Product Design"
-                {...register("skillsText")}
-              />
-            </div>
+                  {activeTab === "education" && (
+                    <motion.div
+                      key="education"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="grid gap-5 md:grid-cols-2"
+                    >
+                      <FormField id="college" label="College" error={errors.college} {...register("college")} />
+                      <FormField id="degree" label="Degree" error={errors.degree} {...register("degree")} />
+                      <FormField id="branch" label="Branch" error={errors.branch} {...register("branch")} />
+                      <FormField id="graduation_year" label="Graduation year" type="number" error={errors.graduation_year} {...register("graduation_year")} />
+                    </motion.div>
+                  )}
 
-            <div className="mt-6 rounded-3xl border border-ink-200/80 bg-white/65 p-4 dark:border-white/10 dark:bg-white/8">
-              <div className="mb-4 flex items-center gap-2">
-                <LinkIcon className="h-4 w-4 text-brand-700 dark:text-brand-200" aria-hidden="true" />
-                <h2 className="font-extrabold text-ink-950 dark:text-white">Social links</h2>
+                  {activeTab === "links" && (
+                    <motion.div
+                      key="links"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="space-y-6"
+                    >
+                      <div className="flex items-center gap-2 border-b border-[var(--border-subtle)]/40 pb-2">
+                        <LinkIcon className="h-4 w-4 text-[var(--accent-primary)]" aria-hidden="true" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Social links</span>
+                      </div>
+                      <div className="grid gap-5 md:grid-cols-2">
+                        <FormField id="linkedin_url" label="LinkedIn URL" error={errors.linkedin_url} {...register("linkedin_url")} />
+                        <FormField id="github_url" label="GitHub URL" error={errors.github_url} {...register("github_url")} />
+                        <FormField id="portfolio_url" label="Portfolio URL" error={errors.portfolio_url} {...register("portfolio_url")} />
+                        <FormField id="avatar_url" label="Avatar URL" error={errors.avatar_url} helper="Supported by backend through users.avatar_url." {...register("avatar_url")} />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <div className="grid gap-5 md:grid-cols-2">
-                <FormField id="linkedin_url" label="LinkedIn URL" error={errors.linkedin_url} {...register("linkedin_url")} />
-                <FormField id="github_url" label="GitHub URL" error={errors.github_url} {...register("github_url")} />
-                <FormField id="portfolio_url" label="Portfolio URL" error={errors.portfolio_url} {...register("portfolio_url")} />
-                <FormField id="avatar_url" label="Avatar URL" error={errors.avatar_url} helper="Supported by backend through users.avatar_url." {...register("avatar_url")} />
+
+              {/* Schema Constraint Information Alert */}
+              <div className="mt-8 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-4 text-xs text-[var(--text-secondary)] leading-relaxed">
+                Interests are not supported by the current backend schema. To preserve database contracts, this console does not insert placeholder fields.
               </div>
             </div>
 
-            <div className="mt-6 rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-100">
-              Interests are not available in the current backend schema, so this page does not store fake interest data.
-            </div>
-
-            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            {/* Action buttons */}
+            <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[var(--border-subtle)] pt-5 sm:flex-row sm:justify-end">
               <Button type="button" variant="secondary" onClick={() => reset(defaults)} disabled={!isDirty || isSaving}>
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
                 Cancel changes
@@ -327,22 +455,28 @@ export default function StudentProfilePage() {
           </form>
         </div>
 
+        {/* Informative Grid Footer */}
         <section className="grid gap-4 md:grid-cols-3">
           {[
-            ["Education clarity", "College, degree, and branch keep your profile searchable.", GraduationCap],
-            ["Trusted links", "Portfolio and social URLs help mentors understand your work.", ExternalLink],
-            ["Skills signal", "Skills power future recommendations without fake profile data.", Sparkles],
-          ].map(([title, text, icon]) => {
+            ["Education details", "College, degree, and graduation stats keep your profile searchable.", GraduationCap],
+            ["Social links", "Portfolio and socials help mentors prepare context for sessions.", ExternalLink],
+            ["Verified profile", "Frictionless setup guarantees higher acceptance on booking calls.", Sparkles],
+          ].map(([title, text, icon], i) => {
             const IconComponent = icon;
-
             return (
-              <div key={title} className="glass-panel rounded-3xl p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-700 dark:bg-brand-300/10 dark:text-brand-100">
-                  <IconComponent className="h-5 w-5" aria-hidden="true" />
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + i * 0.06 }}
+                className="rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5"
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--accent-primary)]">
+                  <IconComponent className="h-4 w-4" aria-hidden="true" />
                 </div>
-                <h3 className="mt-4 font-extrabold text-ink-950 dark:text-white">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-ink-600 dark:text-ink-300">{text}</p>
-              </div>
+                <h3 className="mt-4 text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">{title}</h3>
+                <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">{text}</p>
+              </motion.div>
             );
           })}
         </section>
