@@ -10,9 +10,9 @@ import { cn } from "../utils/cn";
 
 function NavItem({ item, onClick, role }) {
   const roleAccent = {
-    student: "bg-[var(--accent-primary)]",
-    mentor: "bg-[var(--accent-mentor)]",
-    admin: "bg-[var(--accent-admin)]",
+    student: "bg-accent-primary",
+    mentor: "bg-accent-mentor",
+    admin: "bg-accent-admin",
   };
 
   return (
@@ -23,8 +23,8 @@ function NavItem({ item, onClick, role }) {
         cn(
           "relative flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-150",
           isActive
-            ? "text-[var(--bg-base)]"
-            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]",
+            ? "text-bg-base"
+            : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated",
         )
       }
     >
@@ -34,7 +34,7 @@ function NavItem({ item, onClick, role }) {
           {isActive && (
             <motion.span
               layoutId="sidebar-active-pill"
-              className={cn("absolute inset-0 rounded-md", roleAccent[role] ?? "bg-[var(--accent-primary)]")}
+              className={cn("absolute inset-0 rounded-md", roleAccent[role] ?? "bg-accent-primary")}
               style={{ zIndex: 0 }}
               transition={{ type: "spring", stiffness: 380, damping: 34 }}
             />
@@ -45,8 +45,8 @@ function NavItem({ item, onClick, role }) {
               className={cn(
                 "h-4.5 w-4.5 shrink-0 transition-transform duration-150",
                 isActive
-                  ? "text-[var(--bg-base)]"
-                  : "text-[var(--text-tertiary)]",
+                  ? "text-bg-base"
+                  : "text-text-tertiary",
               )}
               aria-hidden="true"
             />
@@ -103,7 +103,7 @@ export function Sidebar({ open, onClose }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-[var(--bg-base)]/60 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-40 bg-bg-base/60 backdrop-blur-sm lg:hidden"
             onClick={onClose}
             aria-hidden="true"
           />
@@ -117,7 +117,7 @@ export function Sidebar({ open, onClose }) {
         transition={{ type: "spring", stiffness: 300, damping: 32 }}
         className={cn(
           "fixed inset-y-0 left-0 z-50 flex w-64 flex-col",
-          "border-r border-[var(--border-subtle)] bg-[var(--bg-surface)]",
+          "border-r border-border-subtle bg-bg-surface",
           "lg:static lg:z-auto lg:translate-x-0 lg:w-64",
           "px-4 py-6",
         )}
@@ -125,21 +125,21 @@ export function Sidebar({ open, onClose }) {
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-2 pb-5 pt-1">
-          <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-[var(--accent-primary)] shadow-token-md">
+          <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-accent-primary shadow-token-md">
             <Sparkles className="h-4.5 w-4.5 text-[var(--bg-base)]" aria-hidden="true" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold tracking-tight text-[var(--text-primary)]">
+            <p className="text-sm font-semibold tracking-tight text-text-primary">
               {APP_NAME}
             </p>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-text-tertiary">
               {roleLabels[role] ?? "Workspace"}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="ml-auto rounded-sm p-1.5 text-[var(--text-tertiary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] lg:hidden"
+            className="ml-auto rounded-sm p-1.5 text-text-tertiary hover:bg-bg-elevated hover:text-text-primary lg:hidden"
             aria-label="Close navigation"
           >
             <X className="h-4 w-4" />
@@ -154,19 +154,19 @@ export function Sidebar({ open, onClose }) {
         </nav>
 
         {/* User footer */}
-        <div className="mt-auto border-t border-[var(--border-subtle)] pt-4">
-          <div className="flex items-center gap-3 rounded-md px-2 py-2 bg-[var(--bg-surface)]">
+        <div className="mt-auto border-t border-border-subtle pt-4">
+          <div className="flex items-center gap-3 rounded-md px-2 py-2 bg-bg-surface">
             <div
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-xs font-bold text-[var(--text-primary)]"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-bg-elevated border border-border-subtle text-xs font-bold text-text-primary"
               aria-hidden="true"
             >
               {initials}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold text-[var(--text-primary)]">
+              <p className="truncate text-xs font-semibold text-text-primary">
                 {user?.full_name || user?.name || "Workspace"}
               </p>
-              <p className="truncate text-[10px] uppercase font-semibold tracking-wider text-[var(--text-tertiary)]">
+              <p className="truncate text-[10px] uppercase font-semibold tracking-wider text-text-tertiary">
                 {role}
               </p>
             </div>
@@ -175,7 +175,7 @@ export function Sidebar({ open, onClose }) {
               onClick={handleLogout}
               disabled={logoutMutation.isPending}
               aria-label="Sign out"
-              className="rounded-sm p-1.5 text-[var(--text-tertiary)] hover:bg-[var(--accent-danger)]/10 hover:text-[var(--accent-danger)] transition disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-sm p-1.5 text-text-tertiary hover:bg-accent-danger/10 hover:text-accent-danger transition disabled:cursor-not-allowed disabled:opacity-50"
               title={logoutMutation.isPending ? "Signing out…" : "Sign out"}
             >
               <LogOut className="h-4 w-4" aria-hidden="true" />

@@ -14,7 +14,7 @@ function TimeAgo({ dateStr }) {
   try {
     const date = new Date(dateStr);
     const dist = formatDistanceToNow(date, { addSuffix: true });
-    return <span className="text-[10px] font-semibold text-[var(--text-tertiary)]">{dist}</span>;
+    return <span className="text-[10px] font-semibold text-text-tertiary">{dist}</span>;
   } catch {
     return null;
   }
@@ -46,6 +46,24 @@ export function Navbar({ onMenuClick }) {
   const { user, role = "student" } = useAuth();
   const navigate = useNavigate();
   const logoutMutation = useLogout();
+
+  const roleTextColors = {
+    student: "text-accent-primary hover:text-accent-primary-hover",
+    mentor: "text-accent-mentor hover:text-accent-mentor-hover",
+    admin: "text-accent-admin hover:text-accent-admin-hover",
+  };
+
+  const roleBgColors = {
+    student: "bg-accent-primary",
+    mentor: "bg-accent-mentor",
+    admin: "bg-accent-admin",
+  };
+
+  const roleHoverStyles = {
+    student: "hover:border-accent-primary hover:text-accent-primary",
+    mentor: "hover:border-accent-mentor hover:text-accent-mentor",
+    admin: "hover:border-accent-admin hover:text-accent-admin",
+  };
   
   // Custom hooks
   const {
@@ -82,6 +100,7 @@ export function Navbar({ onMenuClick }) {
     ];
 
     if (role === "student") {
+      options.push({ name: "Explore Mentors", path: "/student/explore", category: "Navigation" });
       options.push({ name: "Bookings & Sessions", path: "/student/bookings", category: "Navigation" });
     } else if (role === "mentor") {
       options.push({ name: "Availability Calendar", path: "/mentor/availability", category: "Navigation" });
@@ -154,7 +173,7 @@ export function Navbar({ onMenuClick }) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-[var(--bg-base)] text-[var(--text-primary)]">
+      <header className="sticky top-0 z-30 border-b border-border-subtle bg-bg-base text-text-primary">
         <div className="flex h-14 items-center justify-between px-4 sm:px-6">
           
           {/* Left panel triggers */}
@@ -162,7 +181,7 @@ export function Navbar({ onMenuClick }) {
             <button
               type="button"
               onClick={onMenuClick}
-              className="rounded-sm p-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] lg:hidden"
+              className="rounded-sm p-1.5 text-text-secondary hover:bg-bg-elevated hover:text-text-primary lg:hidden"
               aria-label="Open navigation"
             >
               <Menu className="h-5 w-5" />
@@ -175,11 +194,11 @@ export function Navbar({ onMenuClick }) {
                 setSearchOpen(true);
                 setSearchQuery("");
               }}
-              className="flex h-9 w-44 sm:w-56 items-center gap-2 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 text-left text-xs text-[var(--text-tertiary)] hover:border-[var(--border-strong)] hover:text-[var(--text-secondary)] transition duration-token-micro"
+              className="flex h-9 w-44 sm:w-56 items-center gap-2 rounded-md border border-border-subtle bg-bg-surface px-3 text-left text-xs text-text-tertiary hover:border-border-strong hover:text-text-secondary transition duration-token-micro"
             >
               <Search className="h-3.5 w-3.5 shrink-0" />
               <span className="flex-1 truncate">Search pages...</span>
-              <kbd className="pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-0.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-1.5 font-mono text-[9px] font-semibold text-[var(--text-tertiary)]">
+              <kbd className="pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-0.5 rounded border border-border-subtle bg-bg-elevated px-1.5 font-mono text-[9px] font-semibold text-text-tertiary">
                 <span>⌘</span>K
               </kbd>
             </button>
@@ -194,8 +213,8 @@ export function Navbar({ onMenuClick }) {
                 type="button"
                 onClick={() => setNotifOpen((v) => !v)}
                 className={cn(
-                  "relative rounded-sm border p-2 text-[var(--text-secondary)] bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition",
-                  notifOpen && "border-[var(--border-strong)] text-[var(--text-primary)]"
+                  "relative rounded-sm border p-2 text-text-secondary bg-bg-surface border-border-subtle hover:border-border-strong hover:text-text-primary transition",
+                  notifOpen && "border-border-strong text-text-primary"
                 )}
                 aria-label="Notifications"
               >
@@ -206,7 +225,7 @@ export function Navbar({ onMenuClick }) {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       exit={{ scale: 0 }}
-                      className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-[var(--accent-primary)]"
+                      className={cn("absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full", roleBgColors[role] || "bg-accent-primary")}
                     />
                   )}
                 </AnimatePresence>
@@ -220,15 +239,15 @@ export function Navbar({ onMenuClick }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 mt-2 w-80 sm:w-96 overflow-hidden rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-token-lg z-40"
+                    className="absolute right-0 mt-2 w-80 sm:w-96 overflow-hidden rounded-md border border-border-subtle bg-bg-surface shadow-token-lg z-40"
                   >
-                    <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
-                      <span className="text-xs font-bold text-[var(--text-primary)]">Notifications</span>
+                    <div className="flex items-center justify-between border-b border-border-subtle px-4 py-3">
+                      <span className="text-xs font-bold text-text-primary">Notifications</span>
                       {unreadCount > 0 && (
                         <button
                           type="button"
                           onClick={() => markAllRead()}
-                          className="text-[11px] font-semibold text-[var(--accent-primary)] hover:text-[var(--accent-primary-hover)] transition"
+                          className={cn("text-[11px] font-semibold transition", roleTextColors[role] || "text-accent-primary hover:text-accent-primary-hover")}
                         >
                           Mark all read
                         </button>
@@ -237,42 +256,42 @@ export function Navbar({ onMenuClick }) {
 
                     <div className="max-h-80 overflow-y-auto divide-y divide-[var(--border-subtle)]">
                       {isLoading ? (
-                        <div className="px-4 py-6 text-center text-xs text-[var(--text-tertiary)]">Loading updates...</div>
+                        <div className="px-4 py-6 text-center text-xs text-text-tertiary">Loading updates...</div>
                       ) : notifications.length === 0 ? (
-                        <div className="px-4 py-8 text-center text-xs text-[var(--text-tertiary)]">No notifications yet.</div>
+                        <div className="px-4 py-8 text-center text-xs text-text-tertiary">No notifications yet.</div>
                       ) : (
                         ["Today", "Yesterday", "Earlier"].map((groupName) => {
                           const items = grouped[groupName] || [];
                           if (items.length === 0) return null;
                           return (
                             <div key={groupName} className="p-2">
-                              <span className="px-2 py-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--text-tertiary)]">{groupName}</span>
+                              <span className="px-2 py-1 text-[10px] uppercase tracking-wider font-semibold text-text-tertiary">{groupName}</span>
                               <div className="space-y-1 mt-1">
                                 {items.map((n) => (
                                   <div
                                     key={n.id}
                                     className={cn(
                                       "group flex gap-3 rounded px-2 py-2 transition",
-                                      !n.is_read ? "bg-[var(--bg-elevated)]/40" : "hover:bg-[var(--bg-elevated)]/25"
+                                      !n.is_read ? "bg-bg-elevated/40" : "hover:bg-bg-elevated/25"
                                     )}
                                   >
-                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
+                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-bg-elevated border border-border-subtle text-text-secondary">
                                       <Info className="h-3.5 w-3.5" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-start justify-between gap-1">
-                                        <p className={cn("text-xs font-semibold truncate", !n.is_read ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]")}>
+                                        <p className={cn("text-xs font-semibold truncate", !n.is_read ? "text-text-primary" : "text-text-secondary")}>
                                           {n.title}
                                         </p>
                                         <TimeAgo dateStr={n.created_at} />
                                       </div>
-                                      <p className="text-[11px] text-[var(--text-secondary)] mt-0.5 leading-relaxed line-clamp-2">{n.message}</p>
+                                      <p className="text-[11px] text-text-secondary mt-0.5 leading-relaxed line-clamp-2">{n.message}</p>
                                     </div>
                                     {!n.is_read && (
                                       <button
                                         type="button"
                                         onClick={() => markRead(n.id)}
-                                        className="h-5 w-5 shrink-0 flex items-center justify-center rounded border border-[var(--border-subtle)] text-[var(--text-tertiary)] hover:border-[var(--accent-mentor)] hover:text-[var(--accent-mentor)] transition"
+                                        className={cn("h-5 w-5 shrink-0 flex items-center justify-center rounded border border-border-subtle text-text-tertiary transition", roleHoverStyles[role] || "hover:border-accent-primary hover:text-accent-primary")}
                                         title="Mark as read"
                                       >
                                         <Check className="h-3 w-3" />
@@ -297,18 +316,18 @@ export function Navbar({ onMenuClick }) {
                 type="button"
                 onClick={() => setProfileOpen((v) => !v)}
                 className={cn(
-                  "flex h-9 items-center gap-2 rounded-sm border px-2.5 text-xs font-medium bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition duration-token-micro",
-                  profileOpen && "border-[var(--border-strong)] text-[var(--text-primary)]"
+                  "flex h-9 items-center gap-2 rounded-sm border px-2.5 text-xs font-medium bg-bg-surface border-border-subtle hover:border-border-strong hover:text-text-primary transition duration-token-micro",
+                  profileOpen && "border-border-strong text-text-primary"
                 )}
               >
                 <div
-                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-[var(--bg-elevated)] text-[10px] font-bold border border-[var(--border-subtle)]"
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-bg-elevated text-[10px] font-bold border border-border-subtle"
                   aria-hidden="true"
                 >
                   {initials}
                 </div>
                 <span className="hidden max-w-24 truncate sm:inline">{displayName}</span>
-                <ChevronDown className="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+                <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
               </button>
 
               <AnimatePresence>
@@ -318,15 +337,32 @@ export function Navbar({ onMenuClick }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 mt-2 w-52 overflow-hidden rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-token-lg z-40"
+                    className="absolute right-0 mt-2 w-52 overflow-hidden rounded-md border border-border-subtle bg-bg-surface shadow-token-lg z-40"
                   >
-                    <div className="border-b border-[var(--border-subtle)] px-4 py-3">
-                      <p className="truncate text-xs font-bold text-[var(--text-primary)]">
+                    <div className="border-b border-border-subtle px-4 py-3">
+                      <p className="truncate text-xs font-bold text-text-primary">
                         {displayName}
                       </p>
-                      <p className="mt-0.5 truncate text-[10px] uppercase tracking-wider font-semibold text-[var(--text-tertiary)]">
+                      <p className="mt-0.5 truncate text-[10px] uppercase tracking-wider font-semibold text-text-tertiary">
                         {role} account
                       </p>
+                    </div>
+
+                    <div className="p-1 border-b border-border-subtle/50">
+                      {user?.role !== "admin" ? (
+                        <Link
+                          to={`/${user?.role}/profile`}
+                          onClick={() => setProfileOpen(false)}
+                          className="flex w-full items-center gap-2 rounded px-3 py-2 text-xs font-medium text-text-secondary hover:bg-bg-elevated hover:text-text-primary transition"
+                        >
+                          <UserRound className="h-3.5 w-3.5 text-text-tertiary" />
+                          <span>My Profile</span>
+                        </Link>
+                      ) : (
+                        <div className="px-3 py-1.5 text-[10px] font-bold text-text-tertiary uppercase tracking-wider">
+                          Admin Management
+                        </div>
+                      )}
                     </div>
 
                     <div className="p-1">
@@ -334,7 +370,7 @@ export function Navbar({ onMenuClick }) {
                         type="button"
                         onClick={handleLogout}
                         disabled={logoutMutation.isPending}
-                        className="flex w-full items-center gap-2 rounded px-3 py-2 text-xs font-medium text-[var(--accent-danger)] hover:bg-[var(--accent-danger)]/10 transition"
+                        className="flex w-full items-center gap-2 rounded px-3 py-2 text-xs font-medium text-accent-danger hover:bg-accent-danger/10 transition"
                       >
                         <LogOut className="h-3.5 w-3.5" />
                         <span>Log out</span>
@@ -358,7 +394,7 @@ export function Navbar({ onMenuClick }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-[var(--bg-base)]/75 backdrop-blur-sm"
+              className="fixed inset-0 bg-bg-base/75 backdrop-blur-sm"
               onClick={() => setSearchOpen(false)}
             />
 
@@ -367,23 +403,23 @@ export function Navbar({ onMenuClick }) {
               initial={{ opacity: 0, scale: 0.96, y: -8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: -6 }}
-              className="relative w-full max-w-lg overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-token-lg z-10 flex flex-col"
+              className="relative w-full max-w-lg overflow-hidden rounded-lg border border-border-subtle bg-bg-surface shadow-token-lg z-10 flex flex-col"
             >
               {/* Input header */}
-              <div className="flex h-12 items-center gap-3 border-b border-[var(--border-subtle)] px-4 bg-[var(--bg-surface)]">
-                <Search className="h-4.5 w-4.5 text-[var(--text-tertiary)] shrink-0" />
+              <div className="flex h-12 items-center gap-3 border-b border-border-subtle px-4 bg-bg-surface">
+                <Search className="h-4.5 w-4.5 text-text-tertiary shrink-0" />
                 <input
                   type="text"
                   placeholder="Type a command or page search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoFocus
-                  className="w-full bg-transparent text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] border-0 focus:ring-0 focus:outline-none"
+                  className="w-full bg-transparent text-sm text-text-primary placeholder:text-text-tertiary border-0 focus:ring-0 focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setSearchOpen(false)}
-                  className="rounded-sm p-1 text-[var(--text-tertiary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] transition"
+                  className="rounded-sm p-1 text-text-tertiary hover:bg-bg-elevated hover:text-text-primary transition"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -392,7 +428,7 @@ export function Navbar({ onMenuClick }) {
               {/* Options list */}
               <div className="max-h-72 overflow-y-auto p-2 divide-y divide-[var(--border-subtle)]/40">
                 {filteredSearch.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-xs text-[var(--text-tertiary)]">No matching results found.</div>
+                  <div className="px-4 py-8 text-center text-xs text-text-tertiary">No matching results found.</div>
                 ) : (
                   // Group results by category
                   ["Navigation", "System Actions"].map((category) => {
@@ -400,7 +436,7 @@ export function Navbar({ onMenuClick }) {
                     if (categoryItems.length === 0) return null;
                     return (
                       <div key={category} className="py-1">
-                        <span className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[var(--text-tertiary)] block">
+                        <span className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-text-tertiary block">
                           {category}
                         </span>
                         <div className="space-y-0.5 mt-1">
@@ -409,14 +445,14 @@ export function Navbar({ onMenuClick }) {
                               key={item.name}
                               type="button"
                               onClick={() => handleSearchAction(item)}
-                              className="w-full flex items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition"
+                              className="w-full flex items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold text-text-primary hover:bg-bg-elevated transition"
                             >
                               <div className="flex items-center gap-2">
-                                <Command className="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+                                <Command className="h-3.5 w-3.5 text-text-tertiary" />
                                 <span>{item.name}</span>
                               </div>
                               {item.path && (
-                                <span className="text-[10px] font-semibold text-[var(--text-tertiary)] tracking-tight">
+                                <span className="text-[10px] font-semibold text-text-tertiary tracking-tight">
                                   {item.path}
                                 </span>
                               )}
@@ -430,8 +466,8 @@ export function Navbar({ onMenuClick }) {
               </div>
 
               {/* Palette footer info */}
-              <div className="border-t border-[var(--border-subtle)] px-4 py-2 text-center text-[10px] font-medium text-[var(--text-tertiary)] bg-[var(--bg-elevated)]/30">
-                Use <kbd className="font-semibold px-1 py-0.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)]">Esc</kbd> to exit · Select command with mouse or click
+              <div className="border-t border-border-subtle px-4 py-2 text-center text-[10px] font-medium text-text-tertiary bg-bg-elevated/30">
+                Use <kbd className="font-semibold px-1 py-0.5 rounded border border-border-subtle bg-bg-surface">Esc</kbd> to exit · Select command with mouse or click
               </div>
             </motion.div>
           </div>
