@@ -321,10 +321,18 @@ export function Navbar({ onMenuClick }) {
                 )}
               >
                 <div
-                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-bg-elevated text-[10px] font-bold border border-border-subtle"
+                  className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border-subtle bg-bg-elevated text-[10px] font-bold"
                   aria-hidden="true"
                 >
-                  {initials}
+                  {user?.avatar_url ? (
+                    <img
+                      src={user.avatar_url}
+                      alt={displayName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span>{initials}</span>
+                  )}
                 </div>
                 <span className="hidden max-w-24 truncate sm:inline">{displayName}</span>
                 <ChevronDown className="h-3.5 w-3.5 text-text-tertiary" />
