@@ -7,11 +7,13 @@ import {
   SlidersHorizontal,
   UserRound,
   UsersRound,
+  Compass,
 } from "lucide-react";
 
 export const mainNavigation = {
   student: [
     { label: "Dashboard", path: "/student/dashboard", icon: LayoutDashboard },
+    { label: "Explore Mentors", path: "/student/explore", icon: Compass },
     { label: "Profile", path: "/student/profile", icon: UserRound },
     { label: "Bookings", path: "/student/bookings", icon: CalendarClock },
     { label: "Notifications", path: "/student/notifications", icon: Bell },
