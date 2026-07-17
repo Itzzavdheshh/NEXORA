@@ -4,15 +4,15 @@ import { cn } from "../../utils/cn";
 
 const variants = {
   primary:
-    "border border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--bg-base)] hover:bg-[var(--accent-primary-hover)] hover:shadow-accent",
+    "border border-accent-primary bg-accent-primary text-[var(--bg-base)] hover:bg-accent-primary-hover hover:shadow-accent",
   secondary:
-    "border border-[var(--border-strong)] bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-floating)]",
+    "border border-border-strong bg-bg-elevated text-text-primary hover:border-[var(--text-tertiary)] hover:bg-bg-floating",
   danger:
-    "border border-[var(--accent-danger)]/40 bg-[var(--accent-danger)]/10 text-[var(--accent-danger)] hover:bg-[var(--accent-danger)]/15",
+    "border border-accent-danger/40 bg-accent-danger/10 text-accent-danger hover:bg-accent-danger/15",
   ghost:
-    "border border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]",
+    "border border-transparent bg-transparent text-text-secondary hover:bg-bg-elevated hover:text-text-primary",
   success:
-    "border border-[var(--accent-mentor)]/40 bg-[var(--accent-mentor)]/10 text-[var(--accent-mentor)] hover:bg-[var(--accent-mentor)]/15",
+    "border border-accent-mentor/40 bg-accent-mentor/10 text-accent-mentor hover:bg-accent-mentor/15",
 };
 
 const sizes = {
