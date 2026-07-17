@@ -14,7 +14,7 @@ export function NotificationSkeleton() {
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="glass-panel flex gap-4 rounded-2xl p-5"
+            className="border border-border-subtle bg-bg-surface shadow-token-md flex gap-4 rounded-2xl p-5"
           >
             <Skeleton className="h-10 w-10 shrink-0 rounded-xl" />
             <div className="flex-1 space-y-2.5">
