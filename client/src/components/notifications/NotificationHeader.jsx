@@ -2,6 +2,18 @@ import { Bell, RefreshCw, CheckCheck } from "lucide-react";
 import { Button } from "../ui/Button";
 import { cn } from "../../utils/cn";
 
+const badgeClasses = {
+  student: "badge-primary",
+  mentor: "badge-mentor",
+  admin: "badge-admin",
+};
+
+const accentClasses = {
+  student: "text-accent-primary",
+  mentor: "text-accent-mentor",
+  admin: "text-accent-admin",
+};
+
 export function NotificationHeaderStats({
   total,
   unreadCount,
@@ -9,17 +21,18 @@ export function NotificationHeaderStats({
   isMarkingAllRead,
   onRefresh,
   onMarkAllRead,
+  role = "student",
 }) {
   return (
-    <div className="glass-panel rounded-3xl p-6">
+    <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-3xl p-6">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="badge badge-brand">
+          <p className={cn("badge", badgeClasses[role] || "badge-primary")}>
             <Bell className="h-3.5 w-3.5" aria-hidden="true" />
             Notification center
           </p>
 
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-950 dark:text-white">
+          <h1 className="font-display text-display font-semibold text-ink-950 dark:text-white mt-4 leading-tight">
             Stay in the loop
           </h1>
 
@@ -49,9 +62,9 @@ export function NotificationHeaderStats({
             onClick={onRefresh}
             loading={isFetching}
             disabled={isFetching}
-            aria-label="Refresh notifications"
+            aria-label="Refresh notifications list"
           >
-            <RefreshCw className="h-4 w-4" aria-hidden="true" />
+            <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} aria-hidden="true" />
             Refresh
           </Button>
         </div>
@@ -66,12 +79,12 @@ export function NotificationHeaderStats({
         ].map(([label, value, desc, accent]) => (
           <div
             key={label}
-            className="rounded-xl border border-ink-200/60 bg-ink-50/50 p-4 dark:border-white/6 dark:bg-white/3"
+            className="rounded-xl border border-ink-200/60 bg-ink-50/50 p-4 dark:border-white/10 dark:bg-white/5"
           >
             <p className="text-[10px] font-bold uppercase tracking-wide text-ink-500 dark:text-ink-400">{label}</p>
             <p className={cn(
               "mt-1 text-2xl font-extrabold tabular-nums",
-              accent ? "text-brand-600 dark:text-brand-300" : "text-ink-950 dark:text-white"
+              accent ? (accentClasses[role] || "text-accent-primary") : "text-ink-950 dark:text-white"
             )}>
               {value}
             </p>
