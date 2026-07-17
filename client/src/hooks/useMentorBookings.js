@@ -62,15 +62,15 @@ export function useMentorBookings() {
 
   // Update Status mutation with optimistic updates
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }) => bookingService.updateStatus(id, { status }),
+    mutationFn: ({ id, status, meeting_link }) => bookingService.updateStatus(id, { status, meeting_link }),
 
-    onMutate: async ({ id, status }) => {
+    onMutate: async ({ id, status, meeting_link }) => {
       await queryClient.cancelQueries({ queryKey: BOOKINGS_QUERY_KEY });
       const previous = queryClient.getQueryData(BOOKINGS_QUERY_KEY);
 
       queryClient.setQueryData(BOOKINGS_QUERY_KEY, (old) => {
         const list = old?.data ?? old ?? [];
-        const updatedList = list.map((b) => (b.id === id ? { ...b, status } : b));
+        const updatedList = list.map((b) => (b.id === id ? { ...b, status, ...(meeting_link !== undefined ? { meeting_link } : {}) } : b));
         return Array.isArray(old) ? updatedList : { ...old, data: updatedList };
       });
 
