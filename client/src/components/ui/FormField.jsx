@@ -21,17 +21,17 @@ export function FormField({
 
   // Use direct var(--...) bindings to ensure compatibility across all versions of Tailwind and override browser/forms defaults
   const inputBase = cn(
-    "w-full rounded-md border px-4 text-sm font-normal text-[var(--text-primary)] bg-[var(--bg-surface)] border-[var(--border-subtle)]",
-    "placeholder:text-[var(--text-tertiary)]",
+    "w-full rounded-md border px-4 text-sm font-normal text-text-primary bg-bg-surface border-border-subtle",
+    "placeholder:text-text-tertiary",
     "shadow-token-sm",
     "transition-all duration-token-standard ease-token-enter",
-    "hover:border-[var(--border-strong)]",
+    "hover:border-border-strong",
     // Focus
-    "focus:outline-none focus:border-[var(--accent-primary)] focus:ring-2 focus:ring-[var(--accent-primary)]/20",
+    "focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20",
     // Error state
-    hasError && "border-[var(--accent-danger)] focus:border-[var(--accent-danger)] focus:ring-[var(--accent-danger)]/20",
+    hasError && "border-accent-danger focus:border-accent-danger focus:ring-[var(--accent-danger)]/20",
     // Success state
-    hasSuccess && "border-[var(--accent-mentor)] focus:border-[var(--accent-mentor)] focus:ring-[var(--accent-mentor)]/20",
+    hasSuccess && "border-accent-mentor focus:border-accent-mentor focus:ring-[var(--accent-mentor)]/20",
     // Padding adjustments for slots
     leftSlot ? "pl-10" : "",
     (rightSlot || hasError || hasSuccess) ? "pr-10" : "",
@@ -41,7 +41,7 @@ export function FormField({
     <div className={cn("space-y-1.5", className)}>
       {label && (
         <label
-          className="block text-caption font-medium uppercase tracking-token-caption text-[var(--text-secondary)]"
+          className="block text-caption font-medium uppercase tracking-token-caption text-text-secondary"
           htmlFor={id}
         >
           {label}
@@ -50,7 +50,7 @@ export function FormField({
       <div className="relative">
         {/* Left slot */}
         {leftSlot && (
-          <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]">
+          <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary">
             {leftSlot}
           </div>
         )}
@@ -60,7 +60,7 @@ export function FormField({
             id={id}
             className={cn(
               inputBase,
-              "h-10 appearance-none bg-[var(--bg-surface)]", // match standard size md (h-10)
+              "h-10 appearance-none bg-bg-surface", // match standard size md (h-10)
             )}
             aria-invalid={hasError}
             aria-describedby={hasError ? `${id}-error` : helper ? `${id}-helper` : undefined}
@@ -84,9 +84,9 @@ export function FormField({
         {/* Right slot — error/success icon takes priority */}
         <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
           {hasError ? (
-            <AlertCircle className="h-4 w-4 text-[var(--accent-danger)]" aria-hidden="true" />
+            <AlertCircle className="h-4 w-4 text-accent-danger" aria-hidden="true" />
           ) : hasSuccess ? (
-            <CheckCircle2 className="h-4 w-4 text-[var(--accent-mentor)]" aria-hidden="true" />
+            <CheckCircle2 className="h-4 w-4 text-accent-mentor" aria-hidden="true" />
           ) : rightSlot ? (
             rightSlot
           ) : null}
@@ -104,7 +104,7 @@ export function FormField({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
-            className="text-xs font-medium text-[var(--accent-danger)]"
+            className="text-xs font-medium text-accent-danger"
           >
             {error.message}
           </motion.p>
@@ -115,7 +115,7 @@ export function FormField({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-xs leading-5 text-[var(--text-tertiary)]"
+            className="text-xs leading-5 text-text-tertiary"
           >
             {helper}
           </motion.p>
@@ -132,7 +132,7 @@ export function PasswordToggle({ visible, onClick }) {
     <button
       type="button"
       aria-label={visible ? "Hide password" : "Show password"}
-      className="pointer-events-auto absolute right-3 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-sm text-[var(--text-tertiary)] transition hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
+      className="pointer-events-auto absolute right-3 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-sm text-text-tertiary transition hover:bg-bg-elevated hover:text-text-primary"
       onClick={onClick}
     >
       <Icon className="h-4 w-4" aria-hidden="true" />
