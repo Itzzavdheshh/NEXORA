@@ -16,6 +16,8 @@ export function AuthProvider({ children }) {
     queryFn: authService.me,
     enabled: isAuthenticated,
     retry: false,
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000,
   });
 
   const persistSession = useCallback((payload) => {
@@ -61,6 +63,7 @@ export function AuthProvider({ children }) {
       sessionError: meQuery.error,
       persistSession,
       logout,
+      refetchUser: meQuery.refetch,
     }),
     [
       token,
@@ -70,6 +73,7 @@ export function AuthProvider({ children }) {
       meQuery.error,
       persistSession,
       logout,
+      meQuery.refetch,
     ],
   );
 
