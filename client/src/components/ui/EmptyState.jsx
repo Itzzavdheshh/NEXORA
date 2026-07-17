@@ -41,7 +41,7 @@ export function EmptyState({
           transition={{ delay: 0.06, type: "spring", stiffness: 300, damping: 22 }}
           className={cn(
             "mx-auto flex items-center justify-center bg-ink-100/80 text-ink-500",
-            "dark:bg-white/6 dark:text-ink-400",
+            "dark:bg-white/10 dark:text-ink-400",
             s.iconBox,
           )}
         >
