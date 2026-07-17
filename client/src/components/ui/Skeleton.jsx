@@ -19,7 +19,7 @@ export function Skeleton({ className }) {
 /** A stat card skeleton matching the real card layout */
 export function SkeletonStat() {
   return (
-    <div className="glass-panel rounded-2xl p-5" aria-hidden="true">
+    <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-2xl p-5" aria-hidden="true">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <Skeleton className="h-3 w-20" />
@@ -48,7 +48,7 @@ export function SkeletonRow() {
 /** A card skeleton matching booking/mentor cards */
 export function SkeletonCard() {
   return (
-    <div className="glass-panel rounded-2xl p-5 space-y-4" aria-hidden="true">
+    <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-2xl p-5 space-y-4" aria-hidden="true">
       <div className="flex items-center gap-3">
         <Skeleton className="h-10 w-10 rounded-xl shrink-0" />
         <div className="flex-1 space-y-2">
@@ -71,7 +71,7 @@ export function SkeletonCard() {
 /** Hero / page header skeleton */
 export function SkeletonHero() {
   return (
-    <div className="glass-panel rounded-3xl p-6 sm:p-7" aria-hidden="true">
+    <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-3xl p-6 sm:p-7" aria-hidden="true">
       <Skeleton className="h-3.5 w-28 rounded-full" />
       <Skeleton className="mt-5 h-8 w-3/4" />
       <Skeleton className="mt-3 h-4 w-1/2" />
