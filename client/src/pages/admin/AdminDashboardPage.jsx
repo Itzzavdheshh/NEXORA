@@ -43,7 +43,7 @@ const PIE_COLORS = ["#f59e0b", "#10b981", "#1b91ff", "#f43f5e"];
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-ink-200/60 bg-white px-3 py-2 shadow-elevation-2 text-xs dark:border-white/8 dark:bg-[#0d1526]">
+    <div className="rounded-xl border border-ink-200/60 bg-white px-3 py-2 shadow-elevation-2 text-xs dark:border-white/10 dark:bg-[#0d1526]">
       <p className="font-semibold text-ink-900 dark:text-white">{label || payload[0]?.name}</p>
       <p className="mt-0.5 text-ink-500 dark:text-ink-400">{payload[0]?.value}</p>
     </div>
@@ -58,7 +58,7 @@ function StatCard({ label, value, icon, text, accentColor, index }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.26 }}
-      className="glass-panel flex flex-col justify-between rounded-2xl p-5"
+      className="border border-border-subtle bg-bg-surface shadow-token-md flex flex-col justify-between rounded-2xl p-5"
     >
       <div className="flex items-start justify-between">
         <p className="text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">
@@ -92,7 +92,7 @@ function ActivityLogItem({ log, index }) {
     >
       <span className={cn(
         "absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full text-[9px] font-bold text-white",
-        isUser ? "bg-brand-500" : "bg-emerald-500",
+        isUser ? "bg-accent-primary" : "bg-accent-mentor",
       )}>
         {isUser ? "U" : "B"}
       </span>
@@ -163,16 +163,16 @@ export default function AdminDashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl border border-ink-200/60 bg-white/90 p-6 shadow-elevation-2 dark:border-white/6 dark:bg-[#0d1526]/90"
+          className="relative overflow-hidden rounded-3xl border border-ink-200/60 bg-white/90 p-6 shadow-elevation-2 dark:border-white/10 dark:bg-[#0d1526]/90"
         >
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent dark:via-violet-300/20" aria-hidden="true" />
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <span className="badge badge-brand">
+              <span className="badge badge-primary">
                 <Activity className="h-3 w-3" aria-hidden="true" />
                 Admin control center
               </span>
-              <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-950 sm:text-3xl dark:text-white">
+              <h1 className="font-display text-display font-semibold text-ink-950 dark:text-white mt-4 leading-tight">
                 Platform overview
               </h1>
               <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">
@@ -195,22 +195,22 @@ export default function AdminDashboardPage() {
 
         {/* User stats — 4 cards */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard index={0} label="Total users" value={stats.users.total} icon={Users} text="All registered accounts" accentColor="bg-violet-500/10 text-violet-600 dark:text-violet-400" />
-          <StatCard index={1} label="Students" value={stats.users.students} icon={GraduationCap} text="Active student learners" accentColor="bg-brand-500/10 text-brand-600 dark:text-brand-400" />
-          <StatCard index={2} label="Mentors" value={stats.users.mentors} icon={Briefcase} text="All registered mentors" accentColor="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" />
+          <StatCard index={0} label="Total users" value={stats.users.total} icon={Users} text="All registered accounts" accentColor="bg-accent-admin/10 text-accent-admin" />
+          <StatCard index={1} label="Students" value={stats.users.students} icon={GraduationCap} text="Active student learners" accentColor="bg-accent-primary/10 text-accent-primary" />
+          <StatCard index={2} label="Mentors" value={stats.users.mentors} icon={Briefcase} text="All registered mentors" accentColor="bg-accent-mentor/10 text-accent-mentor" />
           <StatCard
             index={3}
             label="Pending review"
             value={stats.users.pendingMentors}
             icon={ShieldCheck}
             text="Awaiting verification"
-            accentColor={stats.users.pendingMentors > 0 ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" : "bg-ink-100 text-ink-500 dark:bg-white/8 dark:text-ink-400"}
+            accentColor={stats.users.pendingMentors > 0 ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" : "bg-ink-100 text-ink-500 dark:bg-white/10 dark:text-ink-400"}
           />
         </div>
 
         {/* Booking stats — 4 cards */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard index={4} label="Total bookings" value={stats.bookings.total} icon={CalendarCheck} text="" accentColor="bg-brand-500/10 text-brand-600 dark:text-brand-400" />
+          <StatCard index={4} label="Total bookings" value={stats.bookings.total} icon={CalendarCheck} text="" accentColor="bg-accent-admin/10 text-accent-admin" />
           <StatCard index={5} label="Completed" value={stats.bookings.completed} icon={CheckCircle} text="" accentColor="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" />
           <StatCard index={6} label="Pending" value={stats.bookings.pending} icon={Clock} text="" accentColor="bg-amber-500/10 text-amber-600 dark:text-amber-400" />
           <StatCard index={7} label="Cancelled" value={stats.bookings.cancelled} icon={XCircle} text="" accentColor="bg-red-500/10 text-red-600 dark:text-red-400" />
@@ -219,7 +219,7 @@ export default function AdminDashboardPage() {
         {/* Charts */}
         <div className="grid gap-5 lg:grid-cols-3">
           {/* User distribution bar chart */}
-          <div className="glass-panel rounded-2xl p-5 lg:col-span-2">
+          <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-2xl p-5 lg:col-span-2">
             <h3 className="text-sm font-semibold text-ink-900 dark:text-ink-100">User distribution</h3>
             <p className="mt-0.5 text-xs text-ink-400 dark:text-ink-500">Platform user counts by role and verification status</p>
             <div className="mt-5 h-56">
@@ -240,7 +240,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Booking mix pie */}
-          <div className="glass-panel rounded-2xl p-5">
+          <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-2xl p-5">
             <h3 className="text-sm font-semibold text-ink-900 dark:text-ink-100">Session mix</h3>
             <p className="mt-0.5 text-xs text-ink-400 dark:text-ink-500">Booking status breakdown</p>
             <div className="relative mt-4 h-44 flex justify-center items-center">
@@ -255,9 +255,12 @@ export default function AdminDashboardPage() {
                     paddingAngle={3}
                     dataKey="value"
                   >
-                    {bookingStatsData.filter((d) => d.value > 0).map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} fillOpacity={0.88} />
-                    ))}
+                    {bookingStatsData.filter((d) => d.value > 0).map((entry) => {
+                      const colorIndex = bookingStatsData.findIndex(item => item.name === entry.name);
+                      return (
+                        <Cell key={entry.name} fill={PIE_COLORS[colorIndex]} fillOpacity={0.88} />
+                      );
+                    })}
                   </Pie>
                   <Tooltip content={<ChartTooltip />} />
                 </PieChart>
@@ -282,13 +285,13 @@ export default function AdminDashboardPage() {
         {/* Activity + System diagnostics */}
         <div className="grid gap-5 lg:grid-cols-3">
           {/* Activity log */}
-          <div className="glass-panel rounded-2xl p-5 space-y-4 lg:col-span-2">
+          <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-2xl p-5 space-y-4 lg:col-span-2">
             <div>
               <h3 className="text-sm font-semibold text-ink-900 dark:text-ink-100">Recent platform activity</h3>
               <p className="mt-0.5 text-xs text-ink-400 dark:text-ink-500">User registrations and booking events</p>
             </div>
             {stats.recentActivity.length ? (
-              <div className="relative space-y-5 border-l border-ink-200/60 pl-4 dark:border-white/6">
+              <div className="relative space-y-5 border-l border-ink-200/60 pl-4 dark:border-white/10">
                 {stats.recentActivity.map((log, i) => (
                   <ActivityLogItem key={log.id} log={log} index={i} />
                 ))}
@@ -305,22 +308,22 @@ export default function AdminDashboardPage() {
 
           {/* System health + quick actions */}
           <div className="space-y-4">
-            <div className="glass-panel rounded-2xl p-5 space-y-3">
+            <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-2xl p-5 space-y-3">
               <div>
                 <h3 className="text-sm font-semibold text-ink-900 dark:text-ink-100">System diagnostics</h3>
                 <p className="mt-0.5 text-xs text-ink-400 dark:text-ink-500">Live server health status</p>
               </div>
               {[
-                { label: "Database", value: stats.health.database, icon: Database, color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
-                { label: "Memory", value: stats.health.memory, icon: Cpu, color: "bg-brand-500/10 text-brand-600 dark:text-brand-400" },
+                { label: "Database", value: stats.health.database, icon: Database, color: "bg-accent-mentor/10 text-accent-mentor" },
+                { label: "Memory", value: stats.health.memory, icon: Cpu, color: "bg-accent-primary/10 text-accent-primary" },
                 {
                   label: "Uptime",
                   value: `${Math.floor(stats.health.uptime / 3600)}h ${Math.floor((stats.health.uptime % 3600) / 60)}m`,
                   icon: Server,
-                  color: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+                  color: "bg-accent-admin/10 text-accent-admin",
                 },
               ].map((item) => (
-                <div key={item.label} className="flex items-center justify-between rounded-xl border border-ink-200/60 bg-white/60 px-3 py-2.5 dark:border-white/6 dark:bg-white/3">
+                <div key={item.label} className="flex items-center justify-between rounded-xl border border-ink-200/60 bg-white/60 px-3 py-2.5 dark:border-white/10 dark:bg-white/5">
                   <div className="flex items-center gap-2.5">
                     <div className={cn("flex h-7 w-7 items-center justify-center rounded-lg", item.color)}>
                       <item.icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -335,11 +338,11 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Quick actions */}
-            <div className="glass-panel rounded-2xl p-5 space-y-3">
+            <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-2xl p-5 space-y-3">
               <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Quick actions</h4>
               <Link
                 to="/admin/verify-mentors"
-                className="flex items-center justify-between rounded-xl bg-ink-950 px-4 py-3 text-xs font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-glow dark:bg-brand-500"
+                className="flex items-center justify-between rounded-xl bg-ink-950 px-4 py-3 text-xs font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-accent dark:bg-accent-admin"
               >
                 <span className="flex items-center gap-2">
                   <UserCheck className="h-3.5 w-3.5" aria-hidden="true" />
@@ -353,7 +356,7 @@ export default function AdminDashboardPage() {
               </Link>
               <Link
                 to="/admin/users"
-                className="flex items-center gap-2 rounded-xl border border-ink-200/60 bg-white px-4 py-3 text-xs font-semibold text-ink-800 transition hover:bg-ink-50 dark:border-white/8 dark:bg-white/6 dark:text-ink-100 dark:hover:bg-white/10"
+                className="flex items-center gap-2 rounded-xl border border-ink-200/60 bg-white px-4 py-3 text-xs font-semibold text-ink-800 transition hover:bg-ink-50 dark:border-white/10 dark:bg-white/10 dark:text-ink-100 dark:hover:bg-white/10"
               >
                 <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />
                 User management

@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState, useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { bookingService } from "../services/bookingService";
 
 function asTime(value) {
@@ -41,18 +42,34 @@ function sortBookings(bookings, sort) {
 }
 
 export function useStudentBookings() {
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [timeframe, setTimeframe] = useState("all");
   const [sort, setSort] = useState("newest");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const bookingsQuery = useQuery({
     queryKey: ["bookings"],
     queryFn: bookingService.list,
   });
 
+  const cancelBooking = useCallback(async (id) => {
+    setIsUpdating(true);
+    try {
+      await bookingService.updateStatus(id, { status: "cancelled" });
+      toast.success("Booking cancelled successfully.");
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || "Failed to cancel booking.");
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [queryClient]);
+
   return useMemo(() => {
-    const bookings = bookingsQuery.data?.data || [];
+    const bookings = bookingsQuery.data?.data || bookingsQuery.data || [];
+
     const filteredBookings = sortBookings(
       bookings.filter((booking) => {
         if (status !== "all" && booking.status !== status) return false;
@@ -76,11 +93,13 @@ export function useStudentBookings() {
       setTimeframe,
       sort,
       setSort,
+      cancelBooking,
+      isUpdating,
       isLoading: bookingsQuery.isLoading,
       isFetching: bookingsQuery.isFetching,
       isError: bookingsQuery.isError,
       error: bookingsQuery.error,
       refetch: bookingsQuery.refetch,
     };
-  }, [bookingsQuery, search, sort, status, timeframe]);
+  }, [bookingsQuery, search, sort, status, timeframe, isUpdating, cancelBooking]);
 }

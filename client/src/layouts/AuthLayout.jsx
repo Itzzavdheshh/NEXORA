@@ -1,7 +1,65 @@
-import { Outlet } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { APP_NAME } from "../constants/app";
 import { Shield, Users, Calendar, Sparkles } from "lucide-react";
+
+// ── Typewriter component ───────────────────────────────────────────────────
+const PHRASES = [
+  "for ambitious students.",
+  "for future engineers.",
+  "for curious minds.",
+  "for career builders.",
+  "for dream chasers.",
+];
+
+const TYPING_SPEED   = 60;   // ms per character while typing
+const ERASING_SPEED  = 35;   // ms per character while erasing
+const PAUSE_AFTER    = 1800; // ms pause after fully typed
+const PAUSE_BEFORE   = 300;  // ms pause before starting to type next phrase
+
+function TypewriterText() {
+  const [phraseIndex, setPhraseIndex]   = useState(0);
+  const [displayed,   setDisplayed]     = useState("");
+  const [phase,       setPhase]         = useState("typing"); // typing | pausing | erasing | waiting
+
+  useEffect(() => {
+    const target = PHRASES[phraseIndex];
+
+    if (phase === "typing") {
+      if (displayed.length < target.length) {
+        const t = setTimeout(() => setDisplayed(target.slice(0, displayed.length + 1)), TYPING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => setPhase("erasing"), PAUSE_AFTER);
+        return () => clearTimeout(t);
+      }
+    }
+
+    if (phase === "erasing") {
+      if (displayed.length > 0) {
+        const t = setTimeout(() => setDisplayed(displayed.slice(0, -1)), ERASING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => {
+          setPhraseIndex((i) => (i + 1) % PHRASES.length);
+          setPhase("typing");
+        }, PAUSE_BEFORE);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [displayed, phase, phraseIndex]);
+
+  return (
+    <span className="text-accent-primary">
+      {displayed}
+      <span
+        className="inline-block w-[2px] h-[1em] bg-accent-primary align-middle ml-[2px] animate-blink"
+        aria-hidden="true"
+      />
+    </span>
+  );
+}
 
 export function AuthLayout() {
   return (
@@ -14,7 +72,7 @@ export function AuthLayout() {
         >
           {/* Exactly one background atmosphere element: 600px radial gradient (accent-primary at ~8% opacity) */}
           <div
-            className="pointer-events-none absolute rounded-full bg-accent-primary/8 blur-[100px]"
+            className="pointer-events-none absolute rounded-full bg-accent-primary/10 blur-[100px]"
             style={{
               width: "600px",
               height: "600px",
@@ -41,11 +99,11 @@ export function AuthLayout() {
               </span>
             </div>
 
-            {/* Headline */}
-            <h1 className="font-display text-display font-semibold text-text-primary leading-tight">
+            {/* Headline with typewriter */}
+            <h1 className="font-display text-display font-semibold text-text-primary leading-tight min-h-[4rem]">
               Structured mentorship
               <br />
-              <span className="text-accent-primary">for ambitious students.</span>
+              <TypewriterText />
             </h1>
             <p className="mt-6 text-body font-normal text-text-secondary">
               Connect with verified mentors, book focused sessions, and track your progress through a purposeful academic workspace.
@@ -62,9 +120,9 @@ export function AuthLayout() {
                 return (
                   <div
                     key={item.label}
-                    className="flex gap-4 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 shadow-token-sm transition duration-token-standard hover:border-[var(--border-strong)]"
+                    className="flex gap-4 rounded-[var(--radius-lg)] border border-border-subtle bg-bg-surface p-4 shadow-token-sm transition duration-token-standard hover:border-border-strong"
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-accent-primary">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-bg-elevated border border-border-subtle text-accent-primary">
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </div>
                     <div>
@@ -97,6 +155,13 @@ export function AuthLayout() {
           {/* Render form directly to prevent browser 3D rasterization blur issues */}
           <div className="w-full max-w-[480px] mx-auto py-4">
             <Outlet />
+          </div>
+
+          {/* Footer links */}
+          <div className="mt-4 flex items-center justify-center gap-4 text-xs text-text-tertiary">
+            <Link to="/privacy" className="hover:text-text-secondary transition-colors">Privacy Policy</Link>
+            <span aria-hidden="true">·</span>
+            <Link to="/terms" className="hover:text-text-secondary transition-colors">Terms of Service</Link>
           </div>
         </section>
       </div>
