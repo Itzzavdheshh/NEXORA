@@ -150,7 +150,7 @@ nexora/
 
 ```bash
 git clone https://github.com/Itzzavdheshh/NEXORA.git
-cd nexora
+cd NEXORA
 ```
 
 ### Install Dependencies
