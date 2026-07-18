@@ -42,20 +42,20 @@ export function VerificationDrawer({
           <img
             src={avatar_url}
             alt=""
-            className="h-16 w-16 rounded-3xl border border-[var(--border-subtle)] object-cover"
+            className="h-16 w-16 rounded-3xl border border-border-subtle object-cover"
           />
         ) : (
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-[var(--bg-elevated)] text-lg font-extrabold text-[var(--text-primary)] ring-2 ring-[var(--border-subtle)]">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-bg-elevated text-lg font-extrabold text-text-primary ring-2 ring-border-subtle">
             {initials}
           </div>
         )}
         <div className="min-w-0">
-          <h3 className="truncate text-lg font-extrabold text-[var(--text-primary)]">
+          <h3 className="truncate text-lg font-extrabold text-text-primary">
             {full_name}
           </h3>
           <a
             href={`mailto:${email}`}
-            className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-brand)] hover:underline"
+            className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-accent-mentor hover:underline"
           >
             <Mail className="h-4 w-4" />
             {email}
@@ -67,14 +67,14 @@ export function VerificationDrawer({
       {profile ? (
         <div className="space-y-5">
           {/* Professional summary */}
-          <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4 space-y-4">
+          <div className="rounded-2xl border border-border-subtle bg-bg-elevated p-4 space-y-4">
             <div className="flex items-start gap-3">
-              <Briefcase className="mt-0.5 h-4 w-4 text-[var(--text-tertiary)]" />
+              <Briefcase className="mt-0.5 h-4 w-4 text-text-tertiary" />
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
+                <p className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
                   Professional details
                 </p>
-                <p className="mt-1 text-sm font-extrabold text-[var(--text-primary)]">
+                <p className="mt-1 text-sm font-extrabold text-text-primary">
                   {profile.job_title || "Mentor"} at{" "}
                   {profile.company || "Independent"}
                 </p>
@@ -82,12 +82,12 @@ export function VerificationDrawer({
             </div>
 
             <div className="flex items-start gap-3">
-              <Award className="mt-0.5 h-4 w-4 text-[var(--text-tertiary)]" />
+              <Award className="mt-0.5 h-4 w-4 text-text-tertiary" />
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
+                <p className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
                   Experience
                 </p>
-                <p className="mt-1 text-sm font-extrabold text-[var(--text-primary)]">
+                <p className="mt-1 text-sm font-extrabold text-text-primary">
                   {profile.experience_years
                     ? `${profile.experience_years} years`
                     : "Not specified"}
@@ -97,12 +97,12 @@ export function VerificationDrawer({
 
             {profile.hourly_rate && (
               <div className="flex items-start gap-3">
-                <GraduationCap className="mt-0.5 h-4 w-4 text-[var(--text-tertiary)]" />
+                <GraduationCap className="mt-0.5 h-4 w-4 text-text-tertiary" />
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
+                  <p className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
                     Hourly rate
                   </p>
-                  <p className="mt-1 text-sm font-extrabold text-[var(--text-primary)]">
+                  <p className="mt-1 text-sm font-extrabold text-text-primary">
                     ${profile.hourly_rate}/hr
                   </p>
                 </div>
@@ -113,10 +113,10 @@ export function VerificationDrawer({
           {/* Bio */}
           {profile.bio && (
             <div className="space-y-2">
-              <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
+              <p className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
                 Bio
               </p>
-              <p className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4 text-sm leading-6 italic text-[var(--text-secondary)]">
+              <p className="rounded-2xl border border-border-subtle bg-bg-elevated p-4 text-sm leading-6 italic text-text-secondary">
                 &ldquo;{profile.bio}&rdquo;
               </p>
             </div>
@@ -125,14 +125,14 @@ export function VerificationDrawer({
           {/* Skills */}
           {Array.isArray(profile.skills) && profile.skills.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
+              <p className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
                 Skills / Expertise
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {profile.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="rounded-lg bg-[var(--accent-brand)]/10 px-2.5 py-1 text-xs font-bold text-[var(--accent-brand)]"
+                    className="rounded-lg bg-accent-mentor/10 px-2.5 py-1 text-xs font-bold text-accent-mentor"
                   >
                     {skill}
                   </span>
@@ -143,8 +143,8 @@ export function VerificationDrawer({
 
           {/* External Links */}
           {(profile.linkedin_url || profile.website_url || profile.github_url) && (
-            <div className="space-y-2 border-t border-[var(--border-subtle)] pt-5">
-              <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
+            <div className="space-y-2 border-t border-border-subtle pt-5">
+              <p className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
                 External Links
               </p>
               <div className="grid gap-2">
@@ -153,10 +153,10 @@ export function VerificationDrawer({
                     href={profile.linkedin_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-base)] text-xs font-bold text-[var(--text-secondary)] transition-colors"
+                    className="flex items-center justify-between p-3 rounded-xl border border-border-subtle bg-bg-elevated hover:bg-bg-base text-xs font-bold text-text-secondary transition-colors"
                   >
                     <span className="flex items-center gap-2">
-                      <LinkIcon className="h-4 w-4 text-[var(--accent-brand)]" />
+                      <LinkIcon className="h-4 w-4 text-accent-mentor" />
                       LinkedIn Profile
                     </span>
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -167,10 +167,10 @@ export function VerificationDrawer({
                     href={profile.github_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-base)] text-xs font-bold text-[var(--text-secondary)] transition-colors"
+                    className="flex items-center justify-between p-3 rounded-xl border border-border-subtle bg-bg-elevated hover:bg-bg-base text-xs font-bold text-text-secondary transition-colors"
                   >
                     <span className="flex items-center gap-2">
-                      <LinkIcon className="h-4 w-4 text-[var(--accent-brand)]" />
+                      <LinkIcon className="h-4 w-4 text-accent-mentor" />
                       GitHub
                     </span>
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -181,10 +181,10 @@ export function VerificationDrawer({
                     href={profile.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-base)] text-xs font-bold text-[var(--text-secondary)] transition-colors"
+                    className="flex items-center justify-between p-3 rounded-xl border border-border-subtle bg-bg-elevated hover:bg-bg-base text-xs font-bold text-text-secondary transition-colors"
                   >
                     <span className="flex items-center gap-2">
-                      <ExternalLink className="h-4 w-4 text-[var(--accent-brand)]" />
+                      <ExternalLink className="h-4 w-4 text-accent-mentor" />
                       Portfolio / Website
                     </span>
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -195,13 +195,13 @@ export function VerificationDrawer({
           )}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-[var(--border-subtle)] p-6 text-center text-xs font-medium text-[var(--text-tertiary)]">
+        <div className="rounded-2xl border border-dashed border-border-subtle p-6 text-center text-xs font-medium text-text-tertiary">
           This mentor has not filled out their profile details yet.
         </div>
       )}
 
       {/* Action buttons — pinned to bottom */}
-      <div className="mt-8 flex gap-3 border-t border-[var(--border-subtle)] pt-5">
+      <div className="mt-8 flex gap-3 border-t border-border-subtle pt-5">
         <Button
           variant="primary"
           loading={isMutating}

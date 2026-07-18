@@ -18,9 +18,9 @@ const statusStyles = {
 };
 
 const roleStyles = {
-  student: "badge-brand",
-  mentor: "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-400/20 dark:bg-violet-400/10 dark:text-violet-200", // Violet accent for mentors in Admin view
-  admin: "border-brand-200 bg-brand-50 text-brand-700 dark:border-brand-300/20 dark:bg-brand-300/10 dark:text-brand-100",
+  student: "badge-primary",
+  mentor: "badge-mentor",
+  admin: "badge-admin",
 };
 
 export default function UserManagementPage() {
@@ -57,13 +57,13 @@ export default function UserManagementPage() {
     <PageTransition>
       <div className="mx-auto max-w-6xl space-y-5">
         {/* Header */}
-        <div className="glass-panel flex flex-col gap-4 rounded-3xl p-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="border border-border-subtle bg-bg-surface shadow-token-md flex flex-col gap-4 rounded-3xl p-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="badge badge-brand">
+            <p className="badge badge-primary">
               <Users className="h-3.5 w-3.5" />
               Identity Management
             </p>
-            <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-950 sm:text-3xl dark:text-white">
+            <h1 className="font-display text-display font-semibold text-ink-950 dark:text-white mt-4 leading-tight">
               User profiles
             </h1>
             <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">
@@ -107,7 +107,7 @@ export default function UserManagementPage() {
             description="Adjust search tags or filter choices to find matching accounts."
           />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {um.users.map((user, idx) => {
               const { id, full_name, email, avatar_url, role, status, is_verified } = user;
               const initials = (full_name || "U")
@@ -117,31 +117,75 @@ export default function UserManagementPage() {
                 .slice(0, 2)
                 .toUpperCase();
 
+              // Role-based custom card borders and interactive glow tokens
+              const roleThemes = {
+                student: {
+                  borderHover: "hover:border-accent-primary/40",
+                  shadowHover: "hover:shadow-[0_0_24px_rgba(245,166,35,0.08)]",
+                  avatarRing: "group-hover:ring-accent-primary/30",
+                  textHover: "group-hover:text-accent-primary",
+                  glowColor: "from-accent-primary/4 to-transparent",
+                },
+                mentor: {
+                  borderHover: "hover:border-accent-mentor/40",
+                  shadowHover: "hover:shadow-[0_0_24px_rgba(16,185,129,0.08)]",
+                  avatarRing: "group-hover:ring-accent-mentor/30",
+                  textHover: "group-hover:text-accent-mentor",
+                  glowColor: "from-accent-mentor/4 to-transparent",
+                },
+                admin: {
+                  borderHover: "hover:border-accent-admin/40",
+                  shadowHover: "hover:shadow-[0_0_24px_rgba(14,165,233,0.08)]",
+                  avatarRing: "group-hover:ring-accent-admin/30",
+                  textHover: "group-hover:text-accent-admin",
+                  glowColor: "from-accent-admin/4 to-transparent",
+                },
+              };
+
+              const theme = roleThemes[role] || roleThemes.student;
+
               return (
                 <motion.div
                   key={id}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.04 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20, delay: idx * 0.03 }}
+                  whileHover={{ y: -5, scale: 1.015 }}
                   onClick={() => setSelectedUser(user)}
-                  className="glass-panel group flex flex-col justify-between rounded-2xl p-5 hover:shadow-elevation-2 hover:-translate-y-0.5 transition duration-200 cursor-pointer"
+                  className={cn(
+                    "relative overflow-hidden border border-border-subtle bg-bg-surface shadow-token-md group flex flex-col justify-between rounded-2xl p-5",
+                    "transition-all duration-300 cursor-pointer",
+                    theme.borderHover,
+                    theme.shadowHover
+                  )}
                 >
-                  <div>
+                  {/* Subtle top corner gradient glow on card hover */}
+                  <div className={cn("absolute right-0 top-0 h-28 w-28 bg-gradient-to-bl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-tr-2xl", theme.glowColor)} aria-hidden="true" />
+
+                  <div className="relative">
                     {/* Top profile row */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3.5">
                       {avatar_url ? (
                         <img
                           src={avatar_url}
                           alt=""
-                          className="h-10 w-10 rounded-xl object-cover border border-ink-200 dark:border-white/10"
+                          className={cn(
+                            "h-11 w-11 rounded-xl object-cover border border-ink-200 dark:border-white/10 shrink-0",
+                            "ring-4 ring-transparent transition-all duration-300",
+                            theme.avatarRing
+                          )}
                         />
                       ) : (
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ink-950 text-xs font-bold text-white dark:bg-brand-300 dark:text-ink-950">
+                        <div className={cn(
+                          "flex h-11 w-11 items-center justify-center rounded-xl bg-ink-950 text-xs font-bold text-white border border-border-subtle shrink-0",
+                          "dark:bg-bg-elevated dark:text-text-primary ring-4 ring-transparent transition-all duration-300",
+                          theme.avatarRing
+                        )}>
                           {initials}
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <h3 className="truncate text-sm font-semibold text-ink-950 dark:text-white">
+                        <h3 className="truncate text-sm font-bold text-ink-950 dark:text-white transition-colors duration-250">
                           {full_name}
                         </h3>
                         <p className="truncate text-xxs font-medium text-ink-500 dark:text-ink-400">
@@ -151,15 +195,15 @@ export default function UserManagementPage() {
                     </div>
 
                     {/* Metadata tags */}
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      <span className={cn("badge text-[10px] capitalize", roleStyles[role] || "badge-muted")}>
+                    <div className="mt-4.5 flex flex-wrap gap-2">
+                      <span className={cn("badge text-[10px] py-0.5 px-2.5 font-bold uppercase tracking-wider capitalize border border-transparent shadow-sm", roleStyles[role] || "badge-muted")}>
                         {role}
                       </span>
-                      <span className={cn("badge text-[10px] capitalize", statusStyles[status] || "badge-muted")}>
+                      <span className={cn("badge text-[10px] py-0.5 px-2.5 font-semibold capitalize border border-transparent", statusStyles[status] || "badge-muted")}>
                         {status}
                       </span>
                       {is_verified && (
-                        <span className="badge badge-success text-[10px]">
+                        <span className="badge badge-success text-[10px] py-0.5 px-2.5 font-semibold border border-transparent">
                           Verified
                         </span>
                       )}
@@ -167,11 +211,15 @@ export default function UserManagementPage() {
                   </div>
 
                   {/* Actions preview */}
-                  <div className="mt-5 border-t border-ink-200/60 pt-3 dark:border-white/6 flex items-center justify-between text-xxs font-bold text-brand-600 dark:text-brand-300">
-                    <span className="inline-flex items-center gap-1">
-                      <Eye className="h-3.5 w-3.5" />
+                  <div className={cn(
+                    "relative mt-5 border-t border-ink-200/50 pt-3 dark:border-white/10 flex items-center justify-between text-xxs font-bold text-ink-400 dark:text-ink-500 transition-colors duration-200",
+                    theme.textHover
+                  )}>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Eye className="h-3.5 w-3.5 group-hover:scale-110 transition-transform duration-200" />
                       View Details
                     </span>
+                    <span className="transform translate-x-0 group-hover:translate-x-1 transition-transform duration-200 text-sm font-normal">→</span>
                   </div>
                 </motion.div>
               );

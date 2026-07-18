@@ -29,7 +29,7 @@ export function UserFilters({
   }
 
   return (
-    <section className="glass-panel rounded-3xl p-4 sm:p-5 space-y-4" aria-label="User search filters">
+    <section className="border border-border-subtle bg-bg-surface shadow-token-md rounded-3xl p-4 sm:p-5 space-y-4" aria-label="User search filters">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         {/* Search */}
         <label className="relative flex-1">

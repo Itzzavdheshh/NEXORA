@@ -85,13 +85,13 @@ export default function MentorVerificationPage() {
     <PageTransition>
       <div className="mx-auto max-w-6xl space-y-5">
         {/* Header */}
-        <div className="glass-panel flex flex-col gap-4 rounded-[2rem] p-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between">
+        <div className="border border-border-subtle bg-bg-surface shadow-token-md flex flex-col gap-4 rounded-[2rem] p-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-brand-700 dark:border-brand-300/20 dark:bg-brand-300/10 dark:text-brand-200">
+            <p className="inline-flex items-center gap-2 rounded-full border border-accent-admin/20 bg-accent-admin/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-accent-admin">
               <ShieldCheck className="h-3.5 w-3.5" />
               Credentials Review
             </p>
-            <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-950 sm:text-4xl dark:text-white">
+            <h1 className="font-display text-display font-semibold text-ink-950 dark:text-white mt-4 leading-tight">
               Mentor verification.
             </h1>
             <p className="mt-2 text-sm text-ink-600 dark:text-ink-200">
@@ -143,7 +143,7 @@ export default function MentorVerificationPage() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="glass-panel group flex flex-col justify-between rounded-3xl p-5 hover:shadow-glow hover:-translate-y-0.5 transition duration-200"
+                  className="border border-border-subtle bg-bg-surface shadow-token-md group flex flex-col justify-between rounded-3xl p-5 hover:shadow-accent hover:-translate-y-0.5 transition duration-200"
                 >
                   <div>
                     {/* Head */}
@@ -155,7 +155,7 @@ export default function MentorVerificationPage() {
                           className="h-11 w-11 rounded-xl object-cover border border-ink-200 dark:border-white/10"
                         />
                       ) : (
-                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-ink-950 text-xs font-extrabold text-white dark:bg-brand-300 dark:text-ink-950">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-ink-950 text-xs font-extrabold text-white border border-border-subtle dark:bg-bg-elevated dark:text-text-primary">
                           {initials}
                         </div>
                       )}

@@ -12,19 +12,22 @@ import { Drawer } from "../../../components/ui/Drawer";
 import { cn } from "../../../utils/cn";
 
 const roleColors = {
-  student:
-    "bg-[var(--accent-brand)]/10 text-[var(--accent-brand)]",
-  mentor:
-    "bg-[var(--accent-mentor)]/10 text-[var(--accent-mentor)]",
-  admin:
-    "bg-violet-500/10 text-violet-700 dark:bg-violet-400/10 dark:text-violet-300",
+  student: "badge-primary",
+  mentor: "badge-mentor",
+  admin: "badge-admin",
+};
+
+const roleTextColors = {
+  student: "text-accent-primary",
+  mentor: "text-accent-mentor",
+  admin: "text-accent-admin",
 };
 
 const statusColors = {
   active:
     "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200",
   inactive:
-    "border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]",
+    "border-border-subtle bg-bg-elevated text-text-secondary",
   suspended:
     "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200",
   rejected:
@@ -67,20 +70,20 @@ export function UserDrawer({ isOpen, onClose, user, onStatusUpdate, isUpdating }
           <img
             src={avatar_url}
             alt=""
-            className="h-16 w-16 rounded-3xl border border-[var(--border-subtle)] object-cover"
+            className="h-16 w-16 rounded-3xl border border-border-subtle object-cover"
           />
         ) : (
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-[var(--bg-elevated)] text-lg font-extrabold text-[var(--text-primary)] ring-2 ring-[var(--border-subtle)]">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-bg-elevated text-lg font-extrabold text-text-primary ring-2 ring-border-subtle">
             {initials}
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-lg font-extrabold text-[var(--text-primary)]">
+          <h3 className="truncate text-lg font-extrabold text-text-primary">
             {full_name}
           </h3>
           <a
             href={`mailto:${email}`}
-            className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-brand)] hover:underline"
+            className={cn("mt-1 flex items-center gap-1.5 text-sm font-semibold hover:underline", roleTextColors[role] || "text-accent-primary")}
           >
             <Mail className="h-4 w-4" />
             {email}
@@ -92,8 +95,8 @@ export function UserDrawer({ isOpen, onClose, user, onStatusUpdate, isUpdating }
       <div className="flex flex-wrap gap-2 mb-6">
         <span
           className={cn(
-            "rounded-full px-3 py-1 text-xs font-bold capitalize",
-            roleColors[role] || "bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
+            "badge border border-transparent capitalize",
+            roleColors[role] || "badge-muted"
           )}
         >
           Role: {role}
@@ -102,7 +105,7 @@ export function UserDrawer({ isOpen, onClose, user, onStatusUpdate, isUpdating }
           className={cn(
             "rounded-full border px-3 py-1 text-xs font-extrabold capitalize tracking-[0.04em]",
             statusColors[status] ||
-              "border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
+              "border-border-subtle bg-bg-elevated text-text-secondary"
           )}
         >
           Status: {status}
@@ -110,26 +113,26 @@ export function UserDrawer({ isOpen, onClose, user, onStatusUpdate, isUpdating }
       </div>
 
       {/* Account metadata card */}
-      <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4 space-y-4 mb-5">
+      <div className="rounded-2xl border border-border-subtle bg-bg-elevated p-4 space-y-4 mb-5">
         <div className="flex items-start gap-3">
-          <Calendar className="mt-0.5 h-4 w-4 text-[var(--text-tertiary)]" />
+          <Calendar className="mt-0.5 h-4 w-4 text-text-tertiary" />
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
+            <p className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
               Registration Date
             </p>
-            <p className="mt-1 text-sm font-extrabold text-[var(--text-primary)]">
+            <p className="mt-1 text-sm font-extrabold text-text-primary">
               {formattedDate}
             </p>
           </div>
         </div>
 
         <div className="flex items-start gap-3">
-          <User className="mt-0.5 h-4 w-4 text-[var(--text-tertiary)]" />
+          <User className="mt-0.5 h-4 w-4 text-text-tertiary" />
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
+            <p className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
               Account ID
             </p>
-            <code className="mt-1 block text-[11px] font-bold text-[var(--text-secondary)] font-mono break-all">
+            <code className="mt-1 block text-[11px] font-bold text-text-secondary font-mono break-all">
               {id}
             </code>
           </div>
@@ -142,10 +145,10 @@ export function UserDrawer({ isOpen, onClose, user, onStatusUpdate, isUpdating }
             <ShieldAlert className="mt-0.5 h-4 w-4 text-amber-500" />
           )}
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
+            <p className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
               Verification Status
             </p>
-            <p className="mt-1 text-sm font-extrabold text-[var(--text-primary)]">
+            <p className="mt-1 text-sm font-extrabold text-text-primary">
               {is_verified
                 ? "Verified Professional"
                 : "Unverified / Awaiting validation"}
@@ -166,7 +169,7 @@ export function UserDrawer({ isOpen, onClose, user, onStatusUpdate, isUpdating }
 
       {/* Action footer — only for non-admins */}
       {role !== "admin" && (
-        <div className="mt-4 border-t border-[var(--border-subtle)] pt-5">
+        <div className="mt-4 border-t border-border-subtle pt-5">
           {isActive ? (
             <Button
               variant="danger"
