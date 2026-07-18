@@ -94,7 +94,7 @@ export function AuthLayout() {
               <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent-primary shadow-token-md">
                 <Sparkles className="h-5 w-5 text-bg-base" aria-hidden="true" />
               </div>
-              <span className="text-card font-semibold tracking-tight text-text-primary">
+              <span className="font-display text-3xl font-semibold tracking-tight text-text-primary">
                 {APP_NAME}
               </span>
             </div>
@@ -143,11 +143,11 @@ export function AuthLayout() {
         {/* Right panel — auth form */}
         <section className="flex flex-col items-center justify-center px-6 py-12 sm:px-12 bg-bg-base overflow-y-auto">
           {/* Logo only on mobile */}
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-accent-primary shadow-token-sm">
-              <Sparkles className="h-4.5 w-4.5 text-bg-base" aria-hidden="true" />
+          <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent-primary shadow-token-md">
+              <Sparkles className="h-5 w-5 text-bg-base" aria-hidden="true" />
             </div>
-            <span className="text-sm font-semibold tracking-tight text-text-primary">
+            <span className="font-display text-3xl font-semibold tracking-tight text-text-primary">
               {APP_NAME}
             </span>
           </div>

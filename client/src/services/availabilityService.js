@@ -1,8 +1,8 @@
 import { apiClient } from "./apiClient";
 
 export const availabilityService = {
-  list() {
-    return apiClient.get("/availability").then((res) => res.data);
+  list(params) {
+    return apiClient.get("/availability", { params }).then((res) => res.data);
   },
   create(payload) {
     return apiClient.post("/availability", payload).then((res) => res.data);

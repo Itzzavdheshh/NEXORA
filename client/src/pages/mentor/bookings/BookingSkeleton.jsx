@@ -14,7 +14,7 @@ export function BookingSkeleton() {
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}
-            className="flex flex-col gap-4 rounded-3xl border border-ink-200/60 bg-white/50 p-5 dark:border-white/8 dark:bg-white/5"
+            className="flex flex-col gap-4 rounded-3xl border border-ink-200/60 bg-white/50 p-5 dark:border-white/10 dark:bg-white/5"
           >
             <div className="flex items-center gap-3">
               <Skeleton className="h-12 w-12 rounded-2xl shrink-0" />

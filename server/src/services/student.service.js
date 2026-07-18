@@ -1,7 +1,7 @@
 const supabase = require("../config/supabase");
 const handleSupabaseError = require("../utils/handleSupabaseError");
-const createStudentProfile = async (userId, profile) => {
 
+const createStudentProfile = async (userId, profile) => {
   const { data: existing, error: existingError } = await supabase
     .from("student_profiles")
     .select("id")
@@ -41,7 +41,7 @@ const getStudentProfile = async (userId) => {
     .from("student_profiles")
     .select("*")
     .eq("user_id", userId)
-    .single();
+    .maybeSingle();
 
   if (error) {
     handleSupabaseError(error);

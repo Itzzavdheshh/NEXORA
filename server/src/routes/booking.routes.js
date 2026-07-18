@@ -31,7 +31,7 @@ router.get(
 router.patch(
   "/:id/status",
   authenticate,
-  authorizeRoles("mentor"),
+  authorizeRoles("mentor", "student"),
   updateStatus
 );
 

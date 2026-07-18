@@ -34,7 +34,7 @@ export function BookingFilters({
 
   return (
     <section
-      className="glass-panel rounded-3xl p-4 sm:p-5"
+      className="border border-border-subtle bg-bg-surface shadow-token-md rounded-3xl p-4 sm:p-5"
       aria-label="Booking filters"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -98,7 +98,7 @@ export function BookingFilters({
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-1.5 text-sm font-semibold transition",
               filter === tab.value
-                ? "bg-ink-950 text-white shadow-glow dark:bg-white dark:text-ink-950"
+                ? "bg-ink-950 text-white shadow-accent dark:bg-white dark:text-ink-950"
                 : "text-ink-600 hover:bg-ink-100 hover:text-ink-950 dark:text-ink-300 dark:hover:bg-white/10 dark:hover:text-white",
             )}
           >

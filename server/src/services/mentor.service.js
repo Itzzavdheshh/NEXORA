@@ -42,7 +42,7 @@ const getMentorProfile = async (userId) => {
     .from("mentor_profiles")
     .select("*")
     .eq("user_id", userId)
-    .single();
+    .maybeSingle();
 
   if (error) throw new Error(error.message);
 
@@ -103,11 +103,22 @@ const getPendingMentors = async () => {
     const userIds = users.map((u) => u.id);
     const { data: profiles, error: profileErr } = await supabase
       .from("mentor_profiles")
-      .select("user_id, job_title, company, bio, skills, experience_years, linkedin_url, website_url")
+      .select("user_id, designation, company, bio, expertise, experience, linkedin_url, github_url, portfolio_url, hourly_rate")
       .in("user_id", userIds);
 
     if (!profileErr && profiles) {
-      const profileMap = new Map(profiles.map((p) => [p.user_id, p]));
+      const profileMap = new Map(
+        profiles.map((p) => [
+          p.user_id,
+          {
+            ...p,
+            job_title: p.designation,
+            skills: p.expertise,
+            experience_years: p.experience,
+            website_url: p.portfolio_url,
+          },
+        ])
+      );
       return users.map((u) => ({
         ...u,
         profile: profileMap.get(u.id) || null,
@@ -158,7 +169,11 @@ const verifyMentor = async (userId) => {
       title: "Mentor Verified",
       message: "Congratulations! Your mentor account has been verified.",
     });
+  } catch (err) {
+    console.error("Notification Error:", err.message);
+  }
 
+  try {
     await sendEmail({
       to: data.email,
       subject: "Mentor Verification",
@@ -168,7 +183,7 @@ const verifyMentor = async (userId) => {
       `,
     });
   } catch (err) {
-    console.error("Notification/Email Error:", err.message);
+    console.error("Email Error:", err.message);
   }
 
   return data;
@@ -213,7 +228,11 @@ const rejectMentor = async (userId) => {
       title: "Application Status",
       message: "We regret to inform you that your mentor application has been rejected.",
     });
+  } catch (err) {
+    console.error("Notification Error:", err.message);
+  }
 
+  try {
     await sendEmail({
       to: data.email,
       subject: "Mentor Application Update",
@@ -224,12 +243,64 @@ const rejectMentor = async (userId) => {
       `,
     });
   } catch (err) {
-    console.error("Notification/Email Error:", err.message);
+    console.error("Email Error:", err.message);
   }
 
   return data;
 };
 
+const getVerifiedMentors = async (search = "") => {
+  const { data: users, error } = await supabase
+    .from("users")
+    .select("id, full_name, email, avatar_url, created_at, is_verified, status")
+    .eq("role", "mentor")
+    .eq("is_verified", true)
+    .eq("status", "active");
+
+  if (error) throw new Error(error.message);
+
+  if (!users || users.length === 0) return [];
+
+  const userIds = users.map((u) => u.id);
+  const { data: profiles, error: profileErr } = await supabase
+    .from("mentor_profiles")
+    .select("user_id, designation, company, bio, expertise, experience, linkedin_url, github_url, portfolio_url, hourly_rate")
+    .in("user_id", userIds);
+
+  if (profileErr) throw new Error(profileErr.message);
+
+  const profileMap = new Map(
+    (profiles ?? []).map((p) => [
+      p.user_id,
+      {
+        ...p,
+        job_title: p.designation,
+        skills: p.expertise,
+        experience_years: p.experience,
+        website_url: p.portfolio_url,
+      },
+    ])
+  );
+
+  let mentors = users.map((u) => ({
+    ...u,
+    profile: profileMap.get(u.id) || null,
+  }));
+
+  if (search.trim()) {
+    const s = search.toLowerCase().trim();
+    mentors = mentors.filter((m) => {
+      const nameMatch = m.full_name?.toLowerCase().includes(s);
+      const titleMatch = m.profile?.job_title?.toLowerCase().includes(s);
+      const companyMatch = m.profile?.company?.toLowerCase().includes(s);
+      const bioMatch = m.profile?.bio?.toLowerCase().includes(s);
+      const skillsMatch = Array.isArray(m.profile?.skills) && m.profile.skills.some((skill) => skill.toLowerCase().includes(s));
+      return nameMatch || titleMatch || companyMatch || bioMatch || skillsMatch;
+    });
+  }
+
+  return mentors;
+};
 
 module.exports = {
   createMentorProfile,
@@ -238,4 +309,5 @@ module.exports = {
   getPendingMentors,
   verifyMentor,
   rejectMentor,
+  getVerifiedMentors,
 };

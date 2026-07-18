@@ -37,7 +37,10 @@ const updateStatus = async (req, res, next) => {
   try {
     const booking = await updateBookingStatus(
       req.params.id,
-      req.body.status
+      req.body.status,
+      req.body.meeting_link,
+      req.user.id,
+      req.user.role
     );
 
     return res.status(200).json({

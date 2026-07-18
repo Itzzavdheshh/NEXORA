@@ -74,13 +74,18 @@ const updateSlot = async (mentorId, slotId, slot) => {
   // Ensure the slot belongs to this mentor before updating
   const { data: existing, error: findError } = await supabase
     .from("availability_slots")
-    .select("id")
+    .select("id, is_available")
     .eq("id", slotId)
     .eq("mentor_id", mentorId)
     .single();
 
   if (findError || !existing) {
     throw new Error("Availability slot not found or access denied.");
+  }
+
+  // Prevent modifying slot if it is already booked
+  if (!existing.is_available) {
+    throw new Error("Cannot modify a slot that has already been booked.");
   }
 
   // Check overlap before updating, excluding the slot being updated itself
@@ -107,13 +112,18 @@ const deleteSlot = async (mentorId, slotId) => {
   // Ensure the slot belongs to this mentor before deleting
   const { data: existing, error: findError } = await supabase
     .from("availability_slots")
-    .select("id")
+    .select("id, is_available")
     .eq("id", slotId)
     .eq("mentor_id", mentorId)
     .single();
 
   if (findError || !existing) {
     throw new Error("Availability slot not found or access denied.");
+  }
+
+  // Prevent deleting slot if it is already booked
+  if (!existing.is_available) {
+    throw new Error("Cannot delete a slot that has already been booked.");
   }
 
   const { error } = await supabase

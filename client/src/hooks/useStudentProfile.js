@@ -36,7 +36,7 @@ export function useStudentProfile() {
       profile: profileQuery.data?.data || null,
       isMissingProfile:
         profileQuery.isError &&
-        /not found|no rows|JSON object requested/i.test(profileQuery.error?.message || ""),
+        /not found|no rows|JSON object requested|coerce the result/i.test(profileQuery.error?.message || ""),
       isLoading: profileQuery.isLoading,
       isFetching: profileQuery.isFetching,
       isError: profileQuery.isError,

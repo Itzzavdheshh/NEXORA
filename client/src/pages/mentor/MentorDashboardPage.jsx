@@ -39,9 +39,9 @@ import { cn } from "../../utils/cn";
 // ── Helpers ────────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
   pending:   { label: "Pending",   dot: "bg-amber-400",   pill: "bg-amber-500/12 text-amber-300"  },
-  confirmed: { label: "Confirmed", dot: "bg-[var(--accent-mentor)]", pill: "bg-emerald-500/12 text-emerald-300" },
-  completed: { label: "Completed", dot: "bg-[var(--accent-primary)]", pill: "bg-amber-500/12 text-amber-300"    },
-  cancelled: { label: "Cancelled", dot: "bg-[var(--accent-danger)]",  pill: "bg-red-500/12 text-red-400"        },
+  confirmed: { label: "Confirmed", dot: "bg-accent-mentor", pill: "bg-emerald-500/12 text-emerald-300" },
+  completed: { label: "Completed", dot: "bg-accent-primary", pill: "bg-amber-500/12 text-amber-300"    },
+  cancelled: { label: "Cancelled", dot: "bg-accent-danger",  pill: "bg-red-500/12 text-red-400"        },
 };
 
 const CHART_COLORS = {
@@ -101,26 +101,26 @@ function StatCard({ icon: Icon, label, value, hint, index, accent, wide }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06, duration: 0.28 }}
       className={cn(
-        "group rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 transition-all duration-200 hover:-translate-y-0.5",
+        "group rounded-2xl border border-border-subtle bg-bg-surface p-5 transition-all duration-200 hover:-translate-y-0.5",
         wide && "md:col-span-2",
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">{label}</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">{label}</p>
           <p className={cn(
             "mt-2 tabular-nums text-3xl font-extrabold tracking-tight",
-            accent ? "text-[var(--accent-mentor)]" : "text-[var(--text-primary)]",
+            accent ? "text-accent-mentor" : "text-text-primary",
           )}>
             <CountUp target={value ?? 0} />
           </p>
-          {hint && <p className="mt-1.5 text-xs text-[var(--text-tertiary)]">{hint}</p>}
+          {hint && <p className="mt-1.5 text-xs text-text-tertiary">{hint}</p>}
         </div>
         <div className={cn(
           "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-110",
           accent
-            ? "bg-emerald-500/12 text-[var(--accent-mentor)]"
-            : "bg-[var(--bg-elevated)] text-[var(--text-secondary)]",
+            ? "bg-emerald-500/12 text-accent-mentor"
+            : "bg-bg-elevated text-text-secondary",
         )}>
           <Icon className="h-4.5 w-4.5" aria-hidden="true" />
         </div>
@@ -133,9 +133,9 @@ function StatCard({ icon: Icon, label, value, hint, index, accent, wide }) {
 function ChartTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-floating)] px-3 py-2 text-xs shadow-lg">
-      <p className="font-semibold text-[var(--text-primary)]">{payload[0]?.name}</p>
-      <p className="mt-0.5 text-[var(--text-secondary)]">{payload[0]?.value} session{payload[0]?.value !== 1 ? "s" : ""}</p>
+    <div className="rounded-xl border border-border-subtle bg-bg-floating px-3 py-2 text-xs shadow-lg">
+      <p className="font-semibold text-text-primary">{payload[0]?.name}</p>
+      <p className="mt-0.5 text-text-secondary">{payload[0]?.value} session{payload[0]?.value !== 1 ? "s" : ""}</p>
     </div>
   );
 }
@@ -151,25 +151,25 @@ function AgendaItem({ booking, index }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="flex items-center justify-between gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4 mb-3 last:mb-0 transition duration-150 hover:border-[var(--border-strong)]"
+      className="flex items-center justify-between gap-4 rounded-xl border border-border-subtle bg-bg-elevated p-4 mb-3 last:mb-0 transition duration-150 hover:border-border-strong"
     >
       <div className="flex items-center gap-3">
         {/* time block */}
-        <div className="rounded-lg bg-[var(--bg-floating)] px-2.5 py-1.5 text-center min-w-[70px]">
-          <p className="text-xs font-bold text-[var(--text-primary)]">{fmtTime(booking.start_time)}</p>
-          <p className="text-[9px] font-semibold text-[var(--text-tertiary)]">{fmt(booking.booking_date)}</p>
+        <div className="rounded-lg bg-bg-floating px-2.5 py-1.5 text-center min-w-[70px]">
+          <p className="text-xs font-bold text-text-primary">{fmtTime(booking.start_time)}</p>
+          <p className="text-[9px] font-semibold text-text-tertiary">{fmt(booking.booking_date)}</p>
         </div>
         {/* Avatar/Initials */}
         {booking.student?.avatar_url ? (
-          <img src={booking.student.avatar_url} alt="" className="h-8 w-8 rounded-lg object-cover border border-[var(--border-subtle)]" />
+          <img src={booking.student.avatar_url} alt="" className="h-8 w-8 rounded-lg object-cover border border-border-subtle" />
         ) : (
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--bg-floating)] text-[10px] font-bold text-[var(--text-primary)]">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-bg-floating text-[10px] font-bold text-text-primary">
             {initials}
           </div>
         )}
         <div>
-          <p className="text-xs font-bold text-[var(--text-primary)]">{studentName}</p>
-          <p className="text-[10px] text-[var(--text-tertiary)]">{booking.meeting_type || "Virtual Session"}</p>
+          <p className="text-xs font-bold text-text-primary">{studentName}</p>
+          <p className="text-[10px] text-text-tertiary">{booking.meeting_type || "Virtual Session"}</p>
         </div>
       </div>
       <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold", cfg.pill)}>
@@ -188,19 +188,19 @@ function PendingRow({ booking, index, onApprove, onDecline, isUpdating }) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="flex items-center gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-3"
+      className="flex items-center gap-3 rounded-xl border border-border-subtle bg-bg-elevated px-4 py-3"
     >
       {/* Avatar */}
       {booking.student?.avatar_url ? (
-        <img src={booking.student.avatar_url} alt="" className="h-9 w-9 rounded-xl object-cover border border-[var(--border-subtle)]" />
+        <img src={booking.student.avatar_url} alt="" className="h-9 w-9 rounded-xl object-cover border border-border-subtle" />
       ) : (
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--bg-floating)] text-xs font-bold text-[var(--text-primary)]">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-bg-floating text-xs font-bold text-text-primary">
           {initials}
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-xs font-semibold text-[var(--text-primary)]">{studentName}</p>
-        <p className="mt-0.5 text-[10px] text-[var(--text-tertiary)]">{fmt(booking.booking_date)} · {fmtTime(booking.start_time)}–{fmtTime(booking.end_time)}</p>
+        <p className="truncate text-xs font-semibold text-text-primary">{studentName}</p>
+        <p className="mt-0.5 text-[10px] text-text-tertiary">{fmt(booking.booking_date)} · {fmtTime(booking.start_time)}–{fmtTime(booking.end_time)}</p>
       </div>
       <div className="flex shrink-0 gap-1.5" onClick={e => e.stopPropagation()}>
         <button
@@ -208,7 +208,7 @@ function PendingRow({ booking, index, onApprove, onDecline, isUpdating }) {
           disabled={isUpdating}
           onClick={() => onApprove(booking.id)}
           title="Confirm"
-          className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/12 text-[var(--accent-mentor)] transition hover:bg-[var(--accent-mentor)] hover:text-[var(--bg-base)] disabled:opacity-50"
+          className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/12 text-accent-mentor transition hover:bg-accent-mentor hover:text-[var(--bg-base)] disabled:opacity-50"
         >
           <CheckCircle2 className="h-4 w-4" />
         </button>
@@ -229,11 +229,11 @@ function PendingRow({ booking, index, onApprove, onDecline, isUpdating }) {
 // ── Section ────────────────────────────────────────────────────────────────
 function Section({ title, subtitle, action, children }) {
   return (
-    <section className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5">
+    <section className="rounded-2xl border border-border-subtle bg-bg-surface p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-sm font-bold text-[var(--text-primary)]">{title}</h2>
-          {subtitle && <p className="mt-0.5 text-xs text-[var(--text-tertiary)]">{subtitle}</p>}
+          <h2 className="text-sm font-bold text-text-primary">{title}</h2>
+          {subtitle && <p className="mt-0.5 text-xs text-text-tertiary">{subtitle}</p>}
         </div>
         {action}
       </div>
@@ -243,8 +243,67 @@ function Section({ title, subtitle, action, children }) {
 }
 
 // ── Main Page ──────────────────────────────────────────────────────────────
+// ── Dashboard subtext typewriter ──────────────────────────────────────────────
+const SUBTEXT_PHRASES = [
+  "Manage your sessions, review incoming requests, and keep schedule current.",
+  "Configure availability slots to allow student bookings.",
+  "Check for new pending requests in your inbox.",
+];
+
+const TYPING_SPEED = 40;
+const ERASING_SPEED = 20;
+const PAUSE_AFTER = 2500;
+const PAUSE_BEFORE = 300;
+
+function DashboardTypewriter() {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [phase, setPhase] = useState("typing");
+
+  useEffect(() => {
+    const target = SUBTEXT_PHRASES[phraseIndex];
+
+    if (phase === "typing") {
+      if (displayed.length < target.length) {
+        const t = setTimeout(() => {
+          setDisplayed(target.slice(0, displayed.length + 1));
+        }, TYPING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => setPhase("erasing"), PAUSE_AFTER);
+        return () => clearTimeout(t);
+      }
+    }
+
+    if (phase === "erasing") {
+      if (displayed.length > 0) {
+        const t = setTimeout(() => {
+          setDisplayed(displayed.slice(0, -1));
+        }, ERASING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => {
+          setPhraseIndex((i) => (i + 1) % SUBTEXT_PHRASES.length);
+          setPhase("typing");
+        }, PAUSE_BEFORE);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [displayed, phase, phraseIndex]);
+
+  return (
+    <span className="text-accent-mentor">
+      {displayed}
+      <span
+        className="inline-block w-[1.5px] h-[1em] bg-accent-mentor align-middle ml-[2px] animate-blink"
+        aria-hidden="true"
+      />
+    </span>
+  );
+}
+
 export default function MentorDashboardPage() {
-  const { user } = useAuth();
+  const { user, refetchUser } = useAuth();
   const navigate = useNavigate();
   const dashboard = useMentorDashboard();
   const firstName = (user?.full_name || user?.name || "Mentor").split(" ")[0];
@@ -272,6 +331,17 @@ export default function MentorDashboardPage() {
 
   function goToBookings() { navigate("/mentor/bookings"); }
 
+  useEffect(() => {
+    refetchUser();
+  }, [refetchUser]);
+
+  const handleRefresh = async () => {
+    await Promise.all([
+      dashboard.refetchAll(),
+      refetchUser(),
+    ]);
+  };
+
   if (dashboard.isLoading) return <DashboardSkeleton />;
 
   if (dashboard.isError) {
@@ -282,7 +352,7 @@ export default function MentorDashboardPage() {
           title="Dashboard unavailable"
           description={dashboard.error?.message || "Could not fetch mentor data."}
           actionLabel="Retry"
-          onAction={dashboard.refetchAll}
+          onAction={handleRefresh}
           size="lg"
         />
       </div>
@@ -298,7 +368,7 @@ export default function MentorDashboardPage() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6"
+          className="relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-surface p-6"
         >
           {/* emerald top shimmer */}
           <div
@@ -352,17 +422,21 @@ export default function MentorDashboardPage() {
                 )}
               </div>
 
-              <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-[var(--text-primary)] sm:text-3xl">
+              <h1 className="font-display text-display font-semibold text-text-primary leading-tight mt-4">
                 Good to see you, {firstName}.
               </h1>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
-                Manage your sessions, review incoming requests, and keep your schedule current.
+              <p className="mt-2 text-sm leading-6 text-text-secondary min-h-[2.5rem] md:min-h-[1.5rem]">
+                <DashboardTypewriter />
               </p>
 
-              {/* Profile completion bar */}
+              {/* Profile incomplete warning indicator */}
               {dashboard.profileCompletion < 100 && (
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="h-1.5 w-36 overflow-hidden rounded-full bg-[var(--bg-elevated)]">
+                <div className="mt-5 flex flex-col gap-3 rounded border border-border-subtle bg-bg-elevated/30 p-4 max-w-md animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-text-primary">Profile Setup Status</span>
+                    <span className="font-semibold text-accent-mentor">{dashboard.profileCompletion}%</span>
+                  </div>
+                  <div className="w-full bg-bg-elevated rounded-full h-1.5 overflow-hidden">
                     <motion.div
                       className="h-full rounded-full"
                       style={{ background: "var(--accent-mentor)" }}
@@ -371,9 +445,12 @@ export default function MentorDashboardPage() {
                       transition={{ duration: 0.8, ease: "easeOut" }}
                     />
                   </div>
-                  <span className="text-xs text-[var(--text-tertiary)]">
-                    Profile {dashboard.profileCompletion}% complete
-                  </span>
+                  <Link
+                    to="/mentor/profile"
+                    className="text-[11px] font-bold text-accent-mentor hover:underline transition w-fit mt-1"
+                  >
+                    Complete your profile info →
+                  </Link>
                 </div>
               )}
             </div>
@@ -382,16 +459,16 @@ export default function MentorDashboardPage() {
             <div className="flex flex-col gap-2 sm:flex-row lg:flex-col lg:items-end">
               <button
                 type="button"
-                onClick={dashboard.refetchAll}
+                onClick={handleRefresh}
                 disabled={dashboard.isFetching}
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-2.5 text-sm font-semibold text-[var(--text-primary)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-border-subtle bg-bg-elevated px-4 py-2.5 text-sm font-semibold text-text-primary transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <RefreshCw className={cn("h-3.5 w-3.5", dashboard.isFetching && "animate-spin")} aria-hidden="true" />
                 {dashboard.isFetching ? "Refreshing…" : "Refresh"}
               </button>
               <Link
                 to="/mentor/availability"
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-2.5 text-sm font-semibold text-[var(--text-primary)] transition hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-xl border border-border-subtle bg-bg-elevated px-4 py-2.5 text-sm font-semibold text-text-primary transition hover:-translate-y-0.5"
               >
                 <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />
                 Manage slots
@@ -437,8 +514,8 @@ export default function MentorDashboardPage() {
               const d = b.booking_date ? new Date(b.booking_date).toISOString().slice(0, 10) : null;
               return d !== todayStr;
             }).slice(0, 3).length > 0 && (
-              <div className="mt-5 border-t border-[var(--border-subtle)]/50 pt-4">
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Upcoming sessions</p>
+              <div className="mt-5 border-t border-border-subtle/50 pt-4">
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">Upcoming sessions</p>
                 <ul className="flex flex-col">
                   {dashboard.upcomingBookings
                     .filter(b => {
@@ -454,7 +531,7 @@ export default function MentorDashboardPage() {
 
           <Section title="Session statistics" subtitle="Status distribution">
             {dashboard.stats.total > 0 ? (
-              <div className="h-64 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3">
+              <div className="h-64 rounded-xl border border-border-subtle bg-bg-elevated p-3">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} barCategoryGap="36%">
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
@@ -530,7 +607,7 @@ export default function MentorDashboardPage() {
             >
               <Link
                 to={item.to}
-                className="group flex items-center gap-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--border-strong)]"
+                className="group flex items-center gap-4 rounded-2xl border border-border-subtle bg-bg-surface px-5 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-border-strong"
               >
                 <div
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-110"
@@ -539,10 +616,10 @@ export default function MentorDashboardPage() {
                   <item.icon className="h-4 w-4" aria-hidden="true" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[var(--text-primary)]">{item.title}</p>
-                  <p className="text-xs text-[var(--text-tertiary)]">{item.desc}</p>
+                  <p className="text-sm font-semibold text-text-primary">{item.title}</p>
+                  <p className="text-xs text-text-tertiary">{item.desc}</p>
                 </div>
-                <ArrowRight className="ml-auto h-4 w-4 text-[var(--text-tertiary)] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                <ArrowRight className="ml-auto h-4 w-4 text-text-tertiary transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </Link>
             </motion.div>
           ))}

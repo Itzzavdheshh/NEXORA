@@ -16,4 +16,7 @@ export const mentorService = {
   rejectMentor(id) {
     return apiClient.patch(`/mentors/${id}/reject`).then((res) => res.data);
   },
+  explore(params) {
+    return apiClient.get("/mentors/explore", { params }).then((res) => res.data);
+  },
 };

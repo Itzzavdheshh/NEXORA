@@ -1,7 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { notificationService } from "../services/notificationService";
+import { supabase } from "../services/supabaseClient";
+import { useAuth } from "./useAuth";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -44,6 +46,7 @@ export const NOTIFICATIONS_QUERY_KEY = ["notifications"];
 // ── Hook ─────────────────────────────────────────────────────────────────────
 export function useNotifications() {
   const queryClient = useQueryClient();
+  const { user, token } = useAuth();
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all"); // "all" | "unread" | "read"
@@ -55,6 +58,51 @@ export function useNotifications() {
     queryFn: notificationService.list,
     select: (res) => res?.data ?? [],
   });
+
+  // ── Supabase Realtime subscription ────────────────────────────────────────
+  // Subscribes to INSERT events on the notifications table filtered to the
+  // current user only. On any new row the React Query cache is invalidated,
+  // which triggers an immediate refetch — no polling interval needed.
+  //
+  // The channel is removed when:
+  //   • the user logs out (user becomes null/undefined)
+  //   • the component/hook unmounts (cleanup function)
+  // This prevents stale or duplicate subscriptions across page navigations.
+  useEffect(() => {
+    if (!user?.id || !token) return;
+
+    let channel;
+    try {
+      // Set the JWT token directly for the Realtime connection
+      supabase.realtime.setAuth(token);
+
+      channel = supabase
+        .channel(`notifications:user:${user.id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${user.id}`,
+          },
+          () => {
+            // Invalidate the notifications cache — React Query will refetch
+            // immediately, updating the list and unread count in real time.
+            queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
+          },
+        )
+        .subscribe();
+    } catch (err) {
+      console.error("Realtime subscription failed:", err);
+    }
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [user?.id, token, queryClient]);
 
   // ── Mark one as read (optimistic) ─────────────────────────────────────────
   const markReadMutation = useMutation({

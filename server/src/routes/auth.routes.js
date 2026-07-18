@@ -7,6 +7,7 @@ const {
   login,
   me,
   logout,
+  changePassword,
 } = require("../controllers/auth.controller");
 
 const {
@@ -22,6 +23,9 @@ router.post("/login", validateLogin, login);
 
 // Get Current User
 router.get("/me", authenticate, me);
+
+// Change Password
+router.post("/change-password", authenticate, changePassword);
 
 // Logout User
 router.post("/logout", authenticate, logout);

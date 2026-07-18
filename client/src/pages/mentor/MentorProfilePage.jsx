@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { AvatarSelector } from "../../components/profile/AvatarSelector";
 import { FormField } from "../../components/ui/FormField";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { Skeleton } from "../../components/ui/Skeleton";
@@ -109,7 +110,7 @@ function ProfileSkeleton() {
   );
 }
 
-function ProfileSummary({ user, values, completion, isVerified }) {
+function ProfileSummary({ user, values, completion, isVerified, setValue }) {
   const initials = (values.fullName || user?.full_name || "M")
     .split(" ")
     .map((part) => part[0])
@@ -125,41 +126,32 @@ function ProfileSummary({ user, values, completion, isVerified }) {
   }, [values.expertiseText]);
 
   return (
-    <aside className="h-fit rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 flex flex-col gap-6">
+    <aside className="h-fit rounded-2xl border border-border-subtle bg-bg-surface p-5 flex flex-col gap-6">
       <div className="flex items-center gap-3">
-        {values.avatar_url ? (
-          <img
-            src={values.avatar_url}
-            alt=""
-            className="h-16 w-16 rounded-xl border border-[var(--border-subtle)] object-cover"
-          />
-        ) : (
-          <div
-            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl text-base font-bold text-[var(--bg-base)] shadow-md"
-            style={{ backgroundColor: "var(--accent-mentor)" }}
-          >
-            {initials || <UserRound className="h-5 w-5" aria-hidden="true" />}
-          </div>
-        )}
+        <AvatarSelector
+          avatarUrl={values.avatar_url}
+          onChange={(url) => setValue("avatar_url", url, { shouldDirty: true })}
+          initials={initials}
+        />
         <div className="min-w-0">
-          <p className="truncate text-base font-bold text-[var(--text-primary)]">
+          <p className="truncate text-base font-bold text-text-primary">
             {values.fullName || "Mentor"}
           </p>
-          <p className="mt-0.5 truncate text-xs text-[var(--text-secondary)]">
+          <p className="mt-0.5 truncate text-xs text-text-secondary">
             {user?.email || ""}
           </p>
         </div>
       </div>
 
       {/* Completion score indicator */}
-      <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-4">
+      <div className="rounded-xl border border-border-subtle bg-bg-elevated/30 p-4">
         <div className="flex items-center justify-between">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Profile completion</p>
-          <p className="text-xs font-bold tabular-nums text-[var(--accent-mentor)]">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">Profile completion</p>
+          <p className="text-xs font-bold tabular-nums text-accent-mentor">
             {completion}%
           </p>
         </div>
-        <div className="w-full bg-[var(--bg-elevated)] rounded-full h-1.5 overflow-hidden mt-2.5">
+        <div className="w-full bg-bg-elevated rounded-full h-1.5 overflow-hidden mt-2.5">
           <motion.div
             className="h-full rounded-full"
             style={{ backgroundColor: "var(--accent-mentor)" }}
@@ -179,10 +171,10 @@ function ProfileSummary({ user, values, completion, isVerified }) {
           ["Hourly Rate", values.hourly_rate ? `$${values.hourly_rate}/hr` : ""],
           ["Verified", isVerified ? "Yes" : "Pending"],
         ].map(([label, value]) => (
-          <div key={label} className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)]/40 pb-2 last:border-b-0 last:pb-0">
-            <span className="shrink-0 text-xs text-[var(--text-secondary)]">{label}</span>
-            <span className="text-right text-xs font-semibold text-[var(--text-primary)]">
-              {value || <span className="text-[var(--text-tertiary)] font-normal italic">Not set</span>}
+          <div key={label} className="flex items-start justify-between gap-3 border-b border-border-subtle/40 pb-2 last:border-b-0 last:pb-0">
+            <span className="shrink-0 text-xs text-text-secondary">{label}</span>
+            <span className="text-right text-xs font-semibold text-text-primary">
+              {value || <span className="text-text-tertiary font-normal italic">Not set</span>}
             </span>
           </div>
         ))}
@@ -190,8 +182,8 @@ function ProfileSummary({ user, values, completion, isVerified }) {
 
       {/* Live interactive expertise chips */}
       {expertiseChips.length > 0 && (
-        <div className="border-t border-[var(--border-subtle)] pt-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)] mb-2.5">Expertise Areas</p>
+        <div className="border-t border-border-subtle pt-4">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary mb-2.5">Expertise Areas</p>
           <div className="flex flex-wrap gap-1.5">
             {expertiseChips.map((chip, idx) => (
               <span
@@ -210,7 +202,7 @@ function ProfileSummary({ user, values, completion, isVerified }) {
 }
 
 export default function MentorProfilePage() {
-  const { user } = useAuth();
+  const { user, refetchUser } = useAuth();
   const { profile, isMissingProfile, isLoading, isError, error, refetch, saveProfile } =
     useMentorProfile();
 
@@ -221,6 +213,7 @@ export default function MentorProfilePage() {
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors, isDirty, isSubmitting },
   } = useForm({
     resolver: createZodResolver(profileSchema),
@@ -249,6 +242,8 @@ export default function MentorProfilePage() {
   const onSubmit = async (formValues) => {
     await saveProfile.mutateAsync(toPayload(formValues));
     reset(formValues);
+    // Immediately refresh auth user so navbar avatar updates without waiting for the 30s poll
+    refetchUser?.();
   };
 
   if (isLoading) return <ProfileSkeleton />;
@@ -280,7 +275,7 @@ export default function MentorProfilePage() {
         <motion.section
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6"
+          className="relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-surface p-6"
         >
           {/* emerald shimmer */}
           <div
@@ -298,10 +293,10 @@ export default function MentorProfilePage() {
                 <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
                 Mentor Profile Setup
               </p>
-              <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--text-primary)] sm:text-4xl">
+              <h1 className="font-display text-display font-semibold text-text-primary mt-4 leading-tight">
                 Share your expertise with others.
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-text-secondary">
                 Keep your details complete so students can discover your skills and schedule booking requests with confidence.
               </p>
             </div>
@@ -323,7 +318,7 @@ export default function MentorProfilePage() {
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
-                    className="badge border border-[var(--accent-danger)]/20 bg-[var(--accent-danger)]/10 text-[var(--accent-danger)] text-[10px] uppercase font-bold tracking-wider"
+                    className="badge border border-accent-danger/20 bg-accent-danger/10 text-accent-danger text-[10px] uppercase font-bold tracking-wider"
                   >
                     <AlertTriangle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                     Unsaved changes
@@ -334,7 +329,7 @@ export default function MentorProfilePage() {
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
-                    className="badge border border-[var(--accent-mentor)]/20 bg-[var(--accent-mentor)]/10 text-[var(--accent-mentor)] text-[10px] uppercase font-bold tracking-wider"
+                    className="badge border border-accent-mentor/20 bg-accent-mentor/10 text-accent-mentor text-[10px] uppercase font-bold tracking-wider"
                   >
                     <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                     Saved
@@ -347,19 +342,19 @@ export default function MentorProfilePage() {
 
         {/* Layout Grid */}
         <div className="grid gap-6 lg:grid-cols-[0.82fr_1.35fr]">
-          <ProfileSummary user={user} values={values} completion={completion} isVerified={isVerified} />
+          <ProfileSummary user={user} values={values} completion={completion} isVerified={isVerified} setValue={setValue} />
 
           {/* Form */}
-          <form className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 sm:p-6 flex flex-col justify-between" onSubmit={handleSubmit(onSubmit)}>
+          <form className="rounded-2xl border border-border-subtle bg-bg-surface p-5 sm:p-6 flex flex-col justify-between" onSubmit={handleSubmit(onSubmit)}>
             <div>
               {isMissingProfile && (
-                <div className="mb-5 rounded border border-[var(--accent-mentor)]/20 bg-[var(--accent-mentor)]/10 px-4 py-3 text-xs font-semibold text-[var(--accent-mentor)]">
-                  No mentor profile exists yet. Save this form once to register it.
+                <div className="mb-5 rounded border border-accent-mentor/20 bg-accent-mentor/10 px-4 py-3 text-xs font-semibold text-accent-mentor">
+                  Welcome to NEXORA! Complete your profile setup below to start connecting with students.
                 </div>
               )}
 
               {/* Animated sliding tab header */}
-              <div className="flex border-b border-[var(--border-subtle)] mb-6 gap-2">
+              <div className="flex border-b border-border-subtle mb-6 gap-2">
                 {tabOptions.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -370,7 +365,7 @@ export default function MentorProfilePage() {
                       onClick={() => setActiveTab(tab.id)}
                       className={cn(
                         "relative pb-3 px-3 text-xs font-semibold flex items-center gap-1.5 transition duration-150",
-                        isActive ? "text-[var(--accent-mentor)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                        isActive ? "text-accent-mentor" : "text-text-secondary hover:text-text-primary"
                       )}
                     >
                       <Icon className="h-3.5 w-3.5" />
@@ -448,15 +443,14 @@ export default function MentorProfilePage() {
                       transition={{ duration: 0.15 }}
                       className="space-y-6"
                     >
-                      <div className="flex items-center gap-2 border-b border-[var(--border-subtle)]/40 pb-2">
+                      <div className="flex items-center gap-2 border-b border-border-subtle/40 pb-2">
                         <LinkIcon className="h-4 w-4" style={{ color: "var(--accent-mentor)" }} aria-hidden="true" />
-                        <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">Social links</span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Social links</span>
                       </div>
                       <div className="grid gap-5 md:grid-cols-2">
                         <FormField id="linkedin_url" label="LinkedIn URL" error={errors.linkedin_url} {...register("linkedin_url")} />
                         <FormField id="github_url" label="GitHub URL" error={errors.github_url} {...register("github_url")} />
                         <FormField id="portfolio_url" label="Portfolio URL" error={errors.portfolio_url} {...register("portfolio_url")} />
-                        <FormField id="avatar_url" label="Avatar URL" error={errors.avatar_url} helper="Supported by backend through users.avatar_url." {...register("avatar_url")} />
                       </div>
                     </motion.div>
                   )}
@@ -464,13 +458,13 @@ export default function MentorProfilePage() {
               </div>
 
               {/* Alert constraint */}
-              <div className="mt-8 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-4 text-xs text-[var(--text-secondary)] leading-relaxed">
+              <div className="mt-8 rounded border border-border-subtle bg-bg-elevated/30 p-4 text-xs text-text-secondary leading-relaxed">
                 Certificates and specific verifications are stored by admin reviews. To preserve database schemas, this console updates standard users profile values.
               </div>
             </div>
 
             {/* Action buttons */}
-            <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[var(--border-subtle)] pt-5 sm:flex-row sm:justify-end">
+            <div className="mt-8 flex flex-col-reverse gap-3 border-t border-border-subtle pt-5 sm:flex-row sm:justify-end">
               <Button type="button" variant="secondary" onClick={() => reset(defaults)} disabled={!isDirty || isSaving}>
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
                 Cancel changes
@@ -497,7 +491,7 @@ export default function MentorProfilePage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + i * 0.06 }}
-                className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5"
+                className="rounded-2xl border border-border-subtle bg-bg-surface p-5"
               >
                 <div
                   className="flex h-9 w-9 items-center justify-center rounded-xl"
@@ -505,8 +499,8 @@ export default function MentorProfilePage() {
                 >
                   <IconComponent className="h-4 w-4" aria-hidden="true" />
                 </div>
-                <h3 className="mt-4 text-sm font-semibold text-[var(--text-primary)]">{title}</h3>
-                <p className="mt-1.5 text-xs leading-5 text-[var(--text-secondary)]">{text}</p>
+                <h3 className="mt-4 text-sm font-semibold text-text-primary">{title}</h3>
+                <p className="mt-1.5 text-xs leading-5 text-text-secondary">{text}</p>
               </motion.div>
             );
           })}

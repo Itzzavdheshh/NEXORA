@@ -6,14 +6,20 @@ import {
   Bell,
   BookOpenCheck,
   CalendarCheck,
+  CalendarPlus,
+  CheckCircle2,
   Clock3,
   GraduationCap,
   LineChart,
+  Megaphone,
   RefreshCw,
+  ShieldAlert,
   Calendar,
   Activity,
   User,
-  Info
+  Sparkles,
+  Star,
+  X,
 } from "lucide-react";
 import {
   Bar,
@@ -26,6 +32,29 @@ import {
   YAxis,
 } from "recharts";
 import { format } from "date-fns";
+
+// Resolve contextual icon for dashboard notification mini-feed
+const NOTIF_TYPES = [
+  ["cancelled",    X,            "text-red-400",     "bg-red-500/10 dark:bg-red-500/15"],
+  ["declined",     X,            "text-red-400",     "bg-red-500/10 dark:bg-red-500/15"],
+  ["rejected",     ShieldAlert,  "text-red-400",     "bg-red-500/10 dark:bg-red-500/15"],
+  ["completed",    BookOpenCheck,"text-emerald-400", "bg-emerald-500/10 dark:bg-emerald-500/15"],
+  ["confirmed",    CheckCircle2, "text-emerald-400", "bg-emerald-500/10 dark:bg-emerald-500/15"],
+  ["session",      CalendarCheck,"text-violet-400",  "bg-violet-500/10 dark:bg-violet-500/15"],
+  ["booking",      CalendarPlus, "text-blue-400",    "bg-blue-500/10 dark:bg-blue-500/15"],
+  ["reminder",     Bell,         "text-amber-400",   "bg-amber-500/10 dark:bg-amber-500/15"],
+  ["announcement", Megaphone,    "text-pink-400",    "bg-pink-500/10 dark:bg-pink-500/15"],
+  ["welcome",      Star,         "text-yellow-400",  "bg-yellow-500/10 dark:bg-yellow-500/15"],
+  ["update",       Sparkles,     "text-sky-400",     "bg-sky-500/10 dark:bg-sky-500/15"],
+];
+
+function resolveNotifIcon(n) {
+  const text = `${n.title} ${n.message}`.toLowerCase();
+  for (const entry of NOTIF_TYPES) {
+    if (text.includes(entry[0])) return entry;
+  }
+  return ["general", Sparkles, "text-slate-400", "bg-slate-500/10 dark:bg-slate-500/15"];
+}
 import { Button } from "../../components/ui/Button";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { PageTransition } from "../../components/ui/PageTransition";
@@ -48,13 +77,13 @@ const STATUS_CONFIG = {
   },
   completed: {
     label: "Completed",
-    color: "bg-[var(--accent-mentor)]/10 text-[var(--accent-mentor)] border-[var(--accent-mentor)]/20",
-    dot: "bg-[var(--accent-mentor)]",
+    color: "bg-accent-mentor/10 text-accent-mentor border-accent-mentor/20",
+    dot: "bg-accent-mentor",
   },
   cancelled: {
     label: "Cancelled",
-    color: "bg-[var(--accent-danger)]/10 text-[var(--accent-danger)] border-[var(--accent-danger)]/20",
-    dot: "bg-[var(--accent-danger)]",
+    color: "bg-accent-danger/10 text-accent-danger border-accent-danger/20",
+    dot: "bg-accent-danger",
   },
 };
 
@@ -104,29 +133,29 @@ function StatCard({ icon, label, value, hint, index, className, accent }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.28, ease: "easeOut" }}
       className={cn(
-        "rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 transition-all duration-200 hover:border-[var(--border-strong)] hover:shadow-token-sm flex flex-col justify-between min-h-[120px]",
+        "rounded-md border border-border-subtle bg-bg-surface p-5 transition-all duration-200 hover:border-border-strong hover:shadow-token-sm flex flex-col justify-between min-h-[120px]",
         className
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
             {label}
           </p>
-          <p className={cn("mt-2.5 tabular-nums font-extrabold tracking-tight", accent ? "text-3xl text-[var(--accent-primary)]" : "text-2xl text-[var(--text-primary)]")}>
+          <p className={cn("mt-2.5 tabular-nums font-extrabold tracking-tight", accent ? "text-3xl text-accent-primary" : "text-2xl text-text-primary")}>
             <CountUp value={value} />
           </p>
         </div>
         <div className={cn(
           "flex h-9 w-9 shrink-0 items-center justify-center rounded border transition-transform duration-200",
           accent
-            ? "border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-            : "border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]",
+            ? "border-accent-primary/20 bg-accent-primary/10 text-accent-primary"
+            : "border-border-subtle bg-bg-elevated text-text-secondary",
         )}>
           <Icon className="h-4 w-4" aria-hidden="true" />
         </div>
       </div>
-      <p className="text-[10px] text-[var(--text-tertiary)] mt-3 font-medium">
+      <p className="text-[10px] text-text-tertiary mt-3 font-medium">
         {hint}
       </p>
     </motion.div>
@@ -136,11 +165,11 @@ function StatCard({ icon, label, value, hint, index, className, accent }) {
 // Section wrapper component
 function Section({ title, description, children, action }) {
   return (
-    <section className="rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 sm:p-6 flex flex-col">
+    <section className="rounded-md border border-border-subtle bg-bg-surface p-5 sm:p-6 flex flex-col">
       <div className="mb-4 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">{title}</h2>
-          <p className="text-xs text-[var(--text-secondary)]">{description}</p>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-text-primary">{title}</h2>
+          <p className="text-xs text-text-secondary">{description}</p>
         </div>
         {action ? <div className="mt-2 sm:mt-0">{action}</div> : null}
       </div>
@@ -153,9 +182,9 @@ function Section({ title, description, children, action }) {
 function ChartTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-2 shadow-token-md text-xs">
-      <p className="font-bold text-[var(--text-primary)]">{payload[0]?.name}</p>
-      <p className="mt-0.5 text-[var(--text-secondary)]">
+    <div className="rounded border border-border-subtle bg-bg-surface px-3 py-2 shadow-token-md text-xs">
+      <p className="font-bold text-text-primary">{payload[0]?.name}</p>
+      <p className="mt-0.5 text-text-secondary">
         {payload[0]?.value} booking{payload[0]?.value !== 1 ? "s" : ""}
       </p>
     </div>
@@ -185,31 +214,31 @@ function BookingItem({ booking, index }) {
       className="relative pl-6 pb-6 last:pb-0"
     >
       {/* Timeline connector and dot */}
-      <span className="absolute left-2.5 top-0 bottom-0 w-0.5 bg-[var(--border-subtle)]" aria-hidden="true" />
-      <span className="absolute left-1.5 top-2.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--bg-surface)] bg-[var(--accent-primary)]" aria-hidden="true" />
+      <span className="absolute left-2.5 top-0 bottom-0 w-0.5 bg-border-subtle" aria-hidden="true" />
+      <span className="absolute left-1.5 top-2.5 h-2.5 w-2.5 rounded-full border-2 border-bg-surface bg-accent-primary" aria-hidden="true" />
 
-      <div className="flex flex-col gap-3 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/40 p-4 transition-all duration-150 hover:border-[var(--border-strong)] sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 rounded-md border border-border-subtle bg-bg-elevated/40 p-4 transition-all duration-150 hover:border-border-strong sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           {/* Avatar */}
           {booking.mentor?.avatar_url ? (
             <img
               src={booking.mentor.avatar_url}
               alt=""
-              className="h-10 w-10 rounded object-cover border border-[var(--border-subtle)]"
+              className="h-10 w-10 rounded object-cover border border-border-subtle"
             />
           ) : (
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-xs font-bold text-[var(--text-primary)]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-border-subtle bg-bg-surface text-xs font-bold text-text-primary">
               {initials}
             </div>
           )}
 
           <div>
-            <p className="text-xs font-bold text-[var(--text-primary)]">{mentorName}</p>
-            <p className="mt-0.5 text-xs text-[var(--text-secondary)] flex items-center gap-1.5">
+            <p className="text-xs font-bold text-text-primary">{mentorName}</p>
+            <p className="mt-0.5 text-xs text-text-secondary flex items-center gap-1.5">
               <span>{formattedDate}</span>
               {booking.start_time && (
                 <>
-                  <span className="text-[var(--text-tertiary)]">•</span>
+                  <span className="text-text-tertiary">•</span>
                   <span>{formatTime(booking.start_time)} {booking.end_time ? `- ${formatTime(booking.end_time)}` : ""}</span>
                 </>
               )}
@@ -218,7 +247,7 @@ function BookingItem({ booking, index }) {
         </div>
 
         <div className="flex items-center justify-between sm:justify-end gap-3">
-          <span className="text-[10px] text-[var(--text-tertiary)] uppercase font-semibold tracking-wider">
+          <span className="text-[10px] text-text-tertiary uppercase font-semibold tracking-wider">
             Format: {booking.meeting_type || "Online"}
           </span>
           <span className={cn("badge text-[10px] border", config.color)}>
@@ -269,6 +298,65 @@ function DashboardSkeleton() {
   );
 }
 
+// ── Dashboard subtext typewriter ──────────────────────────────────────────────
+const SUBTEXT_PHRASES = [
+  "Track sessions, view updates, and manage academic mentorship.",
+  "Explore verified mentors matching your career goals.",
+  "Check your upcoming timeline for scheduled sessions.",
+];
+
+const TYPING_SPEED = 40;
+const ERASING_SPEED = 20;
+const PAUSE_AFTER = 2500;
+const PAUSE_BEFORE = 300;
+
+function DashboardTypewriter() {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [phase, setPhase] = useState("typing");
+
+  useEffect(() => {
+    const target = SUBTEXT_PHRASES[phraseIndex];
+
+    if (phase === "typing") {
+      if (displayed.length < target.length) {
+        const t = setTimeout(() => {
+          setDisplayed(target.slice(0, displayed.length + 1));
+        }, TYPING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => setPhase("erasing"), PAUSE_AFTER);
+        return () => clearTimeout(t);
+      }
+    }
+
+    if (phase === "erasing") {
+      if (displayed.length > 0) {
+        const t = setTimeout(() => {
+          setDisplayed(displayed.slice(0, -1));
+        }, ERASING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => {
+          setPhraseIndex((i) => (i + 1) % SUBTEXT_PHRASES.length);
+          setPhase("typing");
+        }, PAUSE_BEFORE);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [displayed, phase, phraseIndex]);
+
+  return (
+    <span className="text-accent-primary">
+      {displayed}
+      <span
+        className="inline-block w-[1.5px] h-[1em] bg-accent-primary align-middle ml-[2px] animate-blink"
+        aria-hidden="true"
+      />
+    </span>
+  );
+}
+
 export default function StudentDashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -297,7 +385,7 @@ export default function StudentDashboardPage() {
   const chartData = useMemo(() => [
     { name: "Pending", value: dashboard.stats.pending, fill: "#f59e0b" },
     { name: "Confirmed", value: dashboard.stats.confirmed, fill: "#10b981" },
-    { name: "Completed", value: "#F5A623" }, // maps to accent-primary (amber)
+    { name: "Completed", value: dashboard.stats.completed, fill: "#F5A623" }, // maps to accent-primary (amber)
     { name: "Cancelled", value: dashboard.stats.cancelled, fill: "#f43f5e" },
   ], [dashboard.stats]);
 
@@ -329,37 +417,37 @@ export default function StudentDashboardPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.28 }}
-          className="relative overflow-hidden rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-token-sm"
+          className="relative overflow-hidden rounded-md border border-border-subtle bg-bg-surface p-6 shadow-token-sm"
         >
           <div className="grid gap-6 lg:grid-cols-[1fr_auto]">
             <div>
-              <span className="badge border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] mb-4 text-[10px]">
+              <span className="badge border border-accent-primary/20 bg-accent-primary/10 text-accent-primary mb-4 text-[10px]">
                 <GraduationCap className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
                 Student Workspace
               </span>
-              <h1 className="font-display text-display font-semibold text-[var(--text-primary)] leading-tight mt-1">
+              <h1 className="font-display text-display font-semibold text-text-primary leading-tight mt-1">
                 Good to see you, {firstName}.
               </h1>
-              <p className="mt-2 text-xs text-[var(--text-secondary)]">
-                Track sessions, view updates, and manage your academic mentorship.
+              <p className="mt-2 text-xs text-text-secondary min-h-[2.5rem] md:min-h-[1.5rem]">
+                <DashboardTypewriter />
               </p>
 
               {/* Profile incomplete warning indicator */}
               {(!dashboard.profile || profileCompletion < 100) && (
-                <div className="mt-5 flex flex-col gap-3 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-4 max-w-md">
+                <div className="mt-5 flex flex-col gap-3 rounded border border-border-subtle bg-bg-elevated/30 p-4 max-w-md">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-[var(--text-primary)]">Profile Setup Status</span>
-                    <span className="font-semibold text-[var(--accent-primary)]">{profileCompletion}%</span>
+                    <span className="font-bold text-text-primary">Profile Setup Status</span>
+                    <span className="font-semibold text-accent-primary">{profileCompletion}%</span>
                   </div>
-                  <div className="w-full bg-[var(--bg-elevated)] rounded-full h-1.5 overflow-hidden">
+                  <div className="w-full bg-bg-elevated rounded-full h-1.5 overflow-hidden">
                     <div
-                      className="bg-[var(--accent-primary)] h-1.5 rounded-full transition-all duration-300"
+                      className="bg-accent-primary h-1.5 rounded-full transition-all duration-300"
                       style={{ width: `${profileCompletion}%` }}
                     />
                   </div>
                   <Link
                     to="/student/profile"
-                    className="text-[11px] font-bold text-[var(--accent-primary)] hover:text-[var(--accent-primary-hover)] transition w-fit mt-1"
+                    className="text-[11px] font-bold text-accent-primary hover:text-accent-primary-hover transition w-fit mt-1"
                   >
                     Complete your profile info →
                   </Link>
@@ -371,18 +459,18 @@ export default function StudentDashboardPage() {
             <div className="flex flex-col justify-end gap-2.5 sm:flex-row lg:flex-col lg:items-end">
               <Link
                 to="/student/bookings"
-                className="group inline-flex items-center justify-center gap-2 rounded border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-4 py-2 text-xs font-bold text-[var(--bg-base)] transition duration-token-standard hover:bg-[var(--accent-primary-hover)]"
+                className="group inline-flex items-center justify-center gap-2 rounded border border-accent-primary bg-accent-primary px-4 py-2 text-xs font-bold text-[var(--bg-base)] transition duration-token-standard hover:bg-accent-primary-hover"
               >
                 <span>Book a session</span>
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </Link>
               <Link
                 to="/student/notifications"
-                className="inline-flex items-center justify-center gap-2 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-2 text-xs font-bold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition"
+                className="inline-flex items-center justify-center gap-2 rounded border border-border-subtle bg-bg-elevated px-4 py-2 text-xs font-bold text-text-secondary hover:border-border-strong hover:text-text-primary transition"
               >
                 <span>Notifications</span>
                 {dashboard.unreadNotifications.length > 0 && (
-                  <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[9px] font-bold text-[var(--bg-base)]">
+                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-accent-primary px-1.5 text-[10px] font-bold leading-none text-[var(--bg-base)]">
                     {dashboard.unreadNotifications.length}
                   </span>
                 )}
@@ -469,7 +557,7 @@ export default function StudentDashboardPage() {
             description="Status breakdown of bookings"
           >
             {dashboard.stats.total > 0 ? (
-              <div className="h-60 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-4 mt-4">
+              <div className="h-60 rounded border border-border-subtle bg-bg-elevated/30 p-4 mt-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} barCategoryGap="40%">
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
@@ -519,7 +607,7 @@ export default function StudentDashboardPage() {
             action={
               <Link
                 to="/student/notifications"
-                className="text-xs font-bold text-[var(--accent-primary)] hover:text-[var(--accent-primary-hover)] transition"
+                className="text-xs font-bold text-accent-primary hover:text-accent-primary-hover transition"
               >
                 View all
               </Link>
@@ -532,7 +620,7 @@ export default function StudentDashboardPage() {
                   if (list.length === 0) return null;
                   return (
                     <div key={groupName} className="py-3 first:pt-1 last:pb-1">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-[var(--text-tertiary)] block mb-2">{groupName}</span>
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-text-tertiary block mb-2">{groupName}</span>
                       <ul className="space-y-1.5">
                         {list.map((n, i) => (
                           <motion.li
@@ -541,21 +629,29 @@ export default function StudentDashboardPage() {
                             animate={{ opacity: 1 }}
                             transition={{ delay: i * 0.035 }}
                             className={cn(
-                              "relative flex gap-3 rounded p-2.5 transition duration-150",
-                              !n.is_read ? "bg-[var(--bg-elevated)]/40" : "hover:bg-[var(--bg-elevated)]/20"
+                              "relative flex gap-3 rounded-xl p-2.5 transition duration-150",
+                              !n.is_read ? "bg-bg-elevated/50" : "hover:bg-bg-elevated/20"
                             )}
                           >
                             {!n.is_read && (
-                              <span className="absolute left-0 top-3.5 bottom-3.5 w-0.5 bg-[var(--accent-primary)]" aria-hidden="true" />
+                              <span className="absolute left-0 top-3 bottom-3 w-0.5 rounded-r-full bg-accent-primary" aria-hidden="true" />
                             )}
-                            <div className="flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
-                              <Info className="h-3.5 w-3.5" />
-                            </div>
+                            {(() => {
+                              const [, Icon, iconColor, iconBg] = resolveNotifIcon(n);
+                              return (
+                                <div className={cn(
+                                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105",
+                                  !n.is_read ? iconBg : "bg-bg-surface border border-border-subtle"
+                                )}>
+                                  <Icon className={cn("h-3.5 w-3.5", !n.is_read ? iconColor : "text-text-tertiary")} />
+                                </div>
+                              );
+                            })()}
                             <div className="min-w-0 flex-1">
-                              <p className={cn("text-xs font-bold truncate", !n.is_read ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]")}>
+                              <p className={cn("text-xs font-bold truncate", !n.is_read ? "text-text-primary" : "text-text-secondary")}>
                                 {n.title}
                               </p>
-                              <p className="mt-0.5 text-xs text-[var(--text-secondary)] line-clamp-1">{n.message}</p>
+                              <p className="mt-0.5 text-xs text-text-secondary line-clamp-1">{n.message}</p>
                             </div>
                           </motion.li>
                         ))}

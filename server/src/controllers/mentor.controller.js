@@ -5,6 +5,7 @@ const {
   getPendingMentors,
   verifyMentor,
   rejectMentor,
+  getVerifiedMentors,
 } = require("../services/mentor.service");
 
 const createProfile = async (req, res, next) => {
@@ -104,6 +105,20 @@ const reject = async (req, res, next) => {
   }
 };
 
+const explore = async (req, res, next) => {
+  try {
+    const search = req.query.search || "";
+    const mentors = await getVerifiedMentors(search);
+
+    return res.status(200).json({
+      success: true,
+      data: mentors,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createProfile,
   getProfile,
@@ -111,4 +126,5 @@ module.exports = {
   pendingMentors,
   verify,
   reject,
+  explore,
 };

@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ArrowRight, UserPlus, User, GraduationCap } from "lucide-react";
+import { ArrowRight, UserPlus, User, GraduationCap, Check, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { Button } from "../../components/ui/Button";
@@ -12,10 +12,73 @@ import { useRegister } from "../../hooks/useAuthActions";
 import { createZodResolver } from "../../utils/zodForm";
 import { cn } from "../../utils/cn";
 
+// ── Register subtext typewriter ──────────────────────────────────────────────
+const REGISTER_PHRASES = [
+  "and gain access to your workspace.",
+  "and connect with verified mentors.",
+  "and track your academic progress.",
+];
+
+const TYPING_SPEED = 45;
+const ERASING_SPEED = 20;
+const PAUSE_AFTER = 2000;
+const PAUSE_BEFORE = 300;
+
+function RegisterTypewriter() {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [phase, setPhase] = useState("typing");
+
+  useEffect(() => {
+    const target = REGISTER_PHRASES[phraseIndex];
+
+    if (phase === "typing") {
+      if (displayed.length < target.length) {
+        const t = setTimeout(() => {
+          setDisplayed(target.slice(0, displayed.length + 1));
+        }, TYPING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => setPhase("erasing"), PAUSE_AFTER);
+        return () => clearTimeout(t);
+      }
+    }
+
+    if (phase === "erasing") {
+      if (displayed.length > 0) {
+        const t = setTimeout(() => {
+          setDisplayed(displayed.slice(0, -1));
+        }, ERASING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => {
+          setPhraseIndex((i) => (i + 1) % REGISTER_PHRASES.length);
+          setPhase("typing");
+        }, PAUSE_BEFORE);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [displayed, phase, phraseIndex]);
+
+  return (
+    <span className="text-accent-primary">
+      {displayed}
+      <span
+        className="inline-block w-[1.5px] h-[1em] bg-accent-primary align-middle ml-[2px] animate-blink"
+        aria-hidden="true"
+      />
+    </span>
+  );
+}
+
 const registerSchema = z.object({
   fullName: z.string().trim().min(2, "Full name must be at least 2 characters."),
   email: z.string().trim().email("Enter a valid email address."),
-  password: z.string().min(8, "Password must be at least 8 characters long."),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long.")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
+    .regex(/[0-9]/, "Password must contain at least one number."),
   role: z.enum([USER_ROLES.STUDENT, USER_ROLES.MENTOR, USER_ROLES.ADMIN], {
     required_error: "Choose your role.",
   }),
@@ -52,22 +115,29 @@ export function RegisterPage() {
   const selectedRole = watch("role");
   const passwordVal = watch("password") || "";
 
-  // Purely visual strength calculation matching existing schema validation
-  const getPasswordStrength = () => {
+  // Rules checked in real-time
+  const rules = [
+    { key: "length",  label: "At least 8 characters",          pass: passwordVal.length >= 8 },
+    { key: "upper",   label: "One uppercase letter (A–Z)",      pass: /[A-Z]/.test(passwordVal) },
+    { key: "number",  label: "One number (0–9)",                pass: /[0-9]/.test(passwordVal) },
+    { key: "special", label: "One special character (!@#$…)",   pass: /[^A-Za-z0-9]/.test(passwordVal) },
+  ];
+
+  // Required rules (first 3) — form blocks submit if any of these fail
+  const requiredMet = rules.slice(0, 3).filter((r) => r.pass).length;
+  const hasSpecial  = rules[3].pass;
+
+  const getStrengthMeta = () => {
     if (!passwordVal) return { score: 0, color: "", label: "" };
-    if (passwordVal.length < 8) return { score: 1, color: "bg-accent-danger", label: "Weak" };
-    
-    // Check if it has a number and uppercase letter for 'Strong'
-    const hasNumber = /[0-9]/.test(passwordVal);
-    const hasUpper = /[A-Z]/.test(passwordVal);
-    if (hasNumber && hasUpper) {
-      return { score: 3, color: "bg-accent-mentor", label: "Strong" };
-    }
-    
-    return { score: 2, color: "bg-accent-warning", label: "Medium" };
+    if (requiredMet === 0) return { score: 1, color: "bg-accent-danger",  label: "Weak" };
+    if (requiredMet === 1) return { score: 1, color: "bg-accent-danger",  label: "Weak" };
+    if (requiredMet === 2) return { score: 2, color: "bg-accent-warning", label: "Medium" };
+    // All 3 required rules pass
+    if (!hasSpecial)       return { score: 3, color: "bg-amber-400",      label: "Good" };
+    return                        { score: 4, color: "bg-accent-mentor",  label: "Strong" };
   };
 
-  const strength = getPasswordStrength();
+  const strength = getStrengthMeta();
 
   return (
     <PageTransition>
@@ -85,8 +155,13 @@ export function RegisterPage() {
             <h1 className="font-display text-section font-semibold text-text-primary tracking-tight">
               Create your account
             </h1>
-            <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+            {/* Desktop static subtext */}
+            <p className="mt-2 text-sm text-text-secondary leading-relaxed hidden lg:block">
               Choose your role and gain access to your workspace.
+            </p>
+            {/* Mobile dynamic typewriter subtext */}
+            <p className="mt-2 text-sm text-text-secondary leading-relaxed lg:hidden min-h-[2.5rem]">
+              Choose your role <RegisterTypewriter />
             </p>
           </div>
 
@@ -190,30 +265,50 @@ export function RegisterPage() {
                 {...register("password")}
               />
 
-              {/* Password strength indicator (purely visual) */}
+              {/* Password strength + live requirements */}
               {passwordVal.length > 0 && (
-                <div className="space-y-1.5 pt-1">
+                <div className="space-y-2 pt-1">
+                  {/* Strength bar */}
                   <div className="flex items-center justify-between text-[11px] font-semibold text-text-tertiary">
                     <span>Password Strength:</span>
                     <span className={cn(
                       strength.score === 1 && "text-accent-danger",
                       strength.score === 2 && "text-accent-warning",
-                      strength.score === 3 && "text-accent-mentor"
+                      strength.score === 3 && "text-amber-400",
+                      strength.score === 4 && "text-accent-mentor",
                     )}>
                       {strength.label}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-1.5 h-1">
-                    {[1, 2, 3].map((val) => (
+                  <div className="grid grid-cols-4 gap-1 h-1">
+                    {[1, 2, 3, 4].map((val) => (
                       <div
                         key={val}
                         className={cn(
-                          "h-full rounded-full transition-colors duration-token-standard",
+                          "h-full rounded-full transition-colors duration-300",
                           strength.score >= val ? strength.color : "bg-border-subtle"
                         )}
                       />
                     ))}
                   </div>
+
+                  {/* Live requirements checklist */}
+                  <ul className="space-y-1 pt-0.5">
+                    {rules.map((rule) => (
+                      <li key={rule.key} className={cn(
+                        "flex items-center gap-1.5 text-[11px] font-medium transition-colors duration-150",
+                        rule.pass ? "text-accent-mentor" : "text-text-tertiary"
+                      )}>
+                        {rule.pass
+                          ? <Check className="h-3 w-3 shrink-0" />
+                          : <X     className="h-3 w-3 shrink-0 text-accent-danger" />}
+                        {rule.label}
+                        {rule.key === "special" && !rule.pass && (
+                          <span className="text-text-tertiary/60 ml-0.5">(optional — boosts to Strong)</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </div>

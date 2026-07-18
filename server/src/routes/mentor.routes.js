@@ -10,6 +10,7 @@ const {
   pendingMentors,
   verify,
   reject,
+  explore,
 } = require("../controllers/mentor.controller");
 
 const {
@@ -63,6 +64,14 @@ router.patch(
   authenticate,
   authorizeRoles("admin"),
   reject
+);
+
+
+// Explore verified mentors
+router.get(
+  "/explore",
+  authenticate,
+  explore
 );
 
 

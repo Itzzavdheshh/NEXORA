@@ -38,13 +38,13 @@ const STATUS_CONFIG = {
   },
   completed: {
     label: "Completed",
-    style: "bg-[var(--accent-mentor)]/10 text-[var(--accent-mentor)] border-[var(--accent-mentor)]/20",
-    dot: "bg-[var(--accent-mentor)]",
+    style: "bg-accent-mentor/10 text-accent-mentor border-accent-mentor/20",
+    dot: "bg-accent-mentor",
   },
   cancelled: {
     label: "Cancelled",
-    style: "bg-[var(--accent-danger)]/10 text-[var(--accent-danger)] border-[var(--accent-danger)]/20",
-    dot: "bg-[var(--accent-danger)]",
+    style: "bg-accent-danger/10 text-accent-danger border-accent-danger/20",
+    dot: "bg-accent-danger",
   },
 };
 
@@ -81,17 +81,17 @@ function BookingCard({ booking, index, onOpen }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.04, 0.4) }}
       onClick={onOpen}
-      className="cursor-pointer rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 transition duration-150 hover:border-[var(--border-strong)] hover:shadow-token-sm flex flex-col justify-between"
+      className="cursor-pointer rounded-md border border-border-subtle bg-bg-surface p-5 transition duration-150 hover:border-border-strong hover:shadow-token-sm flex flex-col justify-between"
     >
       <div>
         {/* Card Header */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">
+            <div className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-accent-primary">
               <Hash className="h-3 w-3" />
               ID: {String(booking.id || "").slice(0, 8)}
             </div>
-            <h2 className="mt-1.5 text-sm font-bold text-[var(--text-primary)]">
+            <h2 className="mt-1.5 text-sm font-bold text-text-primary">
               Mentorship session with {mentorName}
             </h2>
           </div>
@@ -103,29 +103,29 @@ function BookingCard({ booking, index, onOpen }) {
 
         {/* Schedule grid */}
         <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          <div className="rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-primary)]">
-              <CalendarDays className="h-4 w-4 text-[var(--accent-primary)]" aria-hidden="true" />
+          <div className="rounded border border-border-subtle bg-bg-elevated/30 p-3">
+            <div className="flex items-center gap-2 text-xs font-semibold text-text-primary">
+              <CalendarDays className="h-4 w-4 text-accent-primary" aria-hidden="true" />
               {formatDate(booking.booking_date)}
             </div>
-            <p className="mt-1 text-[9px] text-[var(--text-tertiary)] uppercase font-semibold tracking-wider">Date</p>
+            <p className="mt-1 text-[9px] text-text-tertiary uppercase font-semibold tracking-wider">Date</p>
           </div>
-          <div className="rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-primary)]">
-              <Clock3 className="h-4 w-4 text-[var(--accent-primary)]" aria-hidden="true" />
+          <div className="rounded border border-border-subtle bg-bg-elevated/30 p-3">
+            <div className="flex items-center gap-2 text-xs font-semibold text-text-primary">
+              <Clock3 className="h-4 w-4 text-accent-primary" aria-hidden="true" />
               {booking.start_time?.slice(0, 5) || "Start"} {booking.end_time ? `- ${booking.end_time.slice(0, 5)}` : ""}
             </div>
-            <p className="mt-1 text-[9px] text-[var(--text-tertiary)] uppercase font-semibold tracking-wider">Time (Local)</p>
+            <p className="mt-1 text-[9px] text-text-tertiary uppercase font-semibold tracking-wider">Time (Local)</p>
           </div>
         </div>
       </div>
 
-      <div className="mt-4 border-t border-[var(--border-subtle)] pt-3 flex items-center justify-between">
-        <span className="text-[10px] text-[var(--text-tertiary)] uppercase font-semibold tracking-wider flex items-center gap-1.5">
+      <div className="mt-4 border-t border-border-subtle pt-3 flex items-center justify-between">
+        <span className="text-[10px] text-text-tertiary uppercase font-semibold tracking-wider flex items-center gap-1.5">
           <Video className="h-3.5 w-3.5" />
           Format: {booking.meeting_type || "Online"}
         </span>
-        <span className="text-[11px] font-bold text-[var(--accent-primary)] flex items-center gap-1 group">
+        <span className="text-[11px] font-bold text-accent-primary flex items-center gap-1 group">
           View Details
           <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
         </span>
@@ -138,8 +138,8 @@ function BookingGroup({ title, description, bookings, onOpenCard }) {
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">{title}</h2>
-        <p className="text-xs text-[var(--text-secondary)]">{description}</p>
+        <h2 className="text-xs font-bold uppercase tracking-wider text-text-primary">{title}</h2>
+        <p className="text-xs text-text-secondary">{description}</p>
       </div>
       {bookings.length ? (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -216,18 +216,18 @@ export default function StudentBookingsPage() {
         <motion.section
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6"
+          className="rounded-md border border-border-subtle bg-bg-surface p-6"
         >
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="badge border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-[10px]">
+              <p className="badge border border-accent-primary/20 bg-accent-primary/10 text-accent-primary text-[10px]">
                 <CalendarDays className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
                 Student Bookings
               </p>
-              <h1 className="font-display text-display font-semibold text-[var(--text-primary)] leading-tight mt-4">
+              <h1 className="font-display text-display font-semibold text-text-primary leading-tight mt-4">
                 Mentorship schedule overview.
               </h1>
-              <p className="mt-2 text-xs text-[var(--text-secondary)]">
+              <p className="mt-2 text-xs text-text-secondary">
                 Browse upcoming sessions, complete logs, and review previous mentorship engagements.
               </p>
             </div>
@@ -245,34 +245,34 @@ export default function StudentBookingsPage() {
               ["Upcoming", stats.upcoming, "Active scheduled"],
               ["Completed/Past", stats.past, "Archived logs"],
             ].map(([label, value, desc]) => (
-              <div key={label} className="rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-4">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">{label}</p>
-                <p className="mt-1 text-2xl font-extrabold tabular-nums text-[var(--text-primary)]">{value}</p>
-                <p className="mt-1 text-[10px] text-[var(--text-tertiary)]">{desc}</p>
+              <div key={label} className="rounded border border-border-subtle bg-bg-elevated/30 p-4">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">{label}</p>
+                <p className="mt-1 text-2xl font-extrabold tabular-nums text-text-primary">{value}</p>
+                <p className="mt-1 text-[10px] text-text-tertiary">{desc}</p>
               </div>
             ))}
           </div>
         </motion.section>
 
         {/* Search & Filters */}
-        <section className="rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 sm:p-5">
+        <section className="rounded-md border border-border-subtle bg-bg-surface p-4 sm:p-5">
           <div className="grid gap-3 lg:grid-cols-[1.4fr_0.8fr_0.8fr_0.8fr_auto]">
             <label className="relative block">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" aria-hidden="true" />
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary" aria-hidden="true" />
               <input
                 type="search"
                 value={bookings.search}
                 onChange={(event) => bookings.setSearch(event.target.value)}
                 placeholder="Search notes, format, IDs..."
                 aria-label="Search bookings"
-                className="h-11 w-full rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] pl-11 pr-4 text-xs font-semibold text-[var(--text-primary)] shadow-token-sm transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-strong)] focus:outline-none focus:ring-0"
+                className="h-11 w-full rounded border border-border-subtle bg-bg-surface pl-11 pr-4 text-xs font-semibold text-text-primary shadow-token-sm transition placeholder:text-text-tertiary focus:border-border-strong focus:outline-none focus:ring-0"
               />
             </label>
 
             <select
               value={bookings.status}
               onChange={(event) => bookings.setStatus(event.target.value)}
-              className="h-11 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 text-xs font-semibold text-[var(--text-secondary)] shadow-token-sm focus:border-[var(--border-strong)] focus:outline-none focus:ring-0"
+              className="h-11 rounded border border-border-subtle bg-bg-surface px-4 text-xs font-semibold text-text-secondary shadow-token-sm focus:border-border-strong focus:outline-none focus:ring-0"
               aria-label="Filter by status"
             >
               <option value="all">All statuses</option>
@@ -285,7 +285,7 @@ export default function StudentBookingsPage() {
             <select
               value={bookings.timeframe}
               onChange={(event) => bookings.setTimeframe(event.target.value)}
-              className="h-11 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 text-xs font-semibold text-[var(--text-secondary)] shadow-token-sm focus:border-[var(--border-strong)] focus:outline-none focus:ring-0"
+              className="h-11 rounded border border-border-subtle bg-bg-surface px-4 text-xs font-semibold text-text-secondary shadow-token-sm focus:border-border-strong focus:outline-none focus:ring-0"
               aria-label="Filter by timeframe"
             >
               <option value="all">All dates</option>
@@ -296,7 +296,7 @@ export default function StudentBookingsPage() {
             <select
               value={bookings.sort}
               onChange={(event) => bookings.setSort(event.target.value)}
-              className="h-11 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 text-xs font-semibold text-[var(--text-secondary)] shadow-token-sm focus:border-[var(--border-strong)] focus:outline-none focus:ring-0"
+              className="h-11 rounded border border-border-subtle bg-bg-surface px-4 text-xs font-semibold text-text-secondary shadow-token-sm focus:border-border-strong focus:outline-none focus:ring-0"
               aria-label="Sort bookings"
             >
               <option value="newest">Newest first</option>
@@ -307,7 +307,7 @@ export default function StudentBookingsPage() {
             <button
               type="button"
               onClick={() => setDetailsOpen((value) => !value)}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 text-xs font-bold text-[var(--text-secondary)] shadow-token-sm transition hover:bg-[var(--bg-elevated)]"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded border border-border-subtle bg-bg-surface px-4 text-xs font-bold text-text-secondary shadow-token-sm transition hover:bg-bg-elevated"
               aria-pressed={detailsOpen}
             >
               <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
@@ -315,8 +315,8 @@ export default function StudentBookingsPage() {
             </button>
           </div>
 
-          <p className="mt-3 flex items-center gap-2 text-xs font-medium text-[var(--text-secondary)]">
-            <Filter className="h-3.5 w-3.5 text-[var(--text-tertiary)]" aria-hidden="true" />
+          <p className="mt-3 flex items-center gap-2 text-xs font-medium text-text-secondary">
+            <Filter className="h-3.5 w-3.5 text-text-tertiary" aria-hidden="true" />
             Showing {stats.visible} of {stats.total} bookings.
           </p>
         </section>
@@ -370,11 +370,11 @@ export default function StudentBookingsPage() {
         title="Booking Details"
       >
         {activeBooking && (
-          <div className="space-y-6 text-[var(--text-primary)]">
+          <div className="space-y-6 text-text-primary">
             
             {/* Status card */}
-            <div className="rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30 p-4">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)] block mb-2">Session Status</span>
+            <div className="rounded border border-border-subtle bg-bg-elevated/30 p-4">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary block mb-2">Session Status</span>
               <span className={cn("badge text-xs border inline-flex items-center", activeConfig.style)}>
                 <span className={cn("h-1.5 w-1.5 rounded-full mr-1.5", activeConfig.dot)} />
                 {activeConfig.label}
@@ -383,36 +383,36 @@ export default function StudentBookingsPage() {
 
             {/* Mentor info */}
             <div className="space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)] block">Assigned Mentor</span>
-              <div className="flex items-center gap-3 p-3 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/20">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary block">Assigned Mentor</span>
+              <div className="flex items-center gap-3 p-3 rounded border border-border-subtle bg-bg-elevated/20">
                 {activeBooking.mentor?.avatar_url ? (
                   <img
                     src={activeBooking.mentor.avatar_url}
                     alt=""
-                    className="h-12 w-12 rounded object-cover border border-[var(--border-subtle)]"
+                    className="h-12 w-12 rounded object-cover border border-border-subtle"
                   />
                 ) : (
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-sm font-bold">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded border border-border-subtle bg-bg-surface text-sm font-bold">
                     {activeInitials}
                   </div>
                 )}
                 <div>
-                  <p className="text-xs font-bold text-[var(--text-primary)]">{activeMentorName}</p>
-                  <p className="text-[11px] text-[var(--text-secondary)]">{activeBooking.mentor?.email || "No email available"}</p>
+                  <p className="text-xs font-bold text-text-primary">{activeMentorName}</p>
+                  <p className="text-[11px] text-text-secondary">{activeBooking.mentor?.email || "No email available"}</p>
                 </div>
               </div>
             </div>
 
             {/* Schedule details */}
             <div className="space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)] block">Schedule details</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary block">Schedule details</span>
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="p-3 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/20">
-                  <span className="text-[9px] uppercase tracking-wider font-bold text-[var(--text-tertiary)] block">Date</span>
+                <div className="p-3 rounded border border-border-subtle bg-bg-elevated/20">
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-text-tertiary block">Date</span>
                   <span className="text-xs font-bold mt-1 block">{formatDate(activeBooking.booking_date)}</span>
                 </div>
-                <div className="p-3 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/20">
-                  <span className="text-[9px] uppercase tracking-wider font-bold text-[var(--text-tertiary)] block">Time Slot</span>
+                <div className="p-3 rounded border border-border-subtle bg-bg-elevated/20">
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-text-tertiary block">Time Slot</span>
                   <span className="text-xs font-bold mt-1 block">
                     {activeBooking.start_time?.slice(0, 5) || "Start"} {activeBooking.end_time ? `- ${activeBooking.end_time.slice(0, 5)}` : ""}
                   </span>
@@ -421,28 +421,46 @@ export default function StudentBookingsPage() {
             </div>
 
             {/* Location / meeting type */}
-            <div className="p-4 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/20 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Video className="h-4.5 w-4.5 text-[var(--accent-primary)]" />
-                <div>
-                  <span className="text-[9px] uppercase tracking-wider font-bold text-[var(--text-tertiary)] block">Meeting Format</span>
-                  <span className="text-xs font-semibold mt-0.5 block capitalize">{activeBooking.meeting_type || "Online Call"}</span>
+            {(() => {
+              const link = activeBooking.meeting_link;
+              return (
+                <div className="p-4 rounded border border-border-subtle bg-bg-elevated/20 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Video className="h-4.5 w-4.5 text-accent-primary shrink-0" />
+                    <div className="min-w-0">
+                      <span className="text-[9px] uppercase tracking-wider font-bold text-text-tertiary block">Meeting Format</span>
+                      <span className="text-xs font-semibold mt-0.5 block capitalize truncate">
+                        {activeBooking.meeting_type || "Online Call"}
+                      </span>
+                    </div>
+                  </div>
+                  {activeBooking.status === "confirmed" && link && (
+                    <a
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-accent-primary px-3 py-1.5 text-xs font-bold text-[var(--bg-base)] hover:bg-accent-primary-hover transition shadow-token-sm"
+                    >
+                      <Video className="h-3.5 w-3.5" />
+                      Join Session
+                    </a>
+                  )}
                 </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Student logs/notes */}
             <div className="space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)] block">Student notes</span>
-              <div className="p-4 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/20">
-                <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary block">Student notes</span>
+              <div className="p-4 rounded border border-border-subtle bg-bg-elevated/20">
+                <p className="text-xs leading-relaxed text-text-secondary">
                   {activeBooking.notes || "No notes provided for this session."}
                 </p>
               </div>
             </div>
 
             {/* Identifiers */}
-            <div className="border-t border-[var(--border-subtle)] pt-4 space-y-2 text-[10px] text-[var(--text-tertiary)] font-medium">
+            <div className="border-t border-border-subtle pt-4 space-y-2 text-[10px] text-text-tertiary font-medium">
               <div className="flex justify-between">
                 <span>Booking ID:</span>
                 <span className="font-mono">{activeBooking.id}</span>
@@ -456,6 +474,25 @@ export default function StudentBookingsPage() {
                 <span className="font-mono">{activeBooking.availability_slot_id || "None"}</span>
               </div>
             </div>
+
+            {/* Action buttons */}
+            {activeBooking.status !== "cancelled" && activeBooking.status !== "completed" && (
+              <div className="border-t border-border-subtle pt-5">
+                <Button
+                  variant="danger"
+                  className="w-full shadow-token-sm"
+                  loading={bookings.isUpdating}
+                  onClick={async () => {
+                    if (window.confirm("Are you sure you want to cancel this mentorship session?")) {
+                      await bookings.cancelBooking(activeBooking.id);
+                      setActiveBooking(null);
+                    }
+                  }}
+                >
+                  Cancel Mentorship Session
+                </Button>
+              </div>
+            )}
 
           </div>
         )}

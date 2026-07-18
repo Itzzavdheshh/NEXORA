@@ -8,14 +8,17 @@ import { PublicOnlyRoute } from "./PublicOnlyRoute";
 import { LoginPage } from "../pages/auth/LoginPage";
 import { RegisterPage } from "../pages/auth/RegisterPage";
 import { ForgotPasswordPage } from "../pages/auth/ForgotPasswordPage";
-import { PlaceholderPage } from "../pages/shared/PlaceholderPage";
 import { NotFoundPage } from "../pages/shared/NotFoundPage";
+import { PrivacyPolicyPage } from "../pages/shared/PrivacyPolicyPage";
+import { TermsOfServicePage } from "../pages/shared/TermsOfServicePage";
 import { Skeleton } from "../components/ui/Skeleton";
 
 const StudentDashboardPage = lazy(() => import("../pages/student/StudentDashboardPage"));
 const StudentProfilePage = lazy(() => import("../pages/student/StudentProfilePage"));
 const StudentBookingsPage = lazy(() => import("../pages/student/StudentBookingsPage"));
 const StudentNotificationsPage = lazy(() => import("../pages/student/StudentNotificationsPage"));
+const ExploreMentorsPage = lazy(() => import("../pages/student/ExploreMentorsPage"));
+const StudentMentorProfilePage = lazy(() => import("../pages/student/StudentMentorProfilePage"));
 
 const MentorDashboardPage = lazy(() => import("../pages/mentor/MentorDashboardPage"));
 const MentorAvailabilityPage = lazy(() => import("../pages/mentor/MentorAvailabilityPage"));
@@ -26,6 +29,8 @@ const MentorNotificationsPage = lazy(() => import("../pages/mentor/MentorNotific
 const AdminDashboardPage = lazy(() => import("../pages/admin/AdminDashboardPage"));
 const MentorVerificationPage = lazy(() => import("../pages/admin/MentorVerificationPage"));
 const UserManagementPage = lazy(() => import("../pages/admin/UserManagementPage"));
+const AdminNotificationsPage = lazy(() => import("../pages/admin/AdminNotificationsPage"));
+const SettingsPage = lazy(() => import("../pages/shared/SettingsPage"));
 const StyleGuidePage = import.meta.env.DEV ? lazy(() => import("../pages/StyleGuide")) : null;
 
 function RouteFallback() {
@@ -87,6 +92,22 @@ export default function AppRoutes({ location }) {
             element={
               <LazyRoute>
                 <StudentNotificationsPage />
+              </LazyRoute>
+            }
+          />
+          <Route
+            path="/student/explore"
+            element={
+              <LazyRoute>
+                <ExploreMentorsPage />
+              </LazyRoute>
+            }
+          />
+          <Route
+            path="/student/mentors/:id"
+            element={
+              <LazyRoute>
+                <StudentMentorProfilePage />
               </LazyRoute>
             }
           />
@@ -156,7 +177,14 @@ export default function AppRoutes({ location }) {
               </LazyRoute>
             }
           />
-          <Route path="/admin/notifications" element={<PlaceholderPage title="Admin Notifications" />} />
+          <Route
+            path="/admin/notifications"
+            element={
+              <LazyRoute>
+                <AdminNotificationsPage />
+              </LazyRoute>
+            }
+          />
           <Route
             path="/admin/users"
             element={
@@ -171,11 +199,20 @@ export default function AppRoutes({ location }) {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
-          <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
+          <Route
+            path="/settings"
+            element={
+              <LazyRoute>
+                <SettingsPage />
+              </LazyRoute>
+            }
+          />
         </Route>
       </Route>
 
       <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/privacy" element={<PrivacyPolicyPage />} />
+      <Route path="/terms"   element={<TermsOfServicePage />} />
       {import.meta.env.DEV && StyleGuidePage ? (
         <Route
           path="/style-guide"

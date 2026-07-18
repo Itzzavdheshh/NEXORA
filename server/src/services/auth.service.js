@@ -1,11 +1,31 @@
+const { createClient } = require("@supabase/supabase-js");
 const supabase = require("../config/supabase");
 
+// Helper to create a transient, single-use client for authentication operations
+// (like signInWithPassword) that mutate the client's internal auth state.
+// This prevents the shared 'supabase' singleton client from having its session
+// overridden by a logged-in user's JWT.
+const createTransientClient = () => {
+  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+  });
+};
+
 const registerUser = async ({ fullName, email, password, role }) => {
-  // Create user in Supabase Authentication
+  // Use admin.createUser for server-side registration.
+  // Unlike auth.signUp(), this does not mutate the client's internal auth
+  // state, so subsequent table queries always run as the service role.
+  // email_confirm: true auto-confirms the address (consistent with seed.js).
   const { data: authData, error: authError } =
-    await supabase.auth.signUp({
+    await supabase.auth.admin.createUser({
       email,
       password,
+      email_confirm: true,
+      user_metadata: { full_name: fullName, role },
     });
 
   if (authError) {
@@ -15,7 +35,7 @@ const registerUser = async ({ fullName, email, password, role }) => {
     throw new Error("User registration failed.");
   }
 
-  // Insert user into public.users
+  // Insert user into public.users (runs as service role, bypasses RLS)
   const { data: userData, error: userError } =
     await supabase
       .from("users")
@@ -36,7 +56,8 @@ const registerUser = async ({ fullName, email, password, role }) => {
 };
 
 const loginUser = async ({ email, password }) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const authClient = createTransientClient();
+  const { data, error } = await authClient.auth.signInWithPassword({
     email,
     password,
   });
@@ -116,9 +137,34 @@ const logoutUser = async (token) => {
   };
 };
 
+const changePassword = async ({ userId, email, currentPassword, newPassword }) => {
+  // 1. Verify current password by attempting to sign in using a transient client
+  const authClient = createTransientClient();
+  const { error: signInError } = await authClient.auth.signInWithPassword({
+    email,
+    password: currentPassword,
+  });
+
+  if (signInError) {
+    throw new Error("Incorrect current password.");
+  }
+
+  // 2. Update user password in Supabase auth using admin api
+  const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+    password: newPassword,
+  });
+
+  if (updateError) {
+    throw new Error(updateError.message);
+  }
+
+  return { message: "Password updated successfully." };
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getCurrentUser,
   logoutUser,
+  changePassword,
 };

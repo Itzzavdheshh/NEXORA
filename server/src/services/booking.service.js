@@ -184,21 +184,39 @@ const getBookings = async (userId) => {
 
 const ALLOWED_TRANSITIONS = {
   pending: ["confirmed", "cancelled"],
-  confirmed: ["completed", "cancelled"],
+  confirmed: ["completed", "cancelled", "confirmed"],
   completed: [],
   cancelled: [],
 };
 
-const updateBookingStatus = async (bookingId, status) => {
+const updateBookingStatus = async (bookingId, status, meetingLink, userId, userRole) => {
   // Fetch the current booking details to verify its current status
   const { data: existingBooking, error: fetchError } = await supabase
     .from("bookings")
-    .select("status, student_id")
+    .select("status, student_id, mentor_id, availability_slot_id")
     .eq("id", bookingId)
     .single();
 
   if (fetchError || !existingBooking) {
     throw new Error("Booking record not found.");
+  }
+
+  // Authorization Check
+  if (userRole !== "admin") {
+    if (userRole === "student") {
+      if (existingBooking.student_id !== userId) {
+        throw new Error("You are not authorized to update this booking.");
+      }
+      if (status !== "cancelled") {
+        throw new Error("Students can only cancel bookings.");
+      }
+    } else if (userRole === "mentor") {
+      if (existingBooking.mentor_id !== userId) {
+        throw new Error("You are not authorized to update this booking.");
+      }
+    } else {
+      throw new Error("Unauthorized role.");
+    }
   }
 
   const currentStatus = existingBooking.status || "pending";
@@ -210,15 +228,35 @@ const updateBookingStatus = async (bookingId, status) => {
     );
   }
 
+  const updatePayload = { status };
+  if (meetingLink !== undefined) {
+    if (userRole !== "mentor" && userRole !== "admin") {
+      throw new Error("Only mentors are authorized to set or update the meeting link.");
+    }
+    updatePayload.meeting_link = meetingLink;
+  }
+
   const { data, error } = await supabase
     .from("bookings")
-    .update({ status })
+    .update(updatePayload)
     .eq("id", bookingId)
     .select()
     .single();
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  // Free availability slots by setting is_available = true when status transitions to cancelled
+  if (status === "cancelled" && existingBooking.availability_slot_id) {
+    const { error: slotError } = await supabase
+      .from("availability_slots")
+      .update({ is_available: true })
+      .eq("id", existingBooking.availability_slot_id);
+
+    if (slotError) {
+      console.error("Failed to free availability slot:", slotError.message);
+    }
   }
 
   // Create notification
@@ -236,18 +274,20 @@ const updateBookingStatus = async (bookingId, status) => {
     .single();
 
   // Send email (don't fail booking if email fails)
-  try {
-    await sendEmail({
-      to: student.email,
-      subject: `Booking ${status}`,
-      html: `
-        <h2>Hello ${student.full_name},</h2>
-        <p>Your booking status has been updated.</p>
-        <p><b>Status:</b> ${status}</p>
-      `,
-    });
-  } catch (err) {
-    console.error("Email Error:", err.message);
+  if (student) {
+    try {
+      await sendEmail({
+        to: student.email,
+        subject: `Booking ${status}`,
+        html: `
+          <h2>Hello ${student.full_name},</h2>
+          <p>Your booking status has been updated.</p>
+          <p><b>Status:</b> ${status}</p>
+        `,
+      });
+    } catch (err) {
+      console.error("Email Error:", err.message);
+    }
   }
 
   return data;

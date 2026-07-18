@@ -72,7 +72,7 @@ export function SlotForm({ editSlot, defaultDay, defaultStartTime, defaultEndTim
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
-      className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 sm:p-6"
+      className="rounded-2xl border border-border-subtle bg-bg-surface p-5 sm:p-6"
     >
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-lg font-extrabold tracking-tight text-ink-950 dark:text-white">
@@ -153,8 +153,8 @@ export function SlotCard({ slot, index, onEdit, onDelete, isDeleting }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.04, 0.4) }}
       className={cn(
-        "glass-panel group relative rounded-2xl p-4 transition sm:p-5",
-        "hover:-translate-y-0.5 hover:shadow-glow",
+        "border border-border-subtle bg-bg-surface shadow-token-md group relative rounded-2xl p-4 transition sm:p-5",
+        "hover:-translate-y-0.5 hover:shadow-accent",
       )}
       aria-label={`Slot: ${slot.day_of_week} ${slot.start_time} – ${slot.end_time}`}
     >
@@ -210,7 +210,7 @@ export function SlotCard({ slot, index, onEdit, onDelete, isDeleting }) {
           onClick={() => onDelete(slot)}
           disabled={isDeleting}
           aria-label={`Delete ${slot.day_of_week} slot`}
-          className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-red-200/70 bg-red-50/50 px-3 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-400/20 dark:bg-red-500/8 dark:text-red-300 dark:hover:bg-red-500/16"
+          className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-red-200/70 bg-red-50/50 px-3 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/16"
         >
           <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
           Delete

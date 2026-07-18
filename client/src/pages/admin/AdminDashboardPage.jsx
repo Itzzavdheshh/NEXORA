@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -38,6 +39,65 @@ import { EmptyState } from "../../components/ui/EmptyState";
 import { cn } from "../../utils/cn";
 
 const PIE_COLORS = ["#f59e0b", "#10b981", "#1b91ff", "#f43f5e"];
+
+// ── Dashboard subtext typewriter ──────────────────────────────────────────────
+const SUBTEXT_PHRASES = [
+  "Real-time user analytics, booking health, and system diagnostics.",
+  "Verify pending mentor profiles to ensure quality onboarding.",
+  "Monitor platform activity logs in real-time.",
+];
+
+const TYPING_SPEED = 40;
+const ERASING_SPEED = 20;
+const PAUSE_AFTER = 2500;
+const PAUSE_BEFORE = 300;
+
+function DashboardTypewriter() {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [phase, setPhase] = useState("typing");
+
+  useEffect(() => {
+    const target = SUBTEXT_PHRASES[phraseIndex];
+
+    if (phase === "typing") {
+      if (displayed.length < target.length) {
+        const t = setTimeout(() => {
+          setDisplayed(target.slice(0, displayed.length + 1));
+        }, TYPING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => setPhase("erasing"), PAUSE_AFTER);
+        return () => clearTimeout(t);
+      }
+    }
+
+    if (phase === "erasing") {
+      if (displayed.length > 0) {
+        const t = setTimeout(() => {
+          setDisplayed(displayed.slice(0, -1));
+        }, ERASING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => {
+          setPhraseIndex((i) => (i + 1) % SUBTEXT_PHRASES.length);
+          setPhase("typing");
+        }, PAUSE_BEFORE);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [displayed, phase, phraseIndex]);
+
+  return (
+    <span className="text-accent-admin">
+      {displayed}
+      <span
+        className="inline-block w-[1.5px] h-[1em] bg-accent-admin align-middle ml-[2px] animate-blink"
+        aria-hidden="true"
+      />
+    </span>
+  );
+}
 
 // Custom chart tooltip
 function ChartTooltip({ active, payload, label }) {
@@ -175,8 +235,8 @@ export default function AdminDashboardPage() {
               <h1 className="font-display text-display font-semibold text-ink-950 dark:text-white mt-4 leading-tight">
                 Platform overview
               </h1>
-              <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">
-                Real-time user analytics, booking health, and system diagnostics.
+              <p className="mt-2 text-sm text-ink-500 dark:text-ink-400 min-h-[2.5rem] md:min-h-[1.5rem]">
+                <DashboardTypewriter />
               </p>
             </div>
             <Button

@@ -7,21 +7,29 @@ export default {
   theme: {
     extend: {
       colors: {
-        "bg-base": "rgb(var(--bg-base-rgb) / <alpha-value>)",
-        "bg-surface": "rgb(var(--bg-surface-rgb) / <alpha-value>)",
-        "bg-elevated": "rgb(var(--bg-elevated-rgb) / <alpha-value>)",
-        "bg-floating": "rgb(var(--bg-floating-rgb) / <alpha-value>)",
-        "border-subtle": "rgb(var(--border-subtle-rgb) / <alpha-value>)",
-        "border-strong": "rgb(var(--border-strong-rgb) / <alpha-value>)",
-        "text-primary": "rgb(var(--text-primary-rgb) / <alpha-value>)",
-        "text-secondary": "rgb(var(--text-secondary-rgb) / <alpha-value>)",
-        "text-tertiary": "rgb(var(--text-tertiary-rgb) / <alpha-value>)",
-        "accent-primary": "rgb(var(--accent-primary-rgb) / <alpha-value>)",
-        "accent-primary-hover": "rgb(var(--accent-primary-hover-rgb) / <alpha-value>)",
-        "accent-mentor": "rgb(var(--accent-mentor-rgb) / <alpha-value>)",
-        "accent-admin": "rgb(var(--accent-admin-rgb) / <alpha-value>)",
-        "accent-danger": "rgb(var(--accent-danger-rgb) / <alpha-value>)",
-        "accent-warning": "rgb(var(--accent-warning-rgb) / <alpha-value>)",
+        bg: {
+          base: "rgb(var(--bg-base-rgb) / <alpha-value>)",
+          surface: "rgb(var(--bg-surface-rgb) / <alpha-value>)",
+          elevated: "rgb(var(--bg-elevated-rgb) / <alpha-value>)",
+          floating: "rgb(var(--bg-floating-rgb) / <alpha-value>)",
+        },
+        border: {
+          subtle: "rgb(var(--border-subtle-rgb) / <alpha-value>)",
+          strong: "rgb(var(--border-strong-rgb) / <alpha-value>)",
+        },
+        text: {
+          primary: "rgb(var(--text-primary-rgb) / <alpha-value>)",
+          secondary: "rgb(var(--text-secondary-rgb) / <alpha-value>)",
+          tertiary: "rgb(var(--text-tertiary-rgb) / <alpha-value>)",
+        },
+        accent: {
+          primary: "rgb(var(--accent-primary-rgb) / <alpha-value>)",
+          "primary-hover": "rgb(var(--accent-primary-hover-rgb) / <alpha-value>)",
+          mentor: "rgb(var(--accent-mentor-rgb) / <alpha-value>)",
+          admin: "rgb(var(--accent-admin-rgb) / <alpha-value>)",
+          danger: "rgb(var(--accent-danger-rgb) / <alpha-value>)",
+          warning: "rgb(var(--accent-warning-rgb) / <alpha-value>)",
+        },
         ink: {
           50: "#f8fafc",
           100: "#eef2f7",
@@ -34,18 +42,6 @@ export default {
           800: "#1e2d42",
           900: "#111d30",
           950: "#080e1c",
-        },
-        brand: {
-          50: "#eef7ff",
-          100: "#d9edff",
-          200: "#b2d9ff",
-          300: "#7bbfff",
-          400: "#3da1ff",
-          500: "#1b91ff",
-          600: "#0874df",
-          700: "#075db4",
-          800: "#0a4d8f",
-          900: "#0d3f75",
         },
         emerald: {
           50: "#ecfdf5",
@@ -102,10 +98,10 @@ export default {
         "token-md": "var(--shadow-md)",
         "token-lg": "var(--shadow-lg)",
         accent: "var(--shadow-accent-glow)",
-        // Glow shadows — brand-tinted for primary elements
-        "glow-xs": "0 0 0 1px rgba(27,145,255,0.12), 0 4px 16px rgba(27,145,255,0.12)",
-        glow: "0 0 0 1px rgba(27,145,255,0.15), 0 8px 32px rgba(27,145,255,0.18)",
-        "glow-lg": "0 0 0 1px rgba(27,145,255,0.12), 0 20px 64px rgba(27,145,255,0.22)",
+        // Glow shadows
+        "glow-xs": "0 0 0 1px rgba(245,166,35,0.12), 0 4px 16px rgba(245,166,35,0.12)",
+        glow: "0 0 0 1px rgba(245,166,35,0.15), 0 8px 32px rgba(245,166,35,0.18)",
+        "glow-lg": "0 0 0 1px rgba(245,166,35,0.12), 0 20px 64px rgba(245,166,35,0.22)",
         // Surface elevations — neutral
         "elevation-1": "0 1px 3px rgba(8,14,28,0.06), 0 1px 2px rgba(8,14,28,0.04)",
         "elevation-2": "0 4px 12px rgba(8,14,28,0.08), 0 2px 4px rgba(8,14,28,0.05)",
@@ -135,13 +131,13 @@ export default {
       },
       backgroundImage: {
         "premium-radial":
-          "radial-gradient(circle at 20% 0%, rgba(27,145,255,.09) 0%, transparent 40%), radial-gradient(circle at 85% 90%, rgba(16,185,129,.07) 0%, transparent 40%)",
+          "radial-gradient(circle at 20% 0%, rgba(245,166,35,.09) 0%, transparent 40%), radial-gradient(circle at 85% 90%, rgba(16,185,129,.07) 0%, transparent 40%)",
         "grid-subtle":
           "linear-gradient(rgba(130,144,166,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(130,144,166,0.06) 1px, transparent 1px)",
         "gradient-brand":
-          "linear-gradient(135deg, #1b91ff 0%, #075db4 100%)",
+          "linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-hover) 100%)",
         "gradient-brand-soft":
-          "linear-gradient(135deg, rgba(27,145,255,0.12) 0%, rgba(7,93,180,0.06) 100%)",
+          "linear-gradient(135deg, rgba(245,166,35,0.12) 0%, rgba(245,166,35,0.06) 100%)",
       },
       backgroundSize: {
         "grid-48": "48px 48px",
@@ -222,5 +218,5 @@ export default {
       },
     },
   },
-  plugins: [forms],
+  plugins: [forms({ strategy: "class" })],
 };

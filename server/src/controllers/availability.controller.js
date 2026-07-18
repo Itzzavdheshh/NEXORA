@@ -20,7 +20,8 @@ const createAvailability = async (req, res, next) => {
 
 const getAvailability = async (req, res, next) => {
   try {
-    const slots = await getSlots(req.user.id);
+    const mentorId = req.query.mentorId || req.user.id;
+    const slots = await getSlots(mentorId);
 
     return res.status(200).json({
       success: true,

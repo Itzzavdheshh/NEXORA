@@ -37,7 +37,7 @@ app.use(requestTrace);
 
 // Configure CORS
 const corsOptions = {
-  origin: process.env.NODE_ENV === "production" ? process.env.CORS_ORIGIN : "*",
+  origin: process.env.NODE_ENV === "production" ? process.env.CLIENT_URL : "*",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Request-ID"],
   exposedHeaders: ["X-Request-ID"],

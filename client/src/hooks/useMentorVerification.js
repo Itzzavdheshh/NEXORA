@@ -1,9 +1,13 @@
+import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { mentorService } from "../services/mentorService";
 import { toast } from "react-hot-toast";
+import { supabase } from "../services/supabaseClient";
+import { useAuth } from "./useAuth";
 
 export function useMentorVerification() {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
 
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ["mentors", "pending"],
@@ -11,6 +15,45 @@ export function useMentorVerification() {
   });
 
   const pendingMentors = data?.data || [];
+
+  // Real-time synchronization of the mentor verification queue.
+  // Subscribes to changes on the 'users' table specifically for users with
+  // role 'mentor'. When a new mentor registers or verification status changes,
+  // we invalidate the pending mentors query and admin dashboard stats so they
+  // update on screen automatically.
+  useEffect(() => {
+    if (!token) return;
+
+    let channel;
+    try {
+      supabase.realtime.setAuth(token);
+
+      channel = supabase
+        .channel("admin-mentor-verifications")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "users",
+            filter: "role=eq.mentor",
+          },
+          () => {
+            queryClient.invalidateQueries({ queryKey: ["mentors", "pending"] });
+            queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
+          }
+        )
+        .subscribe();
+    } catch (err) {
+      console.error("Realtime subscription for verifications failed:", err);
+    }
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [token, queryClient]);
 
   // Verify mentor mutation
   const verifyMutation = useMutation({

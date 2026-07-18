@@ -73,24 +73,7 @@
 /* ── Components ────────────────────────────────────────────────────────── */
 @layer components {
 
-  /* ── Glass Surfaces ── */
-  .glass-panel {
-    @apply border rounded-2xl backdrop-blur-xl;
-    border-color: rgba(255, 255, 255, 0.08);
-    background-color: rgba(13, 21, 38, 0.92);
-    box-shadow: 0 20px 72px rgba(0, 0, 0, 0.45);
-  }
 
-  .glass-card {
-    @apply rounded-2xl border backdrop-blur-md;
-    border-color: rgba(255, 255, 255, 0.08);
-    background-color: rgba(15, 26, 46, 0.88);
-    @apply transition duration-200;
-  }
-
-  .glass-card:hover {
-    background-color: rgba(17, 29, 50, 0.92);
-  }
 
   .surface-muted {
     @apply border rounded-2xl;
@@ -132,13 +115,19 @@
     @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide;
   }
 
-  .badge-brand {
+  .badge-primary {
     border: 1px solid rgba(245, 166, 35, 0.2);
     background-color: rgba(245, 166, 35, 0.1);
     color: var(--accent-primary);
   }
 
   .badge-success {
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--accent-mentor);
+  }
+
+  .badge-mentor {
     border: 1px solid rgba(16, 185, 129, 0.2);
     background-color: rgba(16, 185, 129, 0.1);
     color: var(--accent-mentor);
@@ -154,6 +143,12 @@
     border: 1px solid rgba(244, 63, 94, 0.2);
     background-color: rgba(244, 63, 94, 0.1);
     color: var(--accent-danger);
+  }
+
+  .badge-admin {
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    background-color: rgba(56, 189, 248, 0.1);
+    color: var(--accent-admin);
   }
 
   .badge-muted {
@@ -188,7 +183,7 @@
 
   /* ── Section label ── */
   .section-label {
-    @apply badge badge-brand mb-6 uppercase tracking-[0.15em];
+    @apply badge badge-primary mb-6 uppercase tracking-[0.15em];
   }
 
   /* ── Divider ── */
@@ -305,4 +300,43 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+
+  /* Typewriter cursor blink */
+  @keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
+  .animate-blink {
+    animation: cursor-blink 0.9s ease-in-out infinite;
+  }
+}
+
+/* Modern select dropdowns styling */
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238290a6' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E") !important;
+  background-position: right 0.75rem center !important;
+  background-repeat: no-repeat !important;
+  background-size: 0.85em !important;
+  padding-right: 2.25rem !important;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.15) !important;
+}
+
+select option {
+  background-color: #ffffff;
+  color: #0f172a;
+  padding: 8px;
+}
+
+.dark select option {
+  background-color: #0d1527;
+  color: #f8fafc;
 }

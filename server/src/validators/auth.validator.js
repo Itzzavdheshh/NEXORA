@@ -19,11 +19,12 @@ const validateRegister = (req, res, next) => {
     });
   }
 
-  // Validate password length
-  if (password.length < 8) {
+  // Validate password strength: min 8 chars, at least one uppercase, one number
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9]).{8,}$/;
+  if (!passwordRegex.test(password)) {
     return res.status(400).json({
       success: false,
-      message: "Password must be at least 8 characters long.",
+      message: "Password must be at least 8 characters and include an uppercase letter and a number.",
     });
   }
 

@@ -92,13 +92,14 @@ async function runSeed() {
         .from("mentor_profiles")
         .upsert({
           user_id: user.id,
-          job_title: i % 2 === 0 ? "Staff Software Engineer" : "Associate Professor",
+          designation: i % 2 === 0 ? "Staff Software Engineer" : "Associate Professor",
           company: i % 2 === 0 ? "Google Cloud" : "MIT Engineering",
           bio: `Experienced industry mentor specializing in full-stack architecture, system designs, and computer science curriculums.`,
-          skills: ["React", "Node.js", "System Design", "Cloud Computing", "AI/ML"],
-          experience_years: 5 + i,
+          expertise: ["React", "Node.js", "System Design", "Cloud Computing", "AI/ML"],
+          experience: 5 + i,
           linkedin_url: `https://linkedin.com/in/mentor-${i}`,
-          website_url: `https://mentor-${i}.dev`,
+          portfolio_url: `https://mentor-${i}.dev`,
+          hourly_rate: 25 * (i || 1),
         }, { onConflict: "user_id" });
     }
 

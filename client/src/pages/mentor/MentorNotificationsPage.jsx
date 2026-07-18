@@ -10,7 +10,7 @@ import { NotificationHeaderStats } from "../../components/notifications/Notifica
 import { NotificationSkeleton } from "../../components/notifications/NotificationSkeleton";
 
 // ── Memoised list ─────────────────────────────────────────────────────────────
-const NotificationList = memo(function NotificationList({ notifications, onMarkRead, markingId, isMarkingRead }) {
+const NotificationList = memo(function NotificationList({ notifications, onMarkRead, markingId, isMarkingRead, role }) {
   return (
     <ul
       className="space-y-3"
@@ -25,6 +25,7 @@ const NotificationList = memo(function NotificationList({ notifications, onMarkR
             index={index}
             onMarkRead={onMarkRead}
             isMarking={markingId === notification.id && isMarkingRead}
+            role={role}
           />
         </li>
       ))}
@@ -57,9 +58,9 @@ function NotificationsEmptyState({ filter, onClear }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-panel rounded-3xl p-8 text-center sm:p-10"
+        className="border border-border-subtle bg-bg-surface shadow-token-md rounded-3xl p-8 text-center sm:p-10"
       >
-        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-600 shadow-sm dark:bg-brand-300/10 dark:text-brand-200">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-mentor/10 text-accent-mentor shadow-sm dark:bg-accent-mentor/10 dark:text-accent-mentor">
           <Bell className="h-6 w-6" aria-hidden="true" />
         </div>
         <h2 className="text-lg font-bold text-ink-950 dark:text-white">
@@ -144,6 +145,7 @@ export default function MentorNotificationsPage() {
             isMarkingAllRead={ns.isMarkingAllRead}
             onRefresh={ns.refetch}
             onMarkAllRead={ns.markAllRead}
+            role="mentor"
           />
         </motion.div>
 
@@ -182,6 +184,7 @@ export default function MentorNotificationsPage() {
               onMarkRead={ns.markRead}
               markingId={ns.markingId}
               isMarkingRead={ns.isMarkingRead}
+              role="mentor"
             />
           )}
         </motion.div>

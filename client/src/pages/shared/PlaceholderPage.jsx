@@ -6,7 +6,7 @@ export function PlaceholderPage({ title }) {
     <PageTransition>
       <div className="mx-auto max-w-6xl">
         <div className="mb-6">
-          <p className="text-sm font-semibold text-brand-600 dark:text-brand-200">Nexora workspace</p>
+          <p className="text-sm font-semibold text-accent-primary dark:text-accent-primary">Nexora workspace</p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-ink-950 dark:text-white">
             {title}
           </h1>
