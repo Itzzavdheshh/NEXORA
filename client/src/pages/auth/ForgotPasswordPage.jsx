@@ -7,12 +7,12 @@ export function ForgotPasswordPage() {
     <PageTransition>
       <div className="w-full">
         <div 
-          className="rounded-lg p-6 sm:p-8 border border-[var(--border-subtle)] shadow-md"
+          className="rounded-lg p-6 sm:p-8 border border-border-subtle shadow-md"
           style={{ backgroundColor: "var(--bg-elevated)", backdropFilter: "none" }}
         >
           {/* Header */}
           <div className="mb-6">
-            <div className="badge badge-brand mb-4">
+            <div className="badge badge-primary mb-4">
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
               Account recovery
             </div>

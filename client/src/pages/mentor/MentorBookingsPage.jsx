@@ -14,15 +14,15 @@ import { cn } from "../../utils/cn";
 // ── HeaderStats ──────────────────────────────────────────────────────────────
 function BookingHeaderStats({ stats, isFetching, onRefresh }) {
   return (
-    <div className="glass-panel rounded-3xl p-6">
+    <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-3xl p-6">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="badge badge-brand">
+          <p className="badge badge-primary">
             <CalendarRange className="h-3.5 w-3.5" aria-hidden="true" />
             Booking Management
           </p>
 
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-950 sm:text-3xl dark:text-white">
+          <h1 className="font-display text-display font-semibold text-ink-950 dark:text-white mt-4 leading-tight">
             Manage your student sessions
           </h1>
 
@@ -56,7 +56,7 @@ function BookingHeaderStats({ stats, isFetching, onRefresh }) {
         ].map(({ label, value, key, accent }) => (
           <div
             key={key}
-            className="rounded-xl border border-ink-200/60 bg-ink-50/50 p-4 dark:border-white/6 dark:bg-white/3"
+            className="rounded-xl border border-ink-200/60 bg-ink-50/50 p-4 dark:border-white/10 dark:bg-white/5"
           >
             <p className="text-[10px] font-bold uppercase tracking-wide text-ink-500 dark:text-ink-400">
               {label}
@@ -65,7 +65,7 @@ function BookingHeaderStats({ stats, isFetching, onRefresh }) {
               className={cn(
                 "mt-1 text-2xl font-extrabold tabular-nums",
                 accent && value > 0
-                  ? "text-brand-600 dark:text-brand-300"
+                  ? "text-accent-mentor"
                   : "text-ink-950 dark:text-white",
               )}
             >
@@ -129,9 +129,9 @@ function BookingsEmptyState({ filter, onClear }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-panel rounded-3xl p-8 text-center sm:p-10"
+        className="border border-border-subtle bg-bg-surface shadow-token-md rounded-3xl p-8 text-center sm:p-10"
       >
-        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-600 shadow-sm dark:bg-brand-300/10 dark:text-brand-200">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-mentor/10 text-accent-mentor shadow-sm dark:bg-accent-mentor/10 dark:text-accent-mentor">
           <Sparkles className="h-6 w-6" aria-hidden="true" />
         </div>
         <h2 className="text-lg font-bold text-ink-950 dark:text-white">
@@ -248,7 +248,7 @@ export default function MentorBookingsPage() {
                   <BookingCard
                     booking={booking}
                     index={idx}
-                    onStatusUpdate={(id, status) => mb.updateStatus({ id, status })}
+                    onStatusUpdate={(id, status, meeting_link) => mb.updateStatus({ id, status, meeting_link })}
                     isUpdating={mb.isUpdating && mb.updatingId === booking.id}
                     onSelect={(b) => setSelectedBookingId(b.id)}
                   />
@@ -273,7 +273,7 @@ export default function MentorBookingsPage() {
           isOpen={Boolean(activeBooking)}
           onClose={() => setSelectedBookingId(null)}
           booking={activeBooking}
-          onStatusUpdate={(id, status) => mb.updateStatus({ id, status })}
+          onStatusUpdate={(id, status, meeting_link) => mb.updateStatus({ id, status, meeting_link })}
           isUpdating={mb.isUpdating}
         />
       </div>

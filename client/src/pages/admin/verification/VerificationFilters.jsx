@@ -9,7 +9,7 @@ export function VerificationFilters({ search, onSearchChange, sort, onSortChange
   }
 
   return (
-    <section className="glass-panel flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center sm:p-5">
+    <section className="border border-border-subtle bg-bg-surface shadow-token-md flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center sm:p-5">
       {/* Search Input */}
       <label className="relative flex-1">
         <Search

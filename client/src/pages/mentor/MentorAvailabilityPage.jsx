@@ -5,6 +5,8 @@ import {
   Plus,
   RefreshCw,
   Trash2,
+  BadgeCheck,
+  Clock,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button } from "../../components/ui/Button";
@@ -13,6 +15,7 @@ import { PageTransition } from "../../components/ui/PageTransition";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { ConfirmationModal } from "../../components/ui/ConfirmationModal";
 import { useMentorAvailability } from "../../hooks/useMentorAvailability";
+import { useAuth } from "../../hooks/useAuth";
 import { SlotForm } from "./availability/AvailabilityComponents";
 import { cn } from "../../utils/cn";
 
@@ -77,7 +80,7 @@ function SlotPill({ slot, onEdit, onDelete, isDeleting }) {
           e.stopPropagation();
           onDelete(slot);
         }}
-        className="opacity-0 group-hover:opacity-100 p-1 text-[var(--accent-danger)] hover:bg-red-500/20 rounded transition-opacity duration-150"
+        className="opacity-0 group-hover:opacity-100 p-1 text-accent-danger hover:bg-red-500/20 rounded transition-opacity duration-150"
       >
         <Trash2 className="h-3 w-3" />
       </button>
@@ -96,16 +99,16 @@ function WeeklyCalendar({ slots, onAddSlot, onEdit, onDelete, isDeleting }) {
 
   return (
     <div className="overflow-x-auto">
-      <div className="min-w-[800px] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden">
+      <div className="min-w-[800px] rounded-xl border border-border-subtle bg-bg-surface overflow-hidden">
         {/* Header Row */}
-        <div className="grid border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]/40" style={{ gridTemplateColumns: "80px repeat(7, 1fr)" }}>
-          <div className="flex items-center justify-center p-3 border-r border-[var(--border-subtle)]">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Time</span>
+        <div className="grid border-b border-border-subtle bg-bg-elevated/40" style={{ gridTemplateColumns: "80px repeat(7, 1fr)" }}>
+          <div className="flex items-center justify-center p-3 border-r border-border-subtle">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">Time</span>
           </div>
           {DAYS.map(day => (
-            <div key={day} className="p-3 text-center border-r border-[var(--border-subtle)] last:border-r-0">
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">{DAY_SHORT[day]}</span>
-              <span className="mt-1 inline-flex items-center justify-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-[var(--accent-mentor)]">
+            <div key={day} className="p-3 text-center border-r border-border-subtle last:border-r-0">
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-text-secondary">{DAY_SHORT[day]}</span>
+              <span className="mt-1 inline-flex items-center justify-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-accent-mentor">
                 {byDay[day].length} slot{byDay[day].length !== 1 ? "s" : ""}
               </span>
             </div>
@@ -117,8 +120,8 @@ function WeeklyCalendar({ slots, onAddSlot, onEdit, onDelete, isDeleting }) {
           {HOURS.map(hr => (
             <div key={hr} className="grid" style={{ gridTemplateColumns: "80px repeat(7, 1fr)" }}>
               {/* Hour Label */}
-              <div className="flex items-center justify-center p-2 bg-[var(--bg-elevated)]/20 border-r border-[var(--border-subtle)]">
-                <span className="text-[10px] font-semibold text-[var(--text-tertiary)]">{hr}</span>
+              <div className="flex items-center justify-center p-2 bg-bg-elevated/20 border-r border-border-subtle">
+                <span className="text-[10px] font-semibold text-text-tertiary">{hr}</span>
               </div>
 
               {/* Day Cells */}
@@ -129,7 +132,7 @@ function WeeklyCalendar({ slots, onAddSlot, onEdit, onDelete, isDeleting }) {
                 return (
                   <div
                     key={day}
-                    className="relative min-h-[48px] border-r border-[var(--border-subtle)]/50 last:border-r-0 p-1 flex flex-col justify-center gap-1"
+                    className="relative min-h-[48px] border-r border-border-subtle/50 last:border-r-0 p-1 flex flex-col justify-center gap-1"
                   >
                     {cellSlots.length > 0 ? (
                       <div className="flex flex-col gap-1 w-full">
@@ -147,10 +150,10 @@ function WeeklyCalendar({ slots, onAddSlot, onEdit, onDelete, isDeleting }) {
                       <button
                         type="button"
                         onClick={() => onAddSlot(day, hr)}
-                        className="absolute inset-0 w-full h-full flex items-center justify-center group hover:bg-[var(--bg-elevated)]/30 transition-colors"
+                        className="absolute inset-0 w-full h-full flex items-center justify-center group hover:bg-bg-elevated/30 transition-colors"
                         title={`Add slot on ${day} at ${hr}`}
                       >
-                        <Plus className="h-3.5 w-3.5 text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <Plus className="h-3.5 w-3.5 text-text-tertiary opacity-0 group-hover:opacity-100 transition-opacity" />
                       </button>
                     )}
                   </div>
@@ -167,6 +170,8 @@ function WeeklyCalendar({ slots, onAddSlot, onEdit, onDelete, isDeleting }) {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function MentorAvailabilityPage() {
   const av = useMentorAvailability();
+  const { user } = useAuth();
+  const isVerified = Boolean(user?.is_verified);
   const [showForm, setShowForm] = useState(false);
   const [editingSlot, setEditingSlot] = useState(null);
   const [defaultDay, setDefaultDay] = useState("Monday");
@@ -237,7 +242,7 @@ export default function MentorAvailabilityPage() {
         <motion.section
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6"
+          className="relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-surface p-6"
         >
           {/* emerald shimmer */}
           <div
@@ -248,17 +253,36 @@ export default function MentorAvailabilityPage() {
 
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <span
-                className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider"
-                style={{ background: "rgba(16,185,129,0.12)", color: "var(--accent-mentor)" }}
-              >
-                <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />
-                Availability management
-              </span>
-              <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--text-primary)] sm:text-4xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider"
+                  style={{ background: "rgba(16,185,129,0.12)", color: "var(--accent-mentor)" }}
+                >
+                  <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />
+                  Availability management
+                </span>
+                {isVerified ? (
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold"
+                    style={{ background: "rgba(16,185,129,0.08)", color: "var(--accent-mentor)" }}
+                  >
+                    <BadgeCheck className="h-3.5 w-3.5 text-accent-mentor" aria-hidden="true" />
+                    Verified mentor
+                  </span>
+                ) : (
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold"
+                    style={{ background: "rgba(245,166,35,0.12)", color: "var(--accent-primary)" }}
+                  >
+                    <Clock className="h-3 w-3 text-accent-primary animate-pulse" aria-hidden="true" />
+                    Verification Pending
+                  </span>
+                )}
+              </div>
+              <h1 className="font-display text-display font-semibold text-text-primary mt-4 leading-tight">
                 Define when students can book you.
               </h1>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--text-secondary)]">
+              <p className="mt-3 max-w-xl text-sm leading-6 text-text-secondary">
                 Click any cell with a `+` in the calendar to add a slot for that day and hour, or click an existing slot to edit it. Hover a slot to reveal the remove button.
               </p>
             </div>
@@ -284,12 +308,12 @@ export default function MentorAvailabilityPage() {
             ].map(({ label, value, accent }) => (
               <div
                 key={label}
-                className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4"
+                className="rounded-xl border border-border-subtle bg-bg-elevated p-4"
               >
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">{label}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">{label}</p>
                 <p className={cn(
                   "mt-2 text-2xl font-extrabold tabular-nums",
-                  accent && value > 0 ? "text-[var(--accent-mentor)]" : "text-[var(--text-primary)]",
+                  accent && value > 0 ? "text-accent-mentor" : "text-text-primary",
                 )}>
                   {value}
                 </p>
@@ -327,11 +351,11 @@ export default function MentorAvailabilityPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5"
+          className="rounded-2xl border border-border-subtle bg-bg-surface p-5"
         >
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-[var(--text-primary)]">Weekly planner</h2>
-            <div className="flex items-center gap-4 text-[10px] font-semibold text-[var(--text-tertiary)]">
+            <h2 className="text-sm font-bold text-text-primary">Weekly planner</h2>
+            <div className="flex items-center gap-4 text-[10px] font-semibold text-text-tertiary">
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-sm bg-emerald-500/10 border border-emerald-500/20" />
                 Available

@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ArrowRight, Lock } from "lucide-react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { Button } from "../../components/ui/Button";
 import { FormField, PasswordToggle } from "../../components/ui/FormField";
@@ -19,6 +19,65 @@ const loginSchema = z.object({
 function getRedirectPath(data, fallback) {
   const role = data?.data?.user?.role || data?.user?.role;
   return fallback || ROLE_HOME[role] || "/student/dashboard";
+}
+
+// ── Cycling subtext with typewriter effect ─────────────────────────────────────
+const PHRASES = [
+  "Sign in to your role-based workspace.",
+  "Book sessions in seconds.",
+  "Track your growth.",
+];
+
+const TYPING_SPEED = 40;
+const ERASING_SPEED = 20;
+const PAUSE_AFTER = 2000;
+const PAUSE_BEFORE = 300;
+
+function CyclingSubtext() {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [phase, setPhase] = useState("typing");
+
+  useEffect(() => {
+    const target = PHRASES[phraseIndex];
+
+    if (phase === "typing") {
+      if (displayed.length < target.length) {
+        const t = setTimeout(() => {
+          setDisplayed(target.slice(0, displayed.length + 1));
+        }, TYPING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => setPhase("erasing"), PAUSE_AFTER);
+        return () => clearTimeout(t);
+      }
+    }
+
+    if (phase === "erasing") {
+      if (displayed.length > 0) {
+        const t = setTimeout(() => {
+          setDisplayed(displayed.slice(0, -1));
+        }, ERASING_SPEED);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => {
+          setPhraseIndex((i) => (i + 1) % PHRASES.length);
+          setPhase("typing");
+        }, PAUSE_BEFORE);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [displayed, phase, phraseIndex]);
+
+  return (
+    <div className="mt-2 min-h-[1.25rem] text-sm text-text-secondary leading-5" aria-live="polite">
+      {displayed}
+      <span
+        className="inline-block w-[1.5px] h-[1em] bg-text-secondary align-middle ml-[2px] animate-blink"
+        aria-hidden="true"
+      />
+    </div>
+  );
 }
 
 export function LoginPage() {
@@ -47,21 +106,26 @@ export function LoginPage() {
       <div className="w-full">
         {/* Card Panel */}
         <div 
-          className="rounded-lg p-6 sm:p-8 border border-[var(--border-subtle)] shadow-md"
+          className="rounded-lg p-6 sm:p-8 border border-border-subtle shadow-md"
           style={{ backgroundColor: "var(--bg-elevated)", backdropFilter: "none" }}
         >
           {/* Header */}
           <div className="mb-6">
-            <div className="badge badge-brand mb-4">
+            <div className="badge badge-primary mb-4">
               <Lock className="h-3.5 w-3.5" aria-hidden="true" />
               Secure sign-in
             </div>
             <h1 className="font-display text-section font-semibold text-text-primary tracking-tight">
               Welcome back
             </h1>
-            <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+            {/* Desktop static subtext */}
+            <p className="mt-2 text-sm text-text-secondary leading-5 hidden lg:block">
               Sign in to your role-based workspace.
             </p>
+            {/* Mobile dynamic typewriter subtext */}
+            <div className="lg:hidden">
+              <CyclingSubtext />
+            </div>
           </div>
 
           {/* Error Banner */}
