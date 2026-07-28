@@ -1,0 +1,38 @@
+name: 🔄 Keep Backend Alive
+
+on:
+  schedule:
+    # Runs every 5 minutes (GitHub Actions minimum is 5 min)
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  ping:
+    name: Ping Render Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: 🏓 Ping Backend Health Endpoint
+        run: |
+          echo "Pinging backend at $(date)"
+          
+          RESPONSE=$(curl --silent --max-time 30 --write-out "\nHTTP_STATUS:%{http_code}" \
+            "${{ secrets.RENDER_BACKEND_URL }}/health")
+          
+          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | cut -d: -f2)
+          BODY=$(echo "$RESPONSE" | grep -v "HTTP_STATUS")
+          
+          echo "Response body: $BODY"
+          echo "HTTP Status: $HTTP_STATUS"
+          
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "✅ Backend is alive! Status: $HTTP_STATUS"
+          else
+            echo "⚠️ Backend returned status: $HTTP_STATUS"
+            exit 1
+          fi
+
+      - name: 📊 Log ping time
+        if: always()
+        run: echo "Ping completed at $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
