@@ -31,6 +31,9 @@ const userRoutes = require("./routes/user.routes");
 
 const app = express();
 
+// Enable trust proxy for reverse proxy environments like Render, Cloudflare, Heroku
+app.set("trust proxy", 1);
+
 // Enable compression and request tracing
 app.use(compression());
 app.use(requestTrace);
@@ -53,9 +56,9 @@ app.use(sanitizerMiddleware);
 
 // Rate limiting setup
 const authLimiterWindow = parseInt(process.env.AUTH_RATE_LIMIT_WINDOW || "15", 10);
-const authLimiterMax = parseInt(process.env.AUTH_RATE_LIMIT_MAX || "20", 10);
+const authLimiterMax = parseInt(process.env.AUTH_RATE_LIMIT_MAX || "100", 10);
 const apiLimiterWindow = parseInt(process.env.API_RATE_LIMIT_WINDOW || "15", 10);
-const apiLimiterMax = parseInt(process.env.API_RATE_LIMIT_MAX || "200", 10);
+const apiLimiterMax = parseInt(process.env.API_RATE_LIMIT_MAX || "300", 10);
 
 const authLimiter = rateLimit({
   windowMs: authLimiterWindow * 60 * 1000,

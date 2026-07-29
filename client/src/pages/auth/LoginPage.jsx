@@ -95,8 +95,12 @@ export function LoginPage() {
   });
 
   const onSubmit = async (values) => {
-    const data = await login.mutateAsync(values);
-    navigate(getRedirectPath(data, location.state?.from?.pathname), { replace: true });
+    try {
+      const data = await login.mutateAsync(values);
+      navigate(getRedirectPath(data, location.state?.from?.pathname), { replace: true });
+    } catch {
+      // Error is caught by React Query and displayed in the alert banner & toast
+    }
   };
 
   const isLoading = login.isPending || isSubmitting;

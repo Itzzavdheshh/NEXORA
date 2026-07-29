@@ -106,9 +106,13 @@ export function RegisterPage() {
   });
 
   const onSubmit = async (values) => {
-    const data = await registerAccount.mutateAsync(values);
-    const role = data?.data?.user?.role || values.role;
-    navigate(ROLE_HOME[role] || "/student/dashboard", { replace: true });
+    try {
+      const data = await registerAccount.mutateAsync(values);
+      const role = data?.data?.user?.role || values.role;
+      navigate(ROLE_HOME[role] || "/student/dashboard", { replace: true });
+    } catch {
+      // Error is handled by React Query and displayed in the alert banner & toast
+    }
   };
 
   const isLoading = registerAccount.isPending || isSubmitting;
