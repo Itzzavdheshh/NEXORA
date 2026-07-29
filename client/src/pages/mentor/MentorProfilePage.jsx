@@ -170,7 +170,7 @@ function ProfileSummary({ user, values, completion, isVerified, setValue }) {
           ["Company", values.company],
           ["Experience", values.experience ? `${values.experience} years` : ""],
           ["Hourly Rate", values.hourly_rate ? formatHourlyRate(values.hourly_rate) : ""],
-          ["Verified Status", isVerified ? "Verified Badge" : "Pending Admin Review"],
+          ["Verified Status", isVerified ? "Verified " : "Pending Admin Review"],
         ].map(([label, value]) => (
           <div key={label} className="flex items-start justify-between gap-3 border-b border-border-subtle/40 pb-2 last:border-b-0 last:pb-0">
             <span className="shrink-0 text-xs text-text-secondary">{label}</span>
