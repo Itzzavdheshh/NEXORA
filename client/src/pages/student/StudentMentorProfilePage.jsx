@@ -27,6 +27,7 @@ import { EmptyState } from "../../components/ui/EmptyState";
 import { Button } from "../../components/ui/Button";
 import { BookingModal } from "../../components/bookings/BookingModal";
 import { cn } from "../../utils/cn";
+import { formatHourlyRate } from "../../utils/currency";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -210,9 +211,9 @@ export default function StudentMentorProfilePage() {
             <div className="grid grid-cols-2 gap-4 border-b border-border-subtle/50 pb-5">
               <div className="space-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">Hourly rate</span>
-                <p className="text-lg font-extrabold text-text-primary flex items-center gap-0.5">
-                  <DollarSign className="h-4 w-4 text-text-secondary" />
-                  {mentor.profile?.hourly_rate > 0 ? `${mentor.profile?.hourly_rate}/hr` : "Free"}
+                <p className="text-sm font-extrabold text-text-primary flex items-center gap-1">
+                  <DollarSign className="h-4 w-4 text-text-secondary shrink-0" />
+                  <span>{formatHourlyRate(mentor.profile?.hourly_rate)}</span>
                 </p>
               </div>
               <div className="space-y-1">

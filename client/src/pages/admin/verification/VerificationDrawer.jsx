@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { Drawer } from "../../../components/ui/Drawer";
+import { formatHourlyRate } from "../../../utils/currency";
 
 export function VerificationDrawer({
   isOpen,
@@ -103,7 +104,7 @@ export function VerificationDrawer({
                     Hourly rate
                   </p>
                   <p className="mt-1 text-sm font-extrabold text-text-primary">
-                    ${profile.hourly_rate}/hr
+                    {formatHourlyRate(profile.hourly_rate)}
                   </p>
                 </div>
               </div>

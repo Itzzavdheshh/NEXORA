@@ -25,6 +25,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useMentorProfile } from "../../hooks/useMentorProfile";
 import { createZodResolver } from "../../utils/zodForm";
 import { cn } from "../../utils/cn";
+import { formatHourlyRate, getInrEquivalent } from "../../utils/currency";
 
 const profileSchema = z.object({
   fullName: z.string().trim().min(2, "Full name must be at least 2 characters."),
@@ -168,12 +169,21 @@ function ProfileSummary({ user, values, completion, isVerified, setValue }) {
           ["Designation", values.designation],
           ["Company", values.company],
           ["Experience", values.experience ? `${values.experience} years` : ""],
-          ["Hourly Rate", values.hourly_rate ? `$${values.hourly_rate}/hr` : ""],
-          ["Verified", isVerified ? "Yes" : "Pending"],
+          ["Hourly Rate", values.hourly_rate ? formatHourlyRate(values.hourly_rate) : ""],
+          ["Verified Status", isVerified ? "Verified Badge" : "Pending Admin Review"],
         ].map(([label, value]) => (
           <div key={label} className="flex items-start justify-between gap-3 border-b border-border-subtle/40 pb-2 last:border-b-0 last:pb-0">
             <span className="shrink-0 text-xs text-text-secondary">{label}</span>
-            <span className="text-right text-xs font-semibold text-text-primary">
+            <span
+              className={cn(
+                "text-right text-xs font-semibold",
+                label === "Verified Status" && isVerified
+                  ? "text-accent-mentor"
+                  : label === "Verified Status"
+                  ? "text-amber-400 font-bold"
+                  : "text-text-primary"
+              )}
+            >
               {value || <span className="text-text-tertiary font-normal italic">Not set</span>}
             </span>
           </div>
@@ -430,7 +440,18 @@ export default function MentorProfilePage() {
                       <FormField id="designation" label="Designation" error={errors.designation} {...register("designation")} />
                       <FormField id="company" label="Company" error={errors.company} {...register("company")} />
                       <FormField id="experience" label="Experience (years)" type="number" error={errors.experience} {...register("experience")} />
-                      <FormField id="hourly_rate" label="Hourly rate ($)" type="number" error={errors.hourly_rate} {...register("hourly_rate")} />
+                      <FormField
+                        id="hourly_rate"
+                        label="Hourly rate ($ USD)"
+                        type="number"
+                        error={errors.hourly_rate}
+                        helper={
+                          values.hourly_rate > 0
+                            ? `Approx. ₹${getInrEquivalent(values.hourly_rate).toLocaleString("en-IN")} INR per hour ($1 USD = ₹95.69 INR)`
+                            : "Set 0 for free sessions. Shows in both USD ($) and INR (₹)."
+                        }
+                        {...register("hourly_rate")}
+                      />
                     </motion.div>
                   )}
 
@@ -457,9 +478,17 @@ export default function MentorProfilePage() {
                 </AnimatePresence>
               </div>
 
-              {/* Alert constraint */}
-              <div className="mt-8 rounded border border-border-subtle bg-bg-elevated/30 p-4 text-xs text-text-secondary leading-relaxed">
-                Certificates and specific verifications are stored by admin reviews. To preserve database schemas, this console updates standard users profile values.
+              {/* Verification & Data Info */}
+              <div className="mt-8 rounded-xl border border-border-subtle bg-bg-elevated/30 p-4 text-xs text-text-secondary leading-relaxed space-y-2">
+                <div className="flex items-center gap-2 text-text-primary font-semibold">
+                  <BadgeCheck className="h-4 w-4 text-accent-mentor" />
+                  <span>About Verification Status ({isVerified ? "Verified" : "Pending"})</span>
+                </div>
+                <p>
+                  {isVerified
+                    ? "Your profile has been reviewed and verified by an Admin. A green Verified badge is displayed on your cards."
+                    : "When you submit your profile, NEXORA Admins review your designation, company, and links in the Admin Portal to issue your Verified Mentor Badge."}
+                </p>
               </div>
             </div>
 

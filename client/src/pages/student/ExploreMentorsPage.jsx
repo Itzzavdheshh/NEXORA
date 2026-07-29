@@ -20,6 +20,7 @@ import { FormField } from "../../components/ui/FormField";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { formatHourlyRate } from "../../utils/currency";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -275,7 +276,7 @@ export default function ExploreMentorsPage() {
                         </div>
                         <div className="flex items-center gap-1 text-text-primary font-bold justify-end">
                           <DollarSign className="h-3.5 w-3.5 text-text-tertiary" />
-                          <span>{mentor.profile?.hourly_rate > 0 ? `${mentor.profile?.hourly_rate}/hr` : "Free sessions"}</span>
+                          <span>{formatHourlyRate(mentor.profile?.hourly_rate, { freeLabel: "Free sessions", compact: true })}</span>
                         </div>
                       </div>
 
