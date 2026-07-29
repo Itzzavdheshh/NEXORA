@@ -233,7 +233,7 @@ export default function MentorProfilePage() {
   const values = watch();
   const completion = getCompletion(values);
   const isSaving = saveProfile.isPending || isSubmitting;
-  const isVerified = Boolean(profile?.is_verified);
+  const isVerified = Boolean(user?.is_verified || user?.mentor_verified || profile?.is_verified);
 
   // Tab State
   const [activeTab, setActiveTab] = useState("general"); // "general" | "professional" | "links"

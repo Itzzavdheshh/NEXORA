@@ -37,7 +37,6 @@ const createMentorProfile = async (userId, profile) => {
 };
 
 const getMentorProfile = async (userId) => {
-
   const { data, error } = await supabase
     .from("mentor_profiles")
     .select("*")
@@ -45,6 +44,19 @@ const getMentorProfile = async (userId) => {
     .maybeSingle();
 
   if (error) throw new Error(error.message);
+
+  if (data) {
+    const { data: userData } = await supabase
+      .from("users")
+      .select("is_verified, status")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (userData) {
+      data.is_verified = Boolean(userData.is_verified);
+      data.status = userData.status;
+    }
+  }
 
   return data;
 };
@@ -85,6 +97,19 @@ const updateMentorProfile = async (userId, profile) => {
     .single();
 
   if (error) throw new Error(error.message);
+
+  if (data) {
+    const { data: userData } = await supabase
+      .from("users")
+      .select("is_verified, status")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (userData) {
+      data.is_verified = Boolean(userData.is_verified);
+      data.status = userData.status;
+    }
+  }
 
   return data;
 };
