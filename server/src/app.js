@@ -42,7 +42,6 @@ app.use(requestTrace);
 const ALLOWED_ORIGINS = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://nexora-drab-seven.vercel.app",
   ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []),
 ];
 

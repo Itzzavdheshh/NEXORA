@@ -2539,3 +2539,7 @@
 {"level":"info","message":"Server is running on http://localhost:5000","timestamp":"2026-07-30 23:06:05"}
 {"level":"info","message":"EmailService initialized with Resend provider.","timestamp":"2026-07-30 23:06:50"}
 {"level":"info","message":"Server is running on http://localhost:5000","timestamp":"2026-07-30 23:06:50"}
+{"level":"info","message":"EmailService initialized with Resend provider.","timestamp":"2026-07-30 23:08:19"}
+{"level":"info","message":"Server is running on http://localhost:5000","timestamp":"2026-07-30 23:08:19"}
+{"duration":"6ms","level":"info","message":"HTTP Request Completed","method":"OPTIONS","requestId":"f6009932-e373-438a-ac7b-1398a5a3f444","status":204,"timestamp":"2026-07-30 23:09:44","url":"/api/v1/auth/me","userId":"anonymous"}
+{"duration":"1626ms","level":"info","message":"HTTP Request Completed","method":"GET","requestId":"e5e027fc-b564-40af-b40e-305b87f789e3","status":304,"timestamp":"2026-07-30 23:09:45","url":"/api/v1/auth/me","userId":"5911db8c-4d5c-48f8-82d9-8dbcd1ebecd5"}
