@@ -103,7 +103,6 @@ export function AuthCallbackPage() {
         const redirectPath = ROLE_HOME[targetRole] || "/student/dashboard";
         LOG("--- Step 5: navigating to:", redirectPath, "using navigate()");
 
-        // Use React Router navigate — preserves React state, no full reload
         if (isMounted) {
           navigate(redirectPath, { replace: true });
         }
@@ -117,6 +116,46 @@ export function AuthCallbackPage() {
 
     async function handleAuth() {
       try {
+        // A. Check URL hash for implicit flow tokens (#access_token=...&refresh_token=...)
+        if (window.location.hash && window.location.hash.includes("access_token")) {
+          LOG("Found access_token in URL hash! Parsing parameters...");
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const access_token = hashParams.get("access_token");
+          const refresh_token = hashParams.get("refresh_token") || "";
+
+          if (access_token) {
+            LOG("Calling supabase.auth.setSession with hash tokens...");
+            const { data, error: setErr } = await supabase.auth.setSession({
+              access_token,
+              refresh_token,
+            });
+
+            if (setErr) {
+              LOG("setSession error:", setErr.message);
+            }
+
+            if (data?.session) {
+              LOG("setSession SUCCESS! Processing session...");
+              await processSession(data.session);
+              return;
+            }
+          }
+        }
+
+        // B. Check URL query parameters for PKCE code (?code=...)
+        const searchParams = new URLSearchParams(window.location.search);
+        const code = searchParams.get("code");
+        if (code) {
+          LOG("Found PKCE code in URL search params! Exchanging code...");
+          const { data, error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
+          if (!exchangeErr && data?.session) {
+            LOG("PKCE exchange SUCCESS! Processing session...");
+            await processSession(data.session);
+            return;
+          }
+        }
+
+        // C. Check if Supabase SDK has already populated the session
         LOG("--- handleAuth: calling supabase.auth.getSession() ---");
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         LOG("getSession result — session:", !!session, "error:", sessionError?.message);
@@ -129,6 +168,7 @@ export function AuthCallbackPage() {
           return;
         }
 
+        // D. Subscribe to auth state listener
         LOG("No session yet — subscribing to onAuthStateChange");
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
           LOG("onAuthStateChange fired — event:", event, "has session:", !!newSession);
