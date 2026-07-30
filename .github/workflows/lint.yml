@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd server
-          npm ci
+          npm install
 
   lint-frontend:
     name: Frontend Linting
@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd client
-          npm ci
+          npm install
 
       - name: Run ESLint
         run: |
