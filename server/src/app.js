@@ -38,14 +38,30 @@ app.set("trust proxy", 1);
 app.use(compression());
 app.use(requestTrace);
 
-// Configure CORS
+// Configure CORS — allow localhost for dev, Vercel for production
+const ALLOWED_ORIGINS = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://nexora-drab-seven.vercel.app",
+  ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []),
+];
+
 const corsOptions = {
-  origin: process.env.NODE_ENV === "production" ? process.env.CLIENT_URL : "*",
+  origin: (origin, callback) => {
+    // Allow requests with no origin (curl, Postman, same-origin) or whitelisted origins
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked for origin: ${origin}`));
+    }
+  },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Request-ID"],
   exposedHeaders: ["X-Request-ID"],
+  credentials: true,
 };
 app.use(cors(corsOptions));
+
 
 app.use(helmet());
 app.use(morgan("dev"));
