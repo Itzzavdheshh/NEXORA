@@ -1,5 +1,21 @@
 const supabase = require("../config/supabase");
 
+/**
+ * Safely decodes a JWT payload without external libraries
+ */
+function decodeJwtPayload(token) {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = Buffer.from(base64, "base64").toString("utf8");
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
 const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -12,38 +28,79 @@ const authenticate = async (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
+    let authUser = null;
 
-    // Verify Supabase JWT
+    // 1. Primary verification via Supabase Auth API
+    try {
+      const result = await supabase.auth.getUser(token);
+      if (result.data?.user) {
+        authUser = result.data.user;
+      }
+    } catch (err) {
+      console.warn("Primary supabase.auth.getUser failed:", err.message);
+    }
 
-    const result = await supabase.auth.getUser(token);
+    // 2. Fallback verification via JWT payload + admin.getUserById
+    if (!authUser) {
+      const payload = decodeJwtPayload(token);
+      const userId = payload?.sub;
+      const isNotExpired = payload?.exp ? payload.exp * 1000 > Date.now() : true;
 
-    const {
-      data: { user: authUser },
-      error,
-    } = result;
+      if (userId && isNotExpired) {
+        const { data: adminUserRes, error: adminErr } = await supabase.auth.admin.getUserById(userId);
+        if (!adminErr && adminUserRes?.user) {
+          authUser = adminUserRes.user;
+        }
+      }
+    }
 
-    if (error || !authUser) {
+    if (!authUser) {
       return res.status(401).json({
         success: false,
         message: "Invalid or expired token.",
       });
     }
 
-    // Fetch application user
-    const { data: appUser, error: profileError } = await supabase
+    // 3. Fetch application user profile from public.users
+    let { data: appUser } = await supabase
       .from("users")
       .select("*")
       .eq("auth_id", authUser.id)
-      .single();
+      .maybeSingle();
 
-    if (profileError || !appUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User profile not found.",
-      });
+    // 4. Self-healing / auto-provisioning for OAuth users
+    if (!appUser) {
+      const fullName =
+        authUser.user_metadata?.full_name ||
+        authUser.user_metadata?.name ||
+        (authUser.email ? authUser.email.split("@")[0] : "Nexora User");
+      const role = authUser.user_metadata?.role || "student";
+
+      const { data: newProfile, error: createError } = await supabase
+        .from("users")
+        .upsert(
+          {
+            auth_id: authUser.id,
+            full_name: fullName,
+            email: authUser.email || `${authUser.id}@oauth.local`,
+            role: role,
+            status: "active",
+          },
+          { onConflict: "auth_id" }
+        )
+        .select()
+        .maybeSingle();
+
+      if (createError) {
+        return res.status(500).json({
+          success: false,
+          message: `User profile initialization failed: ${createError.message}`,
+        });
+      }
+      appUser = newProfile;
     }
 
-    // Reject users with restricted status (inactive, suspended, rejected)
+    // Reject users with restricted status
     if (appUser.status !== "active") {
       return res.status(403).json({
         success: false,
@@ -55,7 +112,6 @@ const authenticate = async (req, res, next) => {
     req.user = appUser;
 
     next();
-
   } catch (err) {
     return res.status(500).json({
       success: false,

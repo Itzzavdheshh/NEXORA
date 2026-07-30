@@ -10,6 +10,7 @@ import { FormField, PasswordToggle } from "../../components/ui/FormField";
 import { ROLE_HOME } from "../../constants/app";
 import { useLogin } from "../../hooks/useAuthActions";
 import { createZodResolver } from "../../utils/zodForm";
+import { SocialAuthButtons } from "../../components/auth/SocialAuthButtons";
 
 const loginSchema = z.object({
   email: z.string().trim().email("Enter a valid email address."),
@@ -192,6 +193,9 @@ export function LoginPage() {
               {!isLoading && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
             </Button>
           </form>
+
+          {/* Social OAuth Auth */}
+          <SocialAuthButtons />
 
           {/* Footer */}
           <div className="mt-6 border-t border-border-subtle pt-5 text-center text-sm text-text-secondary">

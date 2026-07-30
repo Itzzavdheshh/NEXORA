@@ -161,10 +161,57 @@ const changePassword = async ({ userId, email, currentPassword, newPassword }) =
   return { message: "Password updated successfully." };
 };
 
+const syncOAuthProfile = async (user, requestedRole) => {
+  if (!user) {
+    throw new Error("User object is required.");
+  }
+
+  const authId = user.auth_id || user.id;
+
+  let { data: profile, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("auth_id", authId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const validRole = ["student", "mentor"].includes(requestedRole) ? requestedRole : "student";
+
+  if (!profile) {
+    const fullName = user.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "Nexora User";
+
+    const { data: newProfile, error: createError } = await supabase
+      .from("users")
+      .upsert(
+        {
+          auth_id: authId,
+          full_name: fullName,
+          email: user.email || `${authId}@oauth.local`,
+          role: validRole,
+          status: "active",
+        },
+        { onConflict: "auth_id" }
+      )
+      .select()
+      .maybeSingle();
+
+    if (createError) {
+      throw new Error(createError.message);
+    }
+    return newProfile;
+  }
+
+  return profile;
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getCurrentUser,
   logoutUser,
   changePassword,
+  syncOAuthProfile,
 };

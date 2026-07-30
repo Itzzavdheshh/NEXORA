@@ -67,10 +67,10 @@ export function AuthLayout() {
       <div className="relative z-10 mx-auto grid min-h-screen w-full grid-cols-1 lg:grid-cols-2">
         {/* Left panel — Value Proposition (Desktop only) */}
         <section
-          className="relative hidden flex-col justify-between p-12 lg:flex bg-bg-surface border-r border-border-subtle overflow-hidden"
+          className="relative hidden flex-col justify-between p-8 lg:p-12 xl:p-16 lg:flex bg-bg-surface border-r border-border-subtle overflow-hidden min-h-screen"
           aria-label="Platform overview"
         >
-          {/* Exactly one background atmosphere element: 600px radial gradient (accent-primary at ~8% opacity) */}
+          {/* Exactly one background atmosphere element */}
           <div
             className="pointer-events-none absolute rounded-full bg-accent-primary/10 blur-[100px]"
             style={{
@@ -83,34 +83,35 @@ export function AuthLayout() {
             aria-hidden="true"
           />
 
+          {/* Top Logo */}
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent-primary shadow-token-md">
+              <Sparkles className="h-5 w-5 text-bg-base" aria-hidden="true" />
+            </div>
+            <span className="font-display text-3xl font-semibold tracking-tight text-text-primary">
+              {APP_NAME}
+            </span>
+          </div>
+
+          {/* Main Content Centered */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 flex-1 flex flex-col justify-center max-w-lg mx-auto w-full"
+            className="relative z-10 my-auto max-w-lg w-full py-6"
           >
-            {/* Logo */}
-            <div className="mb-12 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent-primary shadow-token-md">
-                <Sparkles className="h-5 w-5 text-bg-base" aria-hidden="true" />
-              </div>
-              <span className="font-display text-3xl font-semibold tracking-tight text-text-primary">
-                {APP_NAME}
-              </span>
-            </div>
-
             {/* Headline with typewriter */}
             <h1 className="font-display text-display font-semibold text-text-primary leading-tight min-h-[4rem]">
               Structured mentorship
               <br />
               <TypewriterText />
             </h1>
-            <p className="mt-6 text-body font-normal text-text-secondary">
+            <p className="mt-4 text-body font-normal text-text-secondary leading-relaxed">
               Connect with verified mentors, book focused sessions, and track your progress through a purposeful academic workspace.
             </p>
 
             {/* Feature Highlights */}
-            <div className="mt-12 space-y-4">
+            <div className="mt-8 space-y-3.5">
               {[
                 { label: "Verified Mentors", desc: "Every profile manually reviewed by administrators", icon: Shield },
                 { label: "Role-Based Access", desc: "Dedicated student, mentor, and admin spaces", icon: Users },
@@ -120,16 +121,16 @@ export function AuthLayout() {
                 return (
                   <div
                     key={item.label}
-                    className="flex gap-4 rounded-[var(--radius-lg)] border border-border-subtle bg-bg-surface p-4 shadow-token-sm transition duration-token-standard hover:border-border-strong"
+                    className="flex gap-4 rounded-[var(--radius-lg)] border border-border-subtle bg-bg-surface p-3.5 shadow-token-sm transition duration-token-standard hover:border-border-strong"
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-bg-elevated border border-border-subtle text-accent-primary">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-bg-elevated border border-border-subtle text-accent-primary">
+                      <Icon className="h-4.5 w-4.5" aria-hidden="true" />
                     </div>
                     <div>
                       <p className="text-caption font-semibold uppercase tracking-token-caption text-text-primary">
                         {item.label}
                       </p>
-                      <p className="mt-1 text-sm text-text-secondary leading-relaxed">
+                      <p className="mt-0.5 text-xs text-text-secondary leading-relaxed">
                         {item.desc}
                       </p>
                     </div>
@@ -138,27 +139,34 @@ export function AuthLayout() {
               })}
             </div>
           </motion.div>
+
+          {/* Left panel subtle footer */}
+          <div className="relative z-10 text-xs text-text-tertiary">
+            © {new Date().getFullYear()} Nexora Mentorship Platform. All rights reserved.
+          </div>
         </section>
 
         {/* Right panel — auth form */}
-        <section className="flex flex-col items-center justify-center px-6 py-12 sm:px-12 bg-bg-base overflow-y-auto">
-          {/* Logo only on mobile */}
-          <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
-            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent-primary shadow-token-md">
-              <Sparkles className="h-5 w-5 text-bg-base" aria-hidden="true" />
+        <section className="flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16 bg-bg-base overflow-y-auto min-h-screen">
+          {/* Top spacer / Logo on mobile */}
+          <div className="w-full flex items-center justify-center lg:justify-end">
+            <div className="flex items-center gap-3 lg:hidden">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent-primary shadow-token-md">
+                <Sparkles className="h-5 w-5 text-bg-base" aria-hidden="true" />
+              </div>
+              <span className="font-display text-3xl font-semibold tracking-tight text-text-primary">
+                {APP_NAME}
+              </span>
             </div>
-            <span className="font-display text-3xl font-semibold tracking-tight text-text-primary">
-              {APP_NAME}
-            </span>
           </div>
 
-          {/* Render form directly to prevent browser 3D rasterization blur issues */}
-          <div className="w-full max-w-[480px] mx-auto py-4">
+          {/* Form Card Centered */}
+          <div className="w-full max-w-[460px] mx-auto my-auto py-6">
             <Outlet />
           </div>
 
           {/* Footer links */}
-          <div className="mt-4 flex items-center justify-center gap-4 text-xs text-text-tertiary">
+          <div className="flex items-center justify-center gap-4 text-xs text-text-tertiary">
             <Link to="/privacy" className="hover:text-text-secondary transition-colors">Privacy Policy</Link>
             <span aria-hidden="true">·</span>
             <Link to="/terms" className="hover:text-text-secondary transition-colors">Terms of Service</Link>

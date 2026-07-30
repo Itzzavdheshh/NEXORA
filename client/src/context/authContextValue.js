@@ -10,6 +10,9 @@ export function normalizeAuthPayload(payload) {
     payload?.data?.accessToken ||
     payload?.data?.session?.access_token ||
     payload?.session?.access_token;
-  const user = payload?.user || payload?.data?.user || null;
+  let user = payload?.user || payload?.data?.user || payload?.data || null;
+  if (user && user.data && typeof user.data === "object" && !user.role) {
+    user = user.data;
+  }
   return { token, user };
 }

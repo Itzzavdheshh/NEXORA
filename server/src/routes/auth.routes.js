@@ -8,6 +8,7 @@ const {
   me,
   logout,
   changePassword,
+  oauthSync,
 } = require("../controllers/auth.controller");
 
 const {
@@ -23,6 +24,9 @@ router.post("/login", validateLogin, login);
 
 // Get Current User
 router.get("/me", authenticate, me);
+
+// Sync OAuth Profile Role
+router.post("/oauth-sync", authenticate, oauthSync);
 
 // Change Password
 router.post("/change-password", authenticate, changePassword);

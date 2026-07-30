@@ -2481,3 +2481,23 @@
 {"duration":"0ms","level":"info","message":"HTTP Request Completed","method":"OPTIONS","requestId":"9737a95a-434a-496b-a93e-45961204feb6","status":204,"timestamp":"2026-07-27 23:53:55","url":"/api/v1/admin/dashboard/stats","userId":"anonymous"}
 {"duration":"530ms","level":"info","message":"HTTP Request Completed","method":"GET","requestId":"203e4003-10ac-4390-9e28-2739806eeace","status":401,"timestamp":"2026-07-27 23:53:56","url":"/api/v1/notifications","userId":"anonymous"}
 {"duration":"525ms","level":"info","message":"HTTP Request Completed","method":"GET","requestId":"df9c18b7-2941-432f-b5ee-a60351cdf8c5","status":401,"timestamp":"2026-07-27 23:53:56","url":"/api/v1/admin/dashboard/stats","userId":"anonymous"}
+{"level":"info","message":"EmailService initialized with Resend provider.","timestamp":"2026-07-30 21:30:41"}
+{"level":"info","message":"Server is running on http://localhost:5000","timestamp":"2026-07-30 21:30:41"}
+{"duration":"8ms","level":"info","message":"HTTP Request Completed","method":"OPTIONS","requestId":"dcbdd5ee-e644-4d57-800e-f86287cfe499","status":204,"timestamp":"2026-07-30 21:31:36","url":"/api/v1/auth/me","userId":"anonymous"}
+{"duration":"2ms","level":"info","message":"HTTP Request Completed","method":"OPTIONS","requestId":"c206d7d7-69ba-4e8d-a517-6f56c57a4714","status":204,"timestamp":"2026-07-30 21:31:37","url":"/api/v1/notifications","userId":"anonymous"}
+{"duration":"1ms","level":"info","message":"HTTP Request Completed","method":"OPTIONS","requestId":"ddfb2f03-0a30-463a-b09d-72a1fbafe772","status":204,"timestamp":"2026-07-30 21:31:37","url":"/api/v1/admin/dashboard/stats","userId":"anonymous"}
+{"duration":"783ms","level":"info","message":"HTTP Request Completed","method":"GET","requestId":"3c6adf2c-74f9-4e54-892a-34b7016cde93","status":401,"timestamp":"2026-07-30 21:31:38","url":"/api/v1/admin/dashboard/stats","userId":"anonymous"}
+{"duration":"966ms","level":"info","message":"HTTP Request Completed","method":"GET","requestId":"71b07974-a2ac-440e-9e3b-a6012fa0e435","status":401,"timestamp":"2026-07-30 21:31:38","url":"/api/v1/notifications","userId":"anonymous"}
+{"duration":"1340ms","level":"info","message":"HTTP Request Completed","method":"GET","requestId":"2823aaeb-8e36-41a8-9392-084ae76c9b42","status":401,"timestamp":"2026-07-30 21:31:38","url":"/api/v1/auth/me","userId":"anonymous"}
+{"duration":"1ms","level":"info","message":"HTTP Request Completed","method":"OPTIONS","requestId":"888995c0-eb95-43e7-b2fd-63b5fbf52d78","status":204,"timestamp":"2026-07-30 21:31:42","url":"/api/v1/auth/me","userId":"anonymous"}
+{"duration":"237ms","level":"info","message":"HTTP Request Completed","method":"GET","requestId":"78b2fb91-f78a-4134-b995-71f4ad096665","status":401,"timestamp":"2026-07-30 21:31:42","url":"/api/v1/auth/me","userId":"anonymous"}
+{"level":"info","message":"EmailService initialized with Resend provider.","timestamp":"2026-07-30 22:08:19"}
+{"level":"info","message":"Server is running on http://localhost:5000","timestamp":"2026-07-30 22:08:19"}
+{"level":"info","message":"EmailService initialized with Resend provider.","timestamp":"2026-07-30 22:08:26"}
+{"level":"info","message":"Server is running on http://localhost:5000","timestamp":"2026-07-30 22:08:26"}
+{"level":"info","message":"EmailService initialized with Resend provider.","timestamp":"2026-07-30 22:10:27"}
+{"level":"info","message":"Server is running on http://localhost:5000","timestamp":"2026-07-30 22:10:27"}
+{"duration":"22ms","level":"info","message":"HTTP Request Completed","method":"GET","requestId":"6e913213-3805-406b-b0e7-f383377b7f6b","status":200,"timestamp":"2026-07-30 22:15:55","url":"/api/v1/health","userId":"anonymous"}
+{"duration":"923ms","level":"info","message":"HTTP Request Completed","method":"GET","requestId":"90997066-162f-4d45-a7e1-64f690de8e4e","status":200,"timestamp":"2026-07-30 22:16:06","url":"/api/v1/auth/me","userId":"56f79b32-34ab-41b6-b657-c3848b07cf60"}
+{"level":"info","message":"EmailService initialized with Resend provider.","timestamp":"2026-07-30 22:20:04"}
+{"level":"info","message":"Server is running on http://localhost:5000","timestamp":"2026-07-30 22:20:04"}

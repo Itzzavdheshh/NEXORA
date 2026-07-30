@@ -8,6 +8,7 @@ import { PublicOnlyRoute } from "./PublicOnlyRoute";
 import { LoginPage } from "../pages/auth/LoginPage";
 import { RegisterPage } from "../pages/auth/RegisterPage";
 import { ForgotPasswordPage } from "../pages/auth/ForgotPasswordPage";
+import { AuthCallbackPage } from "../pages/auth/AuthCallbackPage";
 import { NotFoundPage } from "../pages/shared/NotFoundPage";
 import { PrivacyPolicyPage } from "../pages/shared/PrivacyPolicyPage";
 import { TermsOfServicePage } from "../pages/shared/TermsOfServicePage";
@@ -59,6 +60,10 @@ export default function AppRoutes({ location }) {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         </Route>
+      </Route>
+
+      <Route element={<AuthLayout />}>
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={[USER_ROLES.STUDENT]} />}>

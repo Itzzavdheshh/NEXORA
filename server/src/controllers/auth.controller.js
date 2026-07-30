@@ -3,7 +3,23 @@ const {
   loginUser,
   logoutUser,
   changePassword: changePasswordService,
+  syncOAuthProfile,
 } = require("../services/auth.service");
+
+const oauthSync = async (req, res, next) => {
+  try {
+    const { role } = req.body || {};
+    const updatedUser = await syncOAuthProfile(req.user, role);
+
+    return res.status(200).json({
+      success: true,
+      message: "OAuth profile synced successfully.",
+      data: updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const register = async (req, res, next) => {
   try {
@@ -105,4 +121,5 @@ module.exports = {
   me,
   logout,
   changePassword,
+  oauthSync,
 };

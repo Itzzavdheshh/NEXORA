@@ -11,6 +11,7 @@ import { ROLE_HOME, USER_ROLES } from "../../constants/app";
 import { useRegister } from "../../hooks/useAuthActions";
 import { createZodResolver } from "../../utils/zodForm";
 import { cn } from "../../utils/cn";
+import { SocialAuthButtons } from "../../components/auth/SocialAuthButtons";
 
 // ── Register subtext typewriter ──────────────────────────────────────────────
 const REGISTER_PHRASES = [
@@ -327,6 +328,9 @@ export function RegisterPage() {
               {!isLoading && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
             </Button>
           </form>
+
+          {/* Social OAuth Auth */}
+          <SocialAuthButtons role={selectedRole} />
 
           <div className="mt-6 border-t border-border-subtle pt-5 text-center text-sm text-text-secondary">
             Already have an account?{" "}
