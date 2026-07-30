@@ -11,6 +11,28 @@ import { Button } from "../../components/ui/Button";
 
 const LOG = (...args) => console.log("[NEXORA-AUTH-CALLBACK]", ...args);
 
+function decodeJwtUser(token) {
+  try {
+    const base64Payload = token.split(".")[1];
+    const base64 = base64Payload.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    const parsed = JSON.parse(jsonPayload);
+    return {
+      id: parsed.sub,
+      email: parsed.email,
+      user_metadata: parsed.user_metadata || {},
+    };
+  } catch (err) {
+    LOG("decodeJwtUser error:", err);
+    return null;
+  }
+}
+
 export function AuthCallbackPage() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -41,7 +63,7 @@ export function AuthCallbackPage() {
         const authUser = session.user;
 
         LOG("--- Step 1: processSession data ---");
-        LOG("token (first 30 chars):", token.slice(0, 30));
+        LOG("token (first 30 chars):", token?.slice(0, 30));
         LOG("requestedRole:", requestedRole);
         LOG("authUser.id:", authUser?.id);
         LOG("authUser.email:", authUser?.email);
@@ -98,7 +120,7 @@ export function AuthCallbackPage() {
           LOG("persistSession called with user.role:", finalUser?.role);
         }
 
-        // 4. Navigate using React Router (NOT window.location.href)
+        // 4. Navigate using React Router
         const targetRole = finalUser?.role || requestedRole || "student";
         const redirectPath = ROLE_HOME[targetRole] || "/student/dashboard";
         LOG("--- Step 5: navigating to:", redirectPath, "using navigate()");
@@ -124,19 +146,33 @@ export function AuthCallbackPage() {
           const refresh_token = hashParams.get("refresh_token") || "";
 
           if (access_token) {
-            LOG("Calling supabase.auth.setSession with hash tokens...");
-            const { data, error: setErr } = await supabase.auth.setSession({
-              access_token,
-              refresh_token,
-            });
-
-            if (setErr) {
-              LOG("setSession error:", setErr.message);
+            LOG("Attempting setSession with hash tokens...");
+            let sessionObj = null;
+            try {
+              const { data } = await supabase.auth.setSession({
+                access_token,
+                refresh_token,
+              });
+              sessionObj = data?.session;
+            } catch (sErr) {
+              LOG("setSession exception:", sErr);
             }
 
-            if (data?.session) {
-              LOG("setSession SUCCESS! Processing session...");
-              await processSession(data.session);
+            // Fallback: construct session directly from JWT if setSession didn't return sessionObj
+            if (!sessionObj) {
+              LOG("setSession returned no session object, decoding JWT directly...");
+              const decodedUser = decodeJwtUser(access_token);
+              if (decodedUser?.id) {
+                sessionObj = {
+                  access_token,
+                  user: decodedUser,
+                };
+              }
+            }
+
+            if (sessionObj) {
+              LOG("Session object ready! Processing session immediately...");
+              await processSession(sessionObj);
               return;
             }
           }
