@@ -35,6 +35,13 @@ if (existingBooking) {
   throw new Error("This availability slot has already been booked.");
 }
 
+// Clean up any old cancelled booking for this slot so unique constraint allows re-booking
+await supabase
+  .from("bookings")
+  .delete()
+  .eq("availability_slot_id", booking.availability_slot_id)
+  .eq("status", BOOKING_STATUS.CANCELLED);
+
 // Create booking
 const { data, error } = await supabase
   .from("bookings")
@@ -55,10 +62,6 @@ const { data, error } = await supabase
 if (error) {
   throw new Error(error.message);
 }
-
-  if (existingBooking) {
-    throw new Error("This availability slot has already been booked.");
-  }
 
   const { data: student } = await supabase
   .from("users")
