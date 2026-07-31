@@ -11,28 +11,6 @@ import { Button } from "../../components/ui/Button";
 
 const LOG = (...args) => console.log("[NEXORA-AUTH-CALLBACK]", ...args);
 
-function decodeJwtUser(token) {
-  try {
-    const base64Payload = token.split(".")[1];
-    const base64 = base64Payload.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-    const parsed = JSON.parse(jsonPayload);
-    return {
-      id: parsed.sub,
-      email: parsed.email,
-      user_metadata: parsed.user_metadata || {},
-    };
-  } catch (err) {
-    LOG("decodeJwtUser error:", err);
-    return null;
-  }
-}
-
 export function AuthCallbackPage() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -63,7 +41,7 @@ export function AuthCallbackPage() {
         const authUser = session.user;
 
         LOG("--- Step 1: processSession data ---");
-        LOG("token (first 30 chars):", token?.slice(0, 30));
+        LOG("token (first 30 chars):", token.slice(0, 30));
         LOG("requestedRole:", requestedRole);
         LOG("authUser.id:", authUser?.id);
         LOG("authUser.email:", authUser?.email);
@@ -120,11 +98,12 @@ export function AuthCallbackPage() {
           LOG("persistSession called with user.role:", finalUser?.role);
         }
 
-        // 4. Navigate using React Router
+        // 4. Navigate using React Router (NOT window.location.href)
         const targetRole = finalUser?.role || requestedRole || "student";
         const redirectPath = ROLE_HOME[targetRole] || "/student/dashboard";
         LOG("--- Step 5: navigating to:", redirectPath, "using navigate()");
 
+        // Use React Router navigate — preserves React state, no full reload
         if (isMounted) {
           navigate(redirectPath, { replace: true });
         }
@@ -138,60 +117,6 @@ export function AuthCallbackPage() {
 
     async function handleAuth() {
       try {
-        // A. Check URL hash for implicit flow tokens (#access_token=...&refresh_token=...)
-        if (window.location.hash && window.location.hash.includes("access_token")) {
-          LOG("Found access_token in URL hash! Parsing parameters...");
-          const hashParams = new URLSearchParams(window.location.hash.substring(1));
-          const access_token = hashParams.get("access_token");
-          const refresh_token = hashParams.get("refresh_token") || "";
-
-          if (access_token) {
-            LOG("Attempting setSession with hash tokens...");
-            let sessionObj = null;
-            try {
-              const { data } = await supabase.auth.setSession({
-                access_token,
-                refresh_token,
-              });
-              sessionObj = data?.session;
-            } catch (sErr) {
-              LOG("setSession exception:", sErr);
-            }
-
-            // Fallback: construct session directly from JWT if setSession didn't return sessionObj
-            if (!sessionObj) {
-              LOG("setSession returned no session object, decoding JWT directly...");
-              const decodedUser = decodeJwtUser(access_token);
-              if (decodedUser?.id) {
-                sessionObj = {
-                  access_token,
-                  user: decodedUser,
-                };
-              }
-            }
-
-            if (sessionObj) {
-              LOG("Session object ready! Processing session immediately...");
-              await processSession(sessionObj);
-              return;
-            }
-          }
-        }
-
-        // B. Check URL query parameters for PKCE code (?code=...)
-        const searchParams = new URLSearchParams(window.location.search);
-        const code = searchParams.get("code");
-        if (code) {
-          LOG("Found PKCE code in URL search params! Exchanging code...");
-          const { data, error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
-          if (!exchangeErr && data?.session) {
-            LOG("PKCE exchange SUCCESS! Processing session...");
-            await processSession(data.session);
-            return;
-          }
-        }
-
-        // C. Check if Supabase SDK has already populated the session
         LOG("--- handleAuth: calling supabase.auth.getSession() ---");
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         LOG("getSession result — session:", !!session, "error:", sessionError?.message);
@@ -204,7 +129,6 @@ export function AuthCallbackPage() {
           return;
         }
 
-        // D. Subscribe to auth state listener
         LOG("No session yet — subscribing to onAuthStateChange");
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
           LOG("onAuthStateChange fired — event:", event, "has session:", !!newSession);

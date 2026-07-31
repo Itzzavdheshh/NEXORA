@@ -28,6 +28,7 @@ const { data: existingBooking } = await supabase
   .from("bookings")
   .select("id")
   .eq("availability_slot_id", booking.availability_slot_id)
+  .neq("status", BOOKING_STATUS.CANCELLED)
   .maybeSingle();
 
 if (existingBooking) {
