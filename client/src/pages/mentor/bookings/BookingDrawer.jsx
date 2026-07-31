@@ -301,7 +301,7 @@ export function BookingDrawer({ isOpen, onClose, booking, onStatusUpdate, isUpda
                     await onStatusUpdate(id, "confirmed", meetingLink);
                   }}
                 >
-                  <Check className="h-4 w-4" />
+                  <Sparkles className="h-4 w-4" />
                   Confirm
                 </Button>
                 <Button

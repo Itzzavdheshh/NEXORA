@@ -103,7 +103,7 @@ export function BookingCard({ booking, onStatusUpdate, isUpdating, onSelect, ind
                   title="Confirm"
                   className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/12 text-accent-mentor transition hover:bg-accent-mentor hover:text-[var(--bg-base)] disabled:opacity-50"
                 >
-                  <Check className="h-4 w-4" />
+                  <Sparkles className="h-4 w-4" />
                 </button>
                 <button
                   type="button"
