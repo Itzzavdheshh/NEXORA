@@ -53,11 +53,12 @@ export function useMentorBookings() {
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("newest");
 
-  // Fetch bookings
+  // Fetch bookings with 4s auto-polling
   const bookingsQuery = useQuery({
     queryKey: BOOKINGS_QUERY_KEY,
     queryFn: bookingService.list,
     select: (res) => res?.data ?? [],
+    refetchInterval: 4000,
   });
 
   // Update Status mutation with optimistic updates
@@ -90,6 +91,8 @@ export function useMentorBookings() {
 
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: BOOKINGS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ["availability"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 

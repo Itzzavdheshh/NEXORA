@@ -52,6 +52,7 @@ export function useStudentBookings() {
   const bookingsQuery = useQuery({
     queryKey: ["bookings"],
     queryFn: bookingService.list,
+    refetchInterval: 4000,
   });
 
   const cancelBooking = useCallback(async (id) => {
@@ -60,6 +61,8 @@ export function useStudentBookings() {
       await bookingService.updateStatus(id, { status: "cancelled" });
       toast.success("Booking cancelled successfully.");
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["availability"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     } catch (error) {
       toast.error(error.response?.data?.message || error.message || "Failed to cancel booking.");
     } finally {

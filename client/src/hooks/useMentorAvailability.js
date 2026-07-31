@@ -36,6 +36,7 @@ export function useMentorAvailability() {
     queryKey: AVAILABILITY_KEY,
     queryFn: availabilityService.list,
     select: (res) => res?.data ?? [],
+    refetchInterval: 4000,
   });
 
   // ── Create ─────────────────────────────────────────────────────────────────

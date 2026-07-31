@@ -76,10 +76,12 @@ export function useStudentDashboard() {
       {
         queryKey: ["bookings"],
         queryFn: bookingService.list,
+        refetchInterval: 4000,
       },
       {
         queryKey: ["notifications"],
         queryFn: notificationService.list,
+        refetchInterval: 4000,
       },
     ],
   });

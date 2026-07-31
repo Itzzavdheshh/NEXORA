@@ -89,14 +89,17 @@ export function useMentorDashboard() {
       {
         queryKey: MENTOR_DASHBOARD_QUERY_KEYS.bookings,
         queryFn: bookingService.list,
+        refetchInterval: 4000,
       },
       {
         queryKey: MENTOR_DASHBOARD_QUERY_KEYS.availability,
         queryFn: availabilityService.list,
+        refetchInterval: 4000,
       },
       {
         queryKey: MENTOR_DASHBOARD_QUERY_KEYS.notifications,
         queryFn: notificationService.list,
+        refetchInterval: 4000,
       },
     ],
   });

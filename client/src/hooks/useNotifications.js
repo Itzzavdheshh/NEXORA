@@ -57,6 +57,7 @@ export function useNotifications() {
     queryKey: NOTIFICATIONS_QUERY_KEY,
     queryFn: notificationService.list,
     select: (res) => res?.data ?? [],
+    refetchInterval: 4000,
   });
 
   // ── Supabase Realtime subscription ────────────────────────────────────────
