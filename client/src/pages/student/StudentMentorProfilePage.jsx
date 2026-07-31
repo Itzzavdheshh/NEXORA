@@ -40,12 +40,14 @@ export default function StudentMentorProfilePage() {
   const mentorsQuery = useQuery({
     queryKey: ["mentors", "explore"],
     queryFn: () => mentorService.explore(),
+    refetchInterval: 3000,
   });
 
   // Fetch the mentor's availability slots
   const slotsQuery = useQuery({
     queryKey: ["availability", "mentor", mentorId],
     queryFn: () => availabilityService.list({ mentorId }),
+    refetchInterval: 3000,
   });
 
 

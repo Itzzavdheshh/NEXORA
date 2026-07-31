@@ -57,6 +57,7 @@ export default function ExploreMentorsPage() {
     queryKey: ["mentors", "explore", searchQuery],
     queryFn: () => mentorService.explore({ search: searchQuery }),
     placeholderData: (previousData) => previousData,
+    refetchInterval: 3000,
   });
 
   const mentors = mentorsQuery.data?.data || [];

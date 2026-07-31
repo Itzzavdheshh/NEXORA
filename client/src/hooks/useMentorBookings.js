@@ -92,6 +92,7 @@ export function useMentorBookings() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: BOOKINGS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ["availability"] });
+      queryClient.invalidateQueries({ queryKey: ["mentors"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });

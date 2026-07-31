@@ -79,9 +79,10 @@ export function BookingModal({ isOpen, onClose, slot, mentor, onSuccess }) {
         notes: values.notes,
       }),
     onSuccess: (data) => {
-      // Invalidate queries so dashboards, booking lists, and notifications sync immediately
+      // Invalidate queries so dashboards, booking lists, availability, and notifications sync immediately
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
-      queryClient.invalidateQueries({ queryKey: ["availability", "mentor", mentor.id] });
+      queryClient.invalidateQueries({ queryKey: ["availability"] });
+      queryClient.invalidateQueries({ queryKey: ["mentors"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       
       setBookingDetails(data.data);
