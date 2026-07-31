@@ -19,4 +19,7 @@ export const mentorService = {
   explore(params) {
     return apiClient.get("/mentors/explore", { params }).then((res) => res.data);
   },
+  getPublicExplore(params) {
+    return apiClient.get("/mentors/explore", { params }).then((res) => res.data);
+  },
 };

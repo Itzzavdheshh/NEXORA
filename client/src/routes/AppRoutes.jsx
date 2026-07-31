@@ -14,6 +14,7 @@ import { PrivacyPolicyPage } from "../pages/shared/PrivacyPolicyPage";
 import { TermsOfServicePage } from "../pages/shared/TermsOfServicePage";
 import { Skeleton } from "../components/ui/Skeleton";
 
+const LandingPage = lazy(() => import("../pages/LandingPage"));
 const StudentDashboardPage = lazy(() => import("../pages/student/StudentDashboardPage"));
 const StudentProfilePage = lazy(() => import("../pages/student/StudentProfilePage"));
 const StudentBookingsPage = lazy(() => import("../pages/student/StudentBookingsPage"));
@@ -215,7 +216,14 @@ export default function AppRoutes({ location }) {
         </Route>
       </Route>
 
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route
+        path="/"
+        element={
+          <LazyRoute>
+            <LandingPage />
+          </LazyRoute>
+        }
+      />
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="/terms"   element={<TermsOfServicePage />} />
       {import.meta.env.DEV && StyleGuidePage ? (

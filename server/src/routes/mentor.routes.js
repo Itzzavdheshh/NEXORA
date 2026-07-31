@@ -67,10 +67,9 @@ router.patch(
 );
 
 
-// Explore verified mentors
+// Explore verified mentors (Public endpoint)
 router.get(
   "/explore",
-  authenticate,
   explore
 );
 
