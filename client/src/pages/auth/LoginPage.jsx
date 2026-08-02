@@ -89,6 +89,7 @@ export function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: createZodResolver(loginSchema),
@@ -194,8 +195,53 @@ export function LoginPage() {
             </Button>
           </form>
 
-          {/* Social OAuth Auth */}
-          <SocialAuthButtons />
+          {/* 1-Click Sales Demo Quick Login Pills */}
+          <div className="mt-6 pt-5 border-t border-border-subtle space-y-2">
+            <p className="text-[10px] font-extrabold uppercase tracking-wider text-text-tertiary text-center">
+              ⚡ Live Pitch Quick Login (1-Click Demo)
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const email = "student1@nexora.com";
+                  const password = "Password123!";
+                  setValue("email", email, { shouldValidate: true });
+                  setValue("password", password, { shouldValidate: true });
+                  onSubmit({ email, password });
+                }}
+                className="py-2.5 px-2 rounded-xl border border-amber-400/30 bg-amber-400/10 text-amber-300 hover:bg-amber-400/20 text-[10px] font-extrabold transition-all text-center"
+              >
+                🎓 Student Demo
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const email = "mentor1@nexora.com";
+                  const password = "Password123!";
+                  setValue("email", email, { shouldValidate: true });
+                  setValue("password", password, { shouldValidate: true });
+                  onSubmit({ email, password });
+                }}
+                className="py-2.5 px-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 text-emerald-300 hover:bg-emerald-400/20 text-[10px] font-extrabold transition-all text-center"
+              >
+                👨‍🏫 Mentor Demo
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const email = "admin@nexora.com";
+                  const password = "Password123!";
+                  setValue("email", email, { shouldValidate: true });
+                  setValue("password", password, { shouldValidate: true });
+                  onSubmit({ email, password });
+                }}
+                className="py-2.5 px-2 rounded-xl border border-sky-400/30 bg-sky-400/10 text-sky-300 hover:bg-sky-400/20 text-[10px] font-extrabold transition-all text-center"
+              >
+                🏛️ Admin Demo
+              </button>
+            </div>
+          </div>
 
           {/* Footer */}
           <div className="mt-6 border-t border-border-subtle pt-5 text-center text-sm text-text-secondary">

@@ -444,9 +444,14 @@ export default function StudentProfilePage() {
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
                 Cancel changes
               </Button>
-              <Button type="submit" loading={isSaving} disabled={!isDirty && !isMissingProfile}>
+              <Button 
+                type="submit" 
+                loading={isSaving} 
+                disabled={!isDirty && !isMissingProfile}
+                className="bg-amber-400 text-black hover:bg-amber-300 font-extrabold shadow-md shadow-amber-500/20"
+              >
                 {isSaving ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Save className="h-4 w-4" aria-hidden="true" />}
-                Save profile
+                <span>Save Profile Settings</span>
               </Button>
             </div>
           </form>

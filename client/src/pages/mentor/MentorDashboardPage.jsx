@@ -456,22 +456,22 @@ export default function MentorDashboardPage() {
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-col gap-2 sm:flex-row lg:flex-col lg:items-end">
+            <div className="flex flex-col gap-2.5 sm:flex-row lg:flex-col lg:items-end">
               <button
                 type="button"
                 onClick={handleRefresh}
                 disabled={dashboard.isFetching}
-                className="inline-flex items-center gap-2 rounded-xl border border-border-subtle bg-bg-elevated px-4 py-2.5 text-sm font-semibold text-text-primary transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-border-subtle bg-bg-elevated px-4 py-2.5 text-xs font-bold text-text-primary transition hover:border-border-strong disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <RefreshCw className={cn("h-3.5 w-3.5", dashboard.isFetching && "animate-spin")} aria-hidden="true" />
                 {dashboard.isFetching ? "Refreshing…" : "Refresh"}
               </button>
               <Link
                 to="/mentor/availability"
-                className="inline-flex items-center gap-2 rounded-xl border border-border-subtle bg-bg-elevated px-4 py-2.5 text-sm font-semibold text-text-primary transition hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-400 bg-emerald-500 text-black px-5 py-2.5 text-xs font-extrabold shadow-md shadow-emerald-500/20 hover:bg-emerald-400 transition"
               >
                 <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />
-                Manage slots
+                <span>Manage Slots</span>
               </Link>
             </div>
           </div>

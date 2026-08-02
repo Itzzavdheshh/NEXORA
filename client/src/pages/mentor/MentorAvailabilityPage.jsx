@@ -288,9 +288,13 @@ export default function MentorAvailabilityPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Button onClick={() => openCreate()} disabled={showForm && !editingSlot}>
+              <Button 
+                onClick={() => openCreate()} 
+                disabled={showForm && !editingSlot}
+                className="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold shadow-md shadow-emerald-500/20"
+              >
                 <Plus className="h-4 w-4" aria-hidden="true" />
-                Add slot
+                <span>Add Availability Slot</span>
               </Button>
               <Button variant="secondary" onClick={av.refetch} loading={av.isFetching}>
                 <RefreshCw className="h-4 w-4" aria-hidden="true" />

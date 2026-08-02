@@ -7,8 +7,8 @@ export function TypewriterText({
     "Master System Design, Coding & Resume Reviews.",
     "Bridge the gap between campus and tech industry."
   ],
-  typingSpeed = 50,
-  deletingSpeed = 30,
+  typingSpeed = 40,
+  deletingSpeed = 20,
   pauseDuration = 2200,
   className = ""
 }) {
@@ -22,7 +22,6 @@ export function TypewriterText({
     let timer;
 
     if (isDeleting) {
-      // Deleting phase
       if (currentText.length > 0) {
         timer = setTimeout(() => {
           setCurrentText(targetWord.slice(0, currentText.length - 1));
@@ -32,13 +31,11 @@ export function TypewriterText({
         setWordIndex((prev) => (prev + 1) % words.length);
       }
     } else {
-      // Typing phase
       if (currentText.length < targetWord.length) {
         timer = setTimeout(() => {
           setCurrentText(targetWord.slice(0, currentText.length + 1));
         }, typingSpeed);
       } else {
-        // Finished typing word, pause before deleting
         timer = setTimeout(() => {
           setIsDeleting(true);
         }, pauseDuration);
@@ -49,10 +46,10 @@ export function TypewriterText({
   }, [currentText, isDeleting, wordIndex, words, typingSpeed, deletingSpeed, pauseDuration]);
 
   return (
-    <span className={`inline-flex items-center flex-wrap ${className}`}>
+    <span className={`inline-flex items-center min-h-[1.5em] whitespace-pre-wrap ${className}`}>
       <span>{currentText}</span>
       <span
-        className="ml-1 inline-block h-[1.1em] w-[3px] rounded-full bg-[var(--accent-primary)] animate-blink align-middle"
+        className="ml-1 inline-block h-[1.1em] w-[2.5px] rounded-full bg-amber-400 animate-pulse align-middle shrink-0 shadow-[0_0_8px_rgba(245,166,35,0.8)]"
         aria-hidden="true"
       />
     </span>
@@ -60,3 +57,4 @@ export function TypewriterText({
 }
 
 export default TypewriterText;
+

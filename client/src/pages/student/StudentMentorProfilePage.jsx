@@ -29,6 +29,21 @@ import { BookingModal } from "../../components/bookings/BookingModal";
 import { cn } from "../../utils/cn";
 import { formatHourlyRate } from "../../utils/currency";
 
+// 12-hour AM/PM Time Format Helper
+function formatSlotTime(timeStr) {
+  if (!timeStr) return "";
+  try {
+    const parts = timeStr.split(":");
+    const hours = parseInt(parts[0], 10);
+    const minutes = parts[1] || "00";
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12;
+    return `${formattedHours}:${minutes} ${ampm}`;
+  } catch {
+    return timeStr.slice(0, 5);
+  }
+}
+
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export default function StudentMentorProfilePage() {
@@ -103,7 +118,7 @@ export default function StudentMentorProfilePage() {
 
   return (
     <PageTransition>
-      <div className="mx-auto max-w-7xl space-y-6">
+      <div className="mx-auto max-w-7xl space-y-6 pb-20 lg:pb-0">
         {/* Back Link */}
         <div>
           <Link
@@ -159,7 +174,7 @@ export default function StudentMentorProfilePage() {
                 Weekly Availability Grid
               </h2>
               <p className="mt-1.5 text-xs text-text-secondary">
-                Select an available slot below to launch the booking creation dialog. All times are listed in standard time formats.
+                Select an available slot below to launch the booking creation dialog. Times are displayed in standard 12-hour format.
               </p>
             </div>
 
@@ -175,7 +190,7 @@ export default function StudentMentorProfilePage() {
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         {daySlots.map((slot) => {
-                          const formattedTime = `${(slot.start_time || "").slice(0, 5)} - ${(slot.end_time || "").slice(0, 5)}`;
+                          const formattedTime = `${formatSlotTime(slot.start_time)} - ${formatSlotTime(slot.end_time)}`;
                           const isAvailable = slot.is_available;
 
                           return (
@@ -186,8 +201,8 @@ export default function StudentMentorProfilePage() {
                               className={cn(
                                 "rounded-xl border px-3 py-1.5 text-[11px] font-bold transition-all duration-200 outline-none text-left",
                                 isAvailable
-                                  ? "border-accent-primary/20 bg-accent-primary/5 text-accent-primary hover:bg-accent-primary/10 hover:border-accent-primary/40 focus:ring-2 focus:ring-accent-primary/20"
-                                  : "border-border-subtle bg-bg-elevated/40 text-text-tertiary cursor-not-allowed"
+                                  ? "border-accent-primary/30 bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20 hover:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20 shadow-sm"
+                                  : "border-border-subtle bg-bg-elevated/40 text-text-tertiary cursor-not-allowed opacity-60"
                               )}
                               id={`slot-btn-${slot.id}`}
                             >

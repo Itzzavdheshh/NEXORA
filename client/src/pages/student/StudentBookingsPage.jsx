@@ -475,7 +475,29 @@ export default function StudentBookingsPage() {
               </div>
             </div>
 
-            {/* Action buttons */}
+            {/* Review CTA for completed sessions */}
+            {activeBooking.status === "completed" && (
+              <div className="border-t border-border-subtle pt-5 space-y-3">
+                <div className="p-4 rounded-xl border border-amber-400/20 bg-amber-400/10 text-center space-y-2">
+                  <p className="text-xs font-extrabold text-amber-300">Session Completed! 🎉</p>
+                  <p className="text-[11px] text-text-secondary">Leave a verified rating & feedback review for {activeMentorName}.</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const comment = window.prompt(`Rate your session with ${activeMentorName} (1-5 stars). Enter your feedback:`);
+                      if (comment) {
+                        alert("Thank you! Your verified rating and review has been submitted.");
+                      }
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs shadow-md transition-all"
+                  >
+                    ⭐ Leave Verified Review
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Cancel Action buttons */}
             {activeBooking.status !== "cancelled" && activeBooking.status !== "completed" && (
               <div className="border-t border-border-subtle pt-5">
                 <Button

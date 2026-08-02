@@ -249,6 +249,13 @@ export function LandingPage() {
 
             {/* Auth CTA Buttons */}
             <div className="hidden md:flex items-center gap-3">
+              <a
+                href="#roles"
+                className="px-3.5 py-2 text-xs font-bold text-amber-400 bg-amber-400/10 rounded-xl border border-amber-400/20 hover:bg-amber-400/20 transition-all flex items-center gap-1.5"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Book Live Demo</span>
+              </a>
               {isAuthenticated ? (
                 <Link
                   to={dashboardRoute}
@@ -344,20 +351,29 @@ export function LandingPage() {
       </header>
 
       {/* ── HERO SECTION WITH PERSONA SWITCHER ─────────────────────────────── */}
-      <section className="relative pt-10 pb-20 md:pt-16 md:pb-28">
-        {/* Ambient floating glow graphics */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[450px] bg-gradient-to-tr from-[var(--accent-primary)]/15 via-emerald-500/10 to-sky-500/10 rounded-full blur-[130px] pointer-events-none animate-aurora" />
+      {/* ── HERO SECTION WITH PERSONA SWITCHER ─────────────────────────────── */}
+      <section className="relative pt-10 pb-20 md:pt-16 md:pb-28 overflow-hidden">
+        {/* Background Grid Mesh */}
+        <div 
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 50% 30%, rgba(245,166,35,0.15) 0%, transparent 65%),
+                              linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)`,
+            backgroundSize: '100% 100%, 36px 36px, 36px 36px'
+          }}
+        />
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Persona Switcher Selector */}
           <div className="flex justify-center mb-8">
-            <div className="inline-flex items-center gap-1.5 p-1.5 rounded-2xl border border-white/10 bg-[#12141B]/90 backdrop-blur-md shadow-xl">
+            <div className="inline-flex items-center gap-1.5 p-1.5 rounded-2xl border border-white/10 bg-[#12141B]/90 backdrop-blur-md shadow-2xl">
               <button
                 type="button"
                 onClick={() => setSelectedRole("student")}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   selectedRole === "student"
-                    ? "bg-[var(--accent-primary)] text-black shadow-md shadow-amber-500/20"
+                    ? "bg-amber-400 text-black shadow-lg shadow-amber-500/25 scale-[1.02]"
                     : "text-[var(--text-secondary)] hover:text-white"
                 }`}
               >
@@ -370,7 +386,7 @@ export function LandingPage() {
                 onClick={() => setSelectedRole("mentor")}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   selectedRole === "mentor"
-                    ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/20"
+                    ? "bg-emerald-400 text-black shadow-lg shadow-emerald-500/25 scale-[1.02]"
                     : "text-[var(--text-secondary)] hover:text-white"
                 }`}
               >
@@ -383,7 +399,7 @@ export function LandingPage() {
                 onClick={() => setSelectedRole("admin")}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   selectedRole === "admin"
-                    ? "bg-sky-400 text-black shadow-md shadow-sky-400/20"
+                    ? "bg-sky-400 text-black shadow-lg shadow-sky-400/25 scale-[1.02]"
                     : "text-[var(--text-secondary)] hover:text-white"
                 }`}
               >
@@ -403,7 +419,7 @@ export function LandingPage() {
             >
               {/* Badge */}
               <motion.div variants={fadeUp} className="inline-flex items-center">
-                <span className="badge badge-primary px-3.5 py-1.5 text-xs">
+                <span className="badge badge-primary px-3.5 py-1.5 text-xs font-bold border border-amber-400/20 bg-amber-400/10 text-amber-300">
                   <Sparkles className="h-3.5 w-3.5 mr-1.5 text-amber-400" />
                   {selectedRole === "student" && "🎓 Purpose-Built 1-on-1 Student Career Platform"}
                   {selectedRole === "mentor" && "👨‍🏫 Complete Mentor Availability & Brand Suite"}
@@ -455,6 +471,19 @@ export function LandingPage() {
                       : "text-sky-300 font-semibold"
                   }
                 />
+              </motion.div>
+
+              {/* Social Proof Avatars Row */}
+              <motion.div variants={fadeUp} className="flex items-center justify-center lg:justify-start gap-3 py-1">
+                <div className="flex -space-x-2 overflow-hidden">
+                  <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#0B0D12] object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" alt="" />
+                  <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#0B0D12] object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" alt="" />
+                  <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#0B0D12] object-cover" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=100" alt="" />
+                  <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#0B0D12] object-cover" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=100" alt="" />
+                </div>
+                <div className="text-xs text-[var(--text-secondary)] font-semibold">
+                  <span className="text-white font-extrabold">2,400+ students</span> & <span className="text-amber-400 font-extrabold">500+ verified mentors</span> active
+                </div>
               </motion.div>
 
               {/* Action Buttons */}

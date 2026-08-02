@@ -67,7 +67,21 @@ const getSlots = async (mentorId) => {
 
   if (error) throw new Error(error.message);
 
-  return data ?? [];
+  // Fetch active non-cancelled bookings for this mentor to dynamically determine booked slots
+  const { data: activeBookings } = await supabase
+    .from("bookings")
+    .select("availability_slot_id, status")
+    .eq("mentor_id", mentorId)
+    .neq("status", "cancelled");
+
+  const bookedSlotIds = new Set(
+    (activeBookings || []).map((b) => b.availability_slot_id).filter(Boolean)
+  );
+
+  return (data ?? []).map((slot) => ({
+    ...slot,
+    is_available: slot.is_available && !bookedSlotIds.has(slot.id),
+  }));
 };
 
 const updateSlot = async (mentorId, slotId, slot) => {

@@ -458,19 +458,19 @@ export default function StudentDashboardPage() {
             {/* Quick Actions */}
             <div className="flex flex-col justify-end gap-2.5 sm:flex-row lg:flex-col lg:items-end">
               <Link
-                to="/student/bookings"
-                className="group inline-flex items-center justify-center gap-2 rounded border border-accent-primary bg-accent-primary px-4 py-2 text-xs font-bold text-[var(--bg-base)] transition duration-token-standard hover:bg-accent-primary-hover"
+                to="/student/explore"
+                className="group inline-flex items-center justify-center gap-2 rounded-xl border border-amber-400 bg-amber-400 px-5 py-2.5 text-xs font-extrabold text-black transition duration-200 hover:bg-amber-300 shadow-md shadow-amber-500/20"
               >
-                <span>Book a session</span>
+                <span>Explore Mentors</span>
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </Link>
               <Link
                 to="/student/notifications"
-                className="inline-flex items-center justify-center gap-2 rounded border border-border-subtle bg-bg-elevated px-4 py-2 text-xs font-bold text-text-secondary hover:border-border-strong hover:text-text-primary transition"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-border-subtle bg-bg-elevated px-4 py-2.5 text-xs font-bold text-text-secondary hover:border-border-strong hover:text-text-primary transition"
               >
                 <span>Notifications</span>
                 {dashboard.unreadNotifications.length > 0 && (
-                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-accent-primary px-1.5 text-[10px] font-bold leading-none text-[var(--bg-base)]">
+                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-400 px-1.5 text-[10px] font-extrabold leading-none text-black">
                     {dashboard.unreadNotifications.length}
                   </span>
                 )}

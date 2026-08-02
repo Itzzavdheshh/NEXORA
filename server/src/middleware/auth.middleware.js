@@ -40,11 +40,11 @@ const authenticate = async (req, res, next) => {
       console.warn("Primary supabase.auth.getUser failed:", err.message);
     }
 
-    // 2. Fallback verification via JWT payload + admin.getUserById
+    // 2. Fallback verification via token payload + admin.getUserById
     if (!authUser) {
       const payload = decodeJwtPayload(token);
       const userId = payload?.sub;
-      const isNotExpired = payload?.exp ? payload.exp * 1000 > Date.now() : true;
+      const isNotExpired = payload?.exp ? payload.exp * 1000 > Date.now() : false;
 
       if (userId && isNotExpired) {
         const { data: adminUserRes, error: adminErr } = await supabase.auth.admin.getUserById(userId);

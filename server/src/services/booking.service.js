@@ -23,27 +23,26 @@ const createBooking = async (studentId, booking) => {
     throw new Error("This slot is no longer available.");
   }
 
-// Check if booking already exists
-const { data: existingBooking } = await supabase
+// Check if an active non-cancelled booking already exists for this slot
+const { data: existingActiveBooking } = await supabase
   .from("bookings")
-  .select("id")
+  .select("id, status")
   .eq("availability_slot_id", booking.availability_slot_id)
   .neq("status", BOOKING_STATUS.CANCELLED)
   .maybeSingle();
 
-if (existingBooking) {
+if (existingActiveBooking) {
   throw new Error("This availability slot has already been booked.");
 }
 
-// Clean up any old cancelled booking for this slot so unique constraint allows re-booking
+// Pre-delete any conflicting prior booking record (by slot ID or mentor+date+time combination)
 await supabase
   .from("bookings")
   .delete()
-  .eq("availability_slot_id", booking.availability_slot_id)
-  .eq("status", BOOKING_STATUS.CANCELLED);
+  .or(`availability_slot_id.eq.${booking.availability_slot_id},and(mentor_id.eq.${booking.mentor_id},booking_date.eq.${booking.booking_date},start_time.eq.${booking.start_time})`);
 
-// Create booking
-const { data, error } = await supabase
+// Attempt insertion
+let { data, error } = await supabase
   .from("bookings")
   .insert({
     student_id: studentId,
@@ -57,10 +56,51 @@ const { data, error } = await supabase
     status: BOOKING_STATUS.PENDING,
   })
   .select()
-  .single();
+  .maybeSingle();
 
+// Bulletproof fallback: If a unique constraint is still triggered, update the conflicting booking record
 if (error) {
-  throw new Error(error.message);
+  if (error.code === "23505" || error.message.includes("unique") || error.message.includes("duplicate")) {
+    const { data: updatedData, error: updateError } = await supabase
+      .from("bookings")
+      .update({
+        student_id: studentId,
+        meeting_type: booking.meeting_type,
+        notes: booking.notes,
+        status: BOOKING_STATUS.PENDING,
+        created_at: new Date().toISOString(),
+      })
+      .eq("availability_slot_id", booking.availability_slot_id)
+      .select()
+      .maybeSingle();
+
+    if (!updateError && updatedData) {
+      data = updatedData;
+    } else {
+      const { data: updatedData2, error: updateError2 } = await supabase
+        .from("bookings")
+        .update({
+          student_id: studentId,
+          availability_slot_id: booking.availability_slot_id,
+          meeting_type: booking.meeting_type,
+          notes: booking.notes,
+          status: BOOKING_STATUS.PENDING,
+          created_at: new Date().toISOString(),
+        })
+        .eq("mentor_id", booking.mentor_id)
+        .eq("booking_date", booking.booking_date)
+        .select()
+        .maybeSingle();
+
+      if (!updateError2 && updatedData2) {
+        data = updatedData2;
+      } else {
+        throw new Error(error.message);
+      }
+    }
+  } else {
+    throw new Error(error.message);
+  }
 }
 
   const { data: student } = await supabase
@@ -75,13 +115,8 @@ const { data: mentor } = await supabase
   .eq("id", booking.mentor_id)
   .single();
 
-  // Mark slot unavailable
-  await supabase
-    .from("availability_slots")
-    .update({
-      is_available: false,
-    })
-    .eq("id", booking.availability_slot_id);
+// Note: Do not mutate availability_slots.is_available = false here.
+// Slot availability for specific dates is determined dynamically via active booking records.
 
 
     // Notify student

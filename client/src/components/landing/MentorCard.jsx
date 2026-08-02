@@ -1,10 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, ShieldCheck, Calendar, ArrowRight, Building2 } from "lucide-react";
+import { Star, ShieldCheck, Calendar, ArrowRight, Building2, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 export function MentorCard({ mentor }) {
+  const { isAuthenticated } = useAuth();
+
   const {
+    id,
     name = "Dr. Alex Rivera",
     role = "Principal Architect",
     company = "Google",
@@ -13,8 +17,11 @@ export function MentorCard({ mentor }) {
     reviewsCount = 84,
     skills = ["System Design", "Cloud Native", "Distributed Systems"],
     bio = "Helped 80+ engineers scale systems to millions of users and pass FAANG interviews.",
-    nextSlot = "Today @ 5:30 PM"
+    nextSlot = "Today @ 5:30 PM",
+    hourlyRate = 120
   } = mentor || {};
+
+  const profileTarget = isAuthenticated && id ? `/student/mentors/${id}` : "/register";
 
   return (
     <motion.div
@@ -36,16 +43,23 @@ export function MentorCard({ mentor }) {
             />
             <div
               className="absolute -bottom-1 -right-1 rounded-full bg-emerald-500 p-0.5 ring-2 ring-[#12141B]"
-              title="Verified Mentor"
+              title="Verified Industry Mentor"
             >
               <ShieldCheck className="h-3.5 w-3.5 text-white" />
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20 text-xs font-semibold text-amber-400 shrink-0">
-            <Star className="h-3.5 w-3.5 fill-amber-400" />
-            <span>{rating}</span>
-            <span className="text-[10px] text-[var(--text-tertiary)] font-normal">({reviewsCount})</span>
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center gap-1.5 bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20 text-xs font-semibold text-amber-400 shrink-0">
+              <Star className="h-3.5 w-3.5 fill-amber-400" />
+              <span>{rating}</span>
+              <span className="text-[10px] text-[var(--text-tertiary)] font-normal">({reviewsCount})</span>
+            </div>
+            {hourlyRate > 0 && (
+              <span className="text-[10px] font-extrabold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                ${hourlyRate}/hr
+              </span>
+            )}
           </div>
         </div>
 
@@ -73,7 +87,7 @@ export function MentorCard({ mentor }) {
           {skills.map((skill, index) => (
             <span
               key={index}
-              className="rounded-md bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-[var(--text-tertiary)] border border-white/5 group-hover:border-amber-400/20 group-hover:text-white transition-all"
+              className="rounded-md bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-[var(--text-tertiary)] border border-white/5 group-hover:border-amber-400/20 group-hover:bg-amber-400/10 group-hover:text-amber-300 transition-all"
             >
               {skill}
             </span>
@@ -89,7 +103,7 @@ export function MentorCard({ mentor }) {
         </div>
 
         <Link
-          to="/register"
+          to={profileTarget}
           className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 group-hover:text-amber-300 transition-colors shrink-0"
         >
           <span>Book Slot</span>
@@ -101,3 +115,4 @@ export function MentorCard({ mentor }) {
 }
 
 export default MentorCard;
+

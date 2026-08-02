@@ -399,27 +399,27 @@ export default function AdminDashboardPage() {
 
             {/* Quick actions */}
             <div className="border border-border-subtle bg-bg-surface shadow-token-md rounded-2xl p-5 space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Quick actions</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">Quick actions</h4>
               <Link
                 to="/admin/verify-mentors"
-                className="flex items-center justify-between rounded-xl bg-ink-950 px-4 py-3 text-xs font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-accent dark:bg-accent-admin"
+                className="flex items-center justify-between rounded-xl bg-sky-400 hover:bg-sky-300 px-4 py-3 text-xs font-extrabold text-black transition shadow-md shadow-sky-400/20"
               >
                 <span className="flex items-center gap-2">
-                  <UserCheck className="h-3.5 w-3.5" aria-hidden="true" />
-                  Pending verifications
+                  <UserCheck className="h-4 w-4" aria-hidden="true" />
+                  Pending Verifications
                 </span>
                 {stats.users.pendingMentors > 0 && (
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold text-ink-950 dark:bg-ink-950 dark:text-white">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-black text-[10px] font-extrabold text-sky-400">
                     {stats.users.pendingMentors}
                   </span>
                 )}
               </Link>
               <Link
                 to="/admin/users"
-                className="flex items-center gap-2 rounded-xl border border-ink-200/60 bg-white px-4 py-3 text-xs font-semibold text-ink-800 transition hover:bg-ink-50 dark:border-white/10 dark:bg-white/10 dark:text-ink-100 dark:hover:bg-white/10"
+                className="flex items-center gap-2 rounded-xl border border-border-subtle bg-bg-elevated px-4 py-3 text-xs font-bold text-text-primary hover:border-border-strong transition"
               >
-                <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />
-                User management
+                <TrendingUp className="h-4 w-4 text-sky-400" aria-hidden="true" />
+                <span>User Directory Management</span>
               </Link>
             </div>
           </div>
