@@ -216,10 +216,10 @@ export function LandingPage() {
       />
 
       {/* ── Announcement Top Bar ─────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-amber-500/15 via-[var(--accent-primary)]/25 to-emerald-500/15 border-b border-white/5 py-2 px-4 text-center text-xs font-medium text-amber-300 flex items-center justify-center gap-2">
-        <Sparkles className="h-3.5 w-3.5 shrink-0" />
-        <span>Nexora 2.0 Live! Tailored 1-on-1 workspaces for Students, Mentors & Institutions.</span>
-        <Link to="/register" className="underline font-bold text-white hover:text-amber-200 ml-1">
+      <div className="bg-gradient-to-r from-amber-500/15 via-[var(--accent-primary)]/25 to-emerald-500/15 border-b border-white/5 py-2 px-3 sm:px-4 text-center text-[11px] sm:text-xs font-medium text-amber-300 flex flex-wrap sm:flex-nowrap items-center justify-center gap-1.5 sm:gap-2">
+        <Sparkles className="h-3.5 w-3.5 shrink-0 hidden xs:inline" />
+        <span className="truncate max-w-[240px] sm:max-w-none">Nexora 2.0 Live! Tailored 1-on-1 workspaces.</span>
+        <Link to="/register" className="underline font-bold text-white hover:text-amber-200 shrink-0 whitespace-nowrap">
           Get Started Free &rarr;
         </Link>
       </div>
@@ -365,46 +365,46 @@ export function LandingPage() {
         />
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Persona Switcher Selector */}
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex items-center gap-1.5 p-1.5 rounded-2xl border border-white/10 bg-[#12141B]/90 backdrop-blur-md shadow-2xl">
+          {/* Persona Switcher Selector — Mobile responsive scroll container */}
+          <div className="flex justify-center mb-8 px-2">
+            <div className="inline-flex items-center gap-1 p-1 sm:p-1.5 rounded-2xl border border-white/10 bg-[#12141B]/90 backdrop-blur-md shadow-2xl max-w-full overflow-x-auto no-scrollbar">
               <button
                 type="button"
                 onClick={() => setSelectedRole("student")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                   selectedRole === "student"
                     ? "bg-amber-400 text-black shadow-lg shadow-amber-500/25 scale-[1.02]"
                     : "text-[var(--text-secondary)] hover:text-white"
                 }`}
               >
-                <GraduationCap className="h-4 w-4" />
+                <GraduationCap className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span>For Students</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setSelectedRole("mentor")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                   selectedRole === "mentor"
                     ? "bg-emerald-400 text-black shadow-lg shadow-emerald-500/25 scale-[1.02]"
                     : "text-[var(--text-secondary)] hover:text-white"
                 }`}
               >
-                <Users className="h-4 w-4" />
+                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span>For Mentors</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setSelectedRole("admin")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                   selectedRole === "admin"
                     ? "bg-sky-400 text-black shadow-lg shadow-sky-400/25 scale-[1.02]"
                     : "text-[var(--text-secondary)] hover:text-white"
                 }`}
               >
-                <Building2 className="h-4 w-4" />
-                <span>For Institutions & Admins</span>
+                <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span>Institutions & Admins</span>
               </button>
             </div>
           </div>
@@ -474,14 +474,14 @@ export function LandingPage() {
               </motion.div>
 
               {/* Social Proof Avatars Row */}
-              <motion.div variants={fadeUp} className="flex items-center justify-center lg:justify-start gap-3 py-1">
-                <div className="flex -space-x-2 overflow-hidden">
+              <motion.div variants={fadeUp} className="flex flex-wrap sm:flex-nowrap items-center justify-center lg:justify-start gap-3 py-1">
+                <div className="flex -space-x-2 overflow-hidden shrink-0">
                   <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#0B0D12] object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" alt="" />
                   <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#0B0D12] object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" alt="" />
                   <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#0B0D12] object-cover" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=100" alt="" />
                   <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#0B0D12] object-cover" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=100" alt="" />
                 </div>
-                <div className="text-xs text-[var(--text-secondary)] font-semibold">
+                <div className="text-xs text-[var(--text-secondary)] font-semibold text-center sm:text-left">
                   <span className="text-white font-extrabold">2,400+ students</span> & <span className="text-amber-400 font-extrabold">500+ verified mentors</span> active
                 </div>
               </motion.div>
@@ -550,18 +550,18 @@ export function LandingPage() {
               {/* Trust badges */}
               <motion.div
                 variants={fadeUp}
-                className="pt-6 border-t border-white/5 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-[var(--text-tertiary)] font-medium"
+                className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-6 text-xs text-[var(--text-tertiary)] font-medium"
               >
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
                   <span>Supabase Realtime Sync</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-sky-400" />
+                  <CheckCircle2 className="h-4 w-4 text-sky-400 shrink-0" />
                   <span>Resend Email Reminders</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-amber-400" />
+                  <CheckCircle2 className="h-4 w-4 text-amber-400 shrink-0" />
                   <span>Role-Based Access Control</span>
                 </div>
               </motion.div>

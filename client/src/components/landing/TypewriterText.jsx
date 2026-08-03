@@ -46,10 +46,10 @@ export function TypewriterText({
   }, [currentText, isDeleting, wordIndex, words, typingSpeed, deletingSpeed, pauseDuration]);
 
   return (
-    <span className={`inline-flex items-center min-h-[1.5em] whitespace-pre-wrap ${className}`}>
+    <span className={`inline ${className}`}>
       <span>{currentText}</span>
       <span
-        className="ml-1 inline-block h-[1.1em] w-[2.5px] rounded-full bg-amber-400 animate-pulse align-middle shrink-0 shadow-[0_0_8px_rgba(245,166,35,0.8)]"
+        className="ml-1 inline-block h-[1em] w-[2.5px] rounded-full bg-amber-400 animate-pulse align-middle shrink-0 shadow-[0_0_8px_rgba(245,166,35,0.8)]"
         aria-hidden="true"
       />
     </span>
