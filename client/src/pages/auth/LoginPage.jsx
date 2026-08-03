@@ -195,6 +195,9 @@ export function LoginPage() {
             </Button>
           </form>
 
+          {/* Social OAuth Auth (Google & GitHub) */}
+          <SocialAuthButtons />
+
           {/* 1-Click Sales Demo Quick Login Pills */}
           <div className="mt-6 pt-5 border-t border-border-subtle space-y-2">
             <p className="text-[10px] font-extrabold uppercase tracking-wider text-text-tertiary text-center">
