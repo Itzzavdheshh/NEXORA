@@ -30,6 +30,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Legend,
 } from "recharts";
 import { format } from "date-fns";
 
@@ -539,15 +540,21 @@ export default function StudentDashboardPage() {
                 ))}
               </ul>
             ) : (
-              <div className="h-full flex items-center justify-center py-10">
+              <div className="h-full flex flex-col items-center justify-center py-10 gap-4">
                 <EmptyState
                   icon={Calendar}
                   title="No sessions scheduled"
                   description="Start booking mentorship slots to populate your calendar timeline."
-                  actionLabel="Browse bookings"
-                  onAction={() => navigate("/student/bookings")}
                   size="sm"
                 />
+                {/* #15 Explore mentors CTA from empty dashboard */}
+                <Link
+                  to="/student/explore"
+                  className="inline-flex items-center gap-2 rounded-xl border border-amber-400 bg-amber-400 px-5 py-2.5 text-xs font-extrabold text-black transition hover:bg-amber-300 shadow-md shadow-amber-500/20"
+                >
+                  <ArrowRight className="h-3.5 w-3.5" />
+                  Find a Mentor
+                </Link>
               </div>
             )}
           </Section>
@@ -577,6 +584,11 @@ export default function StudentDashboardPage() {
                     <Tooltip
                       content={<ChartTooltip />}
                       cursor={{ fill: "rgba(255,255,255,0.02)" }}
+                    />
+                    {/* #14 Chart legend */}
+                    <Legend
+                      wrapperStyle={{ fontSize: 10, color: "var(--text-tertiary)", paddingTop: 8 }}
+                      formatter={(value) => <span style={{ color: "var(--text-secondary)" }}>{value}</span>}
                     />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                       {chartData.map((entry, i) => (

@@ -169,15 +169,42 @@ export default function StudentMentorProfilePage() {
           {/* Availability Grid Card */}
           <section className="rounded-3xl border border-border-subtle bg-bg-surface p-5 sm:p-6 space-y-6">
             <div>
-              <h2 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-accent-primary" />
-                Weekly Availability Grid
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-accent-primary" />
+                  Weekly Availability Grid
+                </h2>
+                {/* #6 Timezone label */}
+                <span className="text-[10px] font-semibold text-text-tertiary bg-bg-elevated border border-border-subtle rounded-full px-2 py-0.5">
+                  🕐 Times in your local timezone
+                </span>
+              </div>
               <p className="mt-1.5 text-xs text-text-secondary">
                 Select an available slot below to launch the booking creation dialog. Times are displayed in standard 12-hour format.
               </p>
+              {/* #7 Visual slot color legend */}
+              <div className="mt-3 flex items-center gap-4">
+                <span className="flex items-center gap-1.5 text-[10px] font-semibold text-text-tertiary">
+                  <span className="inline-block h-2.5 w-2.5 rounded border border-accent-primary/30 bg-accent-primary/10" />
+                  Available
+                </span>
+                <span className="flex items-center gap-1.5 text-[10px] font-semibold text-text-tertiary">
+                  <span className="inline-block h-2.5 w-2.5 rounded border border-border-subtle bg-bg-elevated/40" />
+                  Booked
+                </span>
+              </div>
             </div>
 
+            {/* #8 Inline empty state when no slots at all */}
+            {slots.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border-strong bg-bg-elevated/20 p-8 text-center">
+                <Calendar className="h-8 w-8 text-text-tertiary mx-auto mb-3" />
+                <p className="text-sm font-bold text-text-primary">No availability set yet</p>
+                <p className="text-xs text-text-secondary mt-1 max-w-xs mx-auto">
+                  This mentor hasn't configured any weekly slots yet. Check back later or explore other mentors.
+                </p>
+              </div>
+            ) : (
             <div className="space-y-4">
               {DAYS.map((day) => {
                 const daySlots = slotsByDay[day] || [];
@@ -186,7 +213,7 @@ export default function StudentMentorProfilePage() {
                     <span className="text-xs font-bold text-text-primary self-center">{day}</span>
                     
                     {daySlots.length === 0 ? (
-                      <span className="text-xs font-medium text-text-tertiary italic py-1.5">No hours scheduled for this day.</span>
+                      <span className="text-xs font-medium text-text-tertiary italic py-1.5">No hours set.</span>
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         {daySlots.map((slot) => {
@@ -219,6 +246,7 @@ export default function StudentMentorProfilePage() {
                 );
               })}
             </div>
+            )}
           </section>
 
           {/* Details Sidebar Card */}
@@ -326,6 +354,19 @@ export default function StudentMentorProfilePage() {
             />
           )}
         </AnimatePresence>
+
+        {/* #9 Sticky mobile CTA bar */}
+        {!selectedSlot && slots.some(s => s.is_available) && (
+          <div className="fixed bottom-0 inset-x-0 z-30 lg:hidden border-t border-border-subtle bg-bg-base/95 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-text-primary">Ready to book?</p>
+              <p className="text-[10px] text-text-secondary">Select an available slot above ↑</p>
+            </div>
+            <span className="badge badge-primary text-xs">
+              {slots.filter(s => s.is_available).length} slot{slots.filter(s => s.is_available).length !== 1 ? "s" : ""} open
+            </span>
+          </div>
+        )}
       </div>
     </PageTransition>
   );

@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Bell, ChevronDown, LogOut, Menu, UserRound, Search, Check, Command, Sparkles, X, Info } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu, UserRound, Search, Check, Command, Sparkles, X, Info, Users } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../hooks/useAuth";
 import { useLogout } from "../hooks/useAuthActions";
 import { useNotifications } from "../hooks/useNotifications";
+import { mentorService } from "../services/mentorService";
 import { cn } from "../utils/cn";
 import { formatDistanceToNow } from "date-fns";
 
@@ -80,6 +82,15 @@ export function Navbar({ onMenuClick }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // #24 Fetch mentor list for search (student-only)
+  const mentorsQuery = useQuery({
+    queryKey: ["mentors"],
+    queryFn: () => mentorService.explore({}),
+    enabled: role === "student",
+    staleTime: 1000 * 60 * 5,
+  });
+  const mentorList = mentorsQuery.data?.data || mentorsQuery.data || [];
+
   const profileRef = useRef(null);
   const notifRef = useRef(null);
 
@@ -114,15 +125,33 @@ export function Navbar({ onMenuClick }) {
     return options;
   }, [role]);
 
-  // Filter search matches
+  // Filter search matches — #24 includes mentor names
   const filteredSearch = useMemo(() => {
-    if (!searchQuery.trim()) return searchOptions;
-    return searchOptions.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return searchOptions;
+    const navMatches = searchOptions.filter((item) =>
+      item.name.toLowerCase().includes(query)
     );
-  }, [searchQuery, searchOptions]);
+    // Mentor name search for students
+    const mentorMatches = role === "student"
+      ? mentorList
+          .filter((m) => {
+            const name = (m.full_name || "").toLowerCase();
+            const title = (m.profile?.job_title || "").toLowerCase();
+            const skills = (m.profile?.skills || []).join(" ").toLowerCase();
+            return name.includes(query) || title.includes(query) || skills.includes(query);
+          })
+          .slice(0, 5)
+          .map((m) => ({
+            name: m.full_name,
+            path: `/student/mentors/${m.id}`,
+            category: "Mentors",
+          }))
+      : [];
+    return [...navMatches, ...mentorMatches];
+  }, [searchQuery, searchOptions, mentorList, role]);
 
-  // Close drop-downs on click outside
+  // #23 Exclusive dropdown: opening one closes the other
   useEffect(() => {
     const handler = (e) => {
       if (profileOpen && profileRef.current && !profileRef.current.contains(e.target)) {
@@ -135,6 +164,16 @@ export function Navbar({ onMenuClick }) {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [profileOpen, notifOpen]);
+
+  function openNotif() {
+    setNotifOpen((v) => !v);
+    setProfileOpen(false); // exclusive
+  }
+
+  function openProfile() {
+    setProfileOpen((v) => !v);
+    setNotifOpen(false); // exclusive
+  }
 
   // Keyboard shortcut listener for Command Palette (Cmd+K / Ctrl+K)
   useEffect(() => {
@@ -187,19 +226,21 @@ export function Navbar({ onMenuClick }) {
               <Menu className="h-5 w-5" />
             </button>
 
-            {/* Global search trigger */}
+            {/* Global search trigger \u2014 #25 show Ctrl+K hint */}
             <button
               type="button"
               onClick={() => {
                 setSearchOpen(true);
                 setSearchQuery("");
               }}
-              className="flex h-9 w-44 sm:w-56 items-center gap-2 rounded-md border border-border-subtle bg-bg-surface px-3 text-left text-xs text-text-tertiary hover:border-border-strong hover:text-text-secondary transition duration-token-micro"
+              title="Search pages & mentors (Ctrl+K / ⌘K)"
+              className="flex h-9 w-44 sm:w-64 items-center gap-2 rounded-md border border-border-subtle bg-bg-surface px-3 text-left text-xs text-text-tertiary hover:border-border-strong hover:text-text-secondary transition duration-token-micro"
             >
               <Search className="h-3.5 w-3.5 shrink-0" />
-              <span className="flex-1 truncate">Search pages...</span>
+              <span className="flex-1 truncate">Search pages & mentors...</span>
               <kbd className="pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-0.5 rounded border border-border-subtle bg-bg-elevated px-1.5 font-mono text-[9px] font-semibold text-text-tertiary">
-                <span>⌘</span>K
+                <span className="hidden mac:inline">⌘</span>
+                <span className="mac:hidden">Ctrl</span>K
               </kbd>
             </button>
           </div>
@@ -211,7 +252,7 @@ export function Navbar({ onMenuClick }) {
             <div className="relative" ref={notifRef}>
               <button
                 type="button"
-                onClick={() => setNotifOpen((v) => !v)}
+                onClick={openNotif}
                 className={cn(
                   "relative rounded-sm border p-2 text-text-secondary bg-bg-surface border-border-subtle hover:border-border-strong hover:text-text-primary transition",
                   notifOpen && "border-border-strong text-text-primary"
@@ -258,7 +299,16 @@ export function Navbar({ onMenuClick }) {
                       {isLoading ? (
                         <div className="px-4 py-6 text-center text-xs text-text-tertiary">Loading updates...</div>
                       ) : notifications.length === 0 ? (
-                        <div className="px-4 py-8 text-center text-xs text-text-tertiary">No notifications yet.</div>
+                        // #22 "All caught up!" empty state
+                        <div className="flex flex-col items-center justify-center px-4 py-10 gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent-primary/10 text-accent-primary">
+                            <Bell className="h-5 w-5" />
+                          </div>
+                          <p className="text-xs font-bold text-text-primary">You're all caught up!</p>
+                          <p className="text-[11px] text-text-tertiary text-center leading-relaxed">
+                            No new notifications. Updates will appear here automatically.
+                          </p>
+                        </div>
                       ) : (
                         ["Today", "Yesterday", "Earlier"].map((groupName) => {
                           const items = grouped[groupName] || [];
@@ -305,6 +355,18 @@ export function Navbar({ onMenuClick }) {
                         })
                       )}
                     </div>
+                    {/* #16 "See all" link at bottom of notification feed */}
+                    {notifications.length > 0 && (
+                      <div className="border-t border-border-subtle px-4 py-2 flex justify-center">
+                        <Link
+                          to={`/${role}/notifications`}
+                          onClick={() => setNotifOpen(false)}
+                          className={cn("text-[11px] font-bold transition", roleTextColors[role] || "text-accent-primary hover:text-accent-primary-hover")}
+                        >
+                          See all notifications →
+                        </Link>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -314,7 +376,7 @@ export function Navbar({ onMenuClick }) {
             <div className="relative" ref={profileRef}>
               <button
                 type="button"
-                onClick={() => setProfileOpen((v) => !v)}
+                onClick={openProfile}
                 className={cn(
                   "flex h-9 items-center gap-2 rounded-sm border px-2.5 text-xs font-medium bg-bg-surface border-border-subtle hover:border-border-strong hover:text-text-primary transition duration-token-micro",
                   profileOpen && "border-border-strong text-text-primary"
@@ -433,13 +495,15 @@ export function Navbar({ onMenuClick }) {
                 </button>
               </div>
 
-              {/* Options list */}
+              {/* Options list — #24 includes Mentors category */}
               <div className="max-h-72 overflow-y-auto p-2 divide-y divide-[var(--border-subtle)]/40">
                 {filteredSearch.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-xs text-text-tertiary">No matching results found.</div>
+                  <div className="px-4 py-8 text-center text-xs text-text-tertiary">
+                    <Users className="h-6 w-6 text-text-tertiary mx-auto mb-2" />
+                    No matching results for <span className="font-bold">"{searchQuery}"</span>.
+                  </div>
                 ) : (
-                  // Group results by category
-                  ["Navigation", "System Actions"].map((category) => {
+                  ["Navigation", "Mentors", "System Actions"].map((category) => {
                     const categoryItems = filteredSearch.filter((item) => item.category === category);
                     if (categoryItems.length === 0) return null;
                     return (
@@ -450,18 +514,22 @@ export function Navbar({ onMenuClick }) {
                         <div className="space-y-0.5 mt-1">
                           {categoryItems.map((item) => (
                             <button
-                              key={item.name}
+                              key={item.name + item.path}
                               type="button"
                               onClick={() => handleSearchAction(item)}
                               className="w-full flex items-center justify-between rounded px-3 py-2 text-left text-xs font-semibold text-text-primary hover:bg-bg-elevated transition"
                             >
                               <div className="flex items-center gap-2">
-                                <Command className="h-3.5 w-3.5 text-text-tertiary" />
+                                {category === "Mentors" ? (
+                                  <Users className="h-3.5 w-3.5 text-accent-primary" />
+                                ) : (
+                                  <Command className="h-3.5 w-3.5 text-text-tertiary" />
+                                )}
                                 <span>{item.name}</span>
                               </div>
                               {item.path && (
                                 <span className="text-[10px] font-semibold text-text-tertiary tracking-tight">
-                                  {item.path}
+                                  {category === "Mentors" ? "View profile" : item.path}
                                 </span>
                               )}
                             </button>

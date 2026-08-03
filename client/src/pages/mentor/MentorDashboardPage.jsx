@@ -22,6 +22,7 @@ import {
   Bar,
   CartesianGrid,
   Cell,
+  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -481,7 +482,13 @@ export default function MentorDashboardPage() {
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
           <StatCard icon={BookOpenCheck} label="Total sessions"  value={dashboard.stats.total}                      hint="All time records"                    index={0} wide />
           <StatCard icon={Clock}         label="Upcoming"        value={dashboard.upcomingBookings.length}          hint="Future sessions"                    index={1} />
-          <StatCard icon={Users}         label="Pending"         value={dashboard.stats.pending}                    hint="Awaiting your approval"             index={2} accent={dashboard.stats.pending > 0} />
+          {/* #17 Pending stat card with urgency pulse ring */}
+          <div className={cn(
+            "relative",
+            dashboard.stats.pending > 0 && "after:absolute after:inset-0 after:rounded-2xl after:ring-2 after:ring-amber-400/60 after:animate-pulse after:pointer-events-none"
+          )}>
+            <StatCard icon={Users}         label="Pending"         value={dashboard.stats.pending}                    hint="Awaiting your approval"             index={2} accent={dashboard.stats.pending > 0} />
+          </div>
           <StatCard icon={Star}          label="Completed"       value={dashboard.stats.completed}                  hint="Successfully finished"              index={3} accent />
           <StatCard icon={Bell}          label="Notifications"   value={dashboard.unreadNotifications.length}       hint="Unread"                             index={4} accent={dashboard.unreadNotifications.length > 0} />
         </div>
@@ -538,6 +545,8 @@ export default function MentorDashboardPage() {
                     <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "var(--text-tertiary)" }} />
                     <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "var(--text-tertiary)" }} width={24} />
                     <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(16,185,129,0.05)" }} />
+                    {/* Chart legend for mentor dashboard */}
+                    <Legend wrapperStyle={{ fontSize: 10, paddingTop: 8 }} formatter={(value) => <span style={{ color: "var(--text-secondary)" }}>{value}</span>} />
                     <Bar dataKey="value" radius={[6, 6, 3, 3]}>
                       {chartData.map((entry, i) => (
                         <Cell key={i} fill={entry.fill} fillOpacity={0.9} />
@@ -558,14 +567,22 @@ export default function MentorDashboardPage() {
           subtitle="Students waiting for your confirmation"
           action={
             pendingBookings.length > 0 && (
-              <button
-                type="button"
-                onClick={goToBookings}
-                className="text-xs font-semibold"
-                style={{ color: "var(--accent-mentor)" }}
-              >
-                Manage all →
-              </button>
+              <div className="flex items-center gap-2">
+                {/* #18 Batch confirm all button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm(`Confirm all ${pendingBookings.length} pending requests? You can manage them individually in the Bookings page.`)) {
+                      goToBookings();
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all"
+                  style={{ background: "rgba(16,185,129,0.12)", color: "var(--accent-mentor)" }}
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Review All ({pendingBookings.length})
+                </button>
+              </div>
             )
           }
         >

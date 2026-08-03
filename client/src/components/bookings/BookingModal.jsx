@@ -57,11 +57,11 @@ export function BookingModal({ isOpen, onClose, slot, mentor, onSuccess }) {
   const hourlyRate = Number(mentor?.hourly_rate ?? mentor?.profile?.hourly_rate ?? 10);
   const inrRate = Math.round(hourlyRate * 95.69);
 
-  // Card details state for Payment step
+  // Card details state for Payment step — #19: no demo prefill
   const [cardName, setCardName] = useState("");
-  const [cardNumber, setCardNumber] = useState("4242 •••• •••• 4242");
-  const [cardExp, setCardExp] = useState("12/28");
-  const [cardCvc, setCardCvc] = useState("888");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExp, setCardExp] = useState("");
+  const [cardCvc, setCardCvc] = useState("");
 
   const nextDate = getNextDateForDay(slot.day_of_week);
   const formattedDate = new Date(nextDate).toLocaleDateString(undefined, {
@@ -151,14 +151,25 @@ export function BookingModal({ isOpen, onClose, slot, mentor, onSuccess }) {
               exit={{ opacity: 0, x: 10 }}
               className="space-y-5"
             >
+              {/* #20 Visual horizontal step progress bar */}
+              <div className="flex items-center gap-3 mb-4">
+                {[1, 2].map((s) => (
+                  <div key={s} className="flex items-center gap-2 flex-1">
+                    <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-extrabold transition-all ${
+                      step >= s ? "bg-accent-primary text-black" : "bg-bg-elevated text-text-tertiary border border-border-subtle"
+                    }`}>{s}</div>
+                    <span className={`text-[10px] font-bold ${ step >= s ? "text-text-primary" : "text-text-tertiary" }`}>
+                      {s === 1 ? "Session Details" : "Payment"}
+                    </span>
+                    {s < 2 && <div className={`flex-1 h-0.5 rounded-full ${ step > s ? "bg-accent-primary" : "bg-border-subtle" }`} />}
+                  </div>
+                ))}
+              </div>
+
               {/* Header */}
               <div className="flex items-start justify-between border-b border-border-subtle/50 pb-4">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="badge badge-primary">Step 1 of 2</span>
-                    <span className="text-[10px] font-bold text-text-tertiary">Booking Details</span>
-                  </div>
-                  <h3 className="text-base font-extrabold text-text-primary mt-2">
+                  <h3 className="text-base font-extrabold text-text-primary">
                     Schedule with {mentor.full_name}
                   </h3>
                 </div>
@@ -307,16 +318,25 @@ export function BookingModal({ isOpen, onClose, slot, mentor, onSuccess }) {
               exit={{ opacity: 0, x: -10 }}
               className="space-y-5"
             >
+              {/* #20 Visual progress bar for step 2 */}
+              <div className="flex items-center gap-3 mb-4">
+                {[1, 2].map((s) => (
+                  <div key={s} className="flex items-center gap-2 flex-1">
+                    <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-extrabold transition-all ${
+                      step >= s ? "bg-accent-primary text-black" : "bg-bg-elevated text-text-tertiary border border-border-subtle"
+                    }`}>{s}</div>
+                    <span className={`text-[10px] font-bold ${ step >= s ? "text-text-primary" : "text-text-tertiary" }`}>
+                      {s === 1 ? "Session Details" : "Payment"}
+                    </span>
+                    {s < 2 && <div className={`flex-1 h-0.5 rounded-full ${ step > s ? "bg-accent-primary" : "bg-border-subtle" }`} />}
+                  </div>
+                ))}
+              </div>
+
               {/* Header */}
               <div className="flex items-start justify-between border-b border-border-subtle/50 pb-4">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="badge badge-primary">Step 2 of 2</span>
-                    <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
-                      <Lock className="h-3 w-3" /> Secure Checkout
-                    </span>
-                  </div>
-                  <h3 className="text-base font-extrabold text-text-primary mt-2">
+                  <h3 className="text-base font-extrabold text-text-primary">
                     Complete Payment
                   </h3>
                 </div>
@@ -446,10 +466,14 @@ export function BookingModal({ isOpen, onClose, slot, mentor, onSuccess }) {
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-4 space-y-5"
             >
-              {/* Success Check Animation */}
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-500/10 text-emerald-400 ring-4 ring-emerald-500/20 animate-bounce">
+              {/* #21 Finite bounce animation — settles after 3 bounces */}
+              <motion.div
+                animate={{ y: [0, -8, 0, -4, 0, -2, 0] }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-500/10 text-emerald-400 ring-4 ring-emerald-500/20"
+              >
                 <CheckCircle2 className="h-9 w-9" />
-              </div>
+              </motion.div>
 
               <div className="space-y-2">
                 <h3 className="font-display text-lg font-bold text-text-primary">

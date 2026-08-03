@@ -84,14 +84,10 @@ function BookingCard({ booking, index, onOpen }) {
       className="cursor-pointer rounded-md border border-border-subtle bg-bg-surface p-5 transition duration-150 hover:border-border-strong hover:shadow-token-sm flex flex-col justify-between"
     >
       <div>
-        {/* Card Header */}
+        {/* Card Header — #10: removed ID display */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-accent-primary">
-              <Hash className="h-3 w-3" />
-              ID: {String(booking.id || "").slice(0, 8)}
-            </div>
-            <h2 className="mt-1.5 text-sm font-bold text-text-primary">
+            <h2 className="text-sm font-bold text-text-primary">
               Mentorship session with {mentorName}
             </h2>
           </div>
@@ -118,6 +114,21 @@ function BookingCard({ booking, index, onOpen }) {
             <p className="mt-1 text-[9px] text-text-tertiary uppercase font-semibold tracking-wider">Time (Local)</p>
           </div>
         </div>
+        {/* #13 Meeting link on confirmed card */}
+        {booking.status === "confirmed" && booking.meeting_link && (
+          <div className="mt-3 flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
+            <Video className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+            <a
+              href={booking.meeting_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-[11px] font-bold text-emerald-400 hover:underline truncate"
+            >
+              Join session link
+            </a>
+          </div>
+        )}
       </div>
 
       <div className="mt-4 border-t border-border-subtle pt-3 flex items-center justify-between">
@@ -166,10 +177,12 @@ function BookingGroup({ title, description, bookings, onOpenCard }) {
   );
 }
 
+// #12 Upcoming/Past tab split
 export default function StudentBookingsPage() {
   const bookings = useStudentBookings();
   const [detailsOpen, setDetailsOpen] = useState(true);
   const [activeBooking, setActiveBooking] = useState(null);
+  const [activeTab, setActiveTab] = useState("upcoming"); // "upcoming" | "past" | "all"
 
   const stats = useMemo(
     () => ({
@@ -321,6 +334,29 @@ export default function StudentBookingsPage() {
           </p>
         </section>
 
+        {/* #12 Upcoming / Past Tabs */}
+        <div className="flex items-center gap-1 border-b border-border-subtle pb-4">
+          {[
+            { id: "upcoming", label: `Upcoming (${bookings.upcomingBookings.length})` },
+            { id: "past", label: `Past (${bookings.pastBookings.length})` },
+            { id: "all", label: `All (${bookings.filteredBookings.length})` },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "rounded-lg px-4 py-2 text-xs font-bold transition-all",
+                activeTab === tab.id
+                  ? "bg-accent-primary text-black shadow-sm"
+                  : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         {/* Results grid / groups */}
         {!stats.visible ? (
           <EmptyState
@@ -334,21 +370,20 @@ export default function StudentBookingsPage() {
               bookings.setTimeframe("all");
             }}
           />
-        ) : detailsOpen ? (
-          <div className="space-y-8">
-            <BookingGroup
-              title="Upcoming bookings"
-              description="Future scheduled sessions."
-              bookings={bookings.upcomingBookings}
-              onOpenCard={setActiveBooking}
-            />
-            <BookingGroup
-              title="Past bookings"
-              description="Older session records."
-              bookings={bookings.pastBookings}
-              onOpenCard={setActiveBooking}
-            />
-          </div>
+        ) : activeTab === "upcoming" ? (
+          <BookingGroup
+            title="Upcoming bookings"
+            description="Future scheduled sessions."
+            bookings={bookings.upcomingBookings}
+            onOpenCard={setActiveBooking}
+          />
+        ) : activeTab === "past" ? (
+          <BookingGroup
+            title="Past bookings"
+            description="Older session records."
+            bookings={bookings.pastBookings}
+            onOpenCard={setActiveBooking}
+          />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {bookings.filteredBookings.map((booking, index) => (

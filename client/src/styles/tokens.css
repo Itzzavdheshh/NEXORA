@@ -84,4 +84,53 @@
   --motion-duration-page: 320ms;
   --motion-ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
   --motion-ease-exit: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ── ink-* alias tokens (for legacy component compatibility) ── */
+  --color-ink-50:  #F8F9FA;
+  --color-ink-100: #F1F3F5;
+  --color-ink-200: #E9ECEF;
+  --color-ink-300: #DEE2E6;
+  --color-ink-400: #ADB5BD;
+  --color-ink-500: #6C757D;
+  --color-ink-600: #495057;
+  --color-ink-700: #343A40;
+  --color-ink-800: #212529;
+  --color-ink-900: #111827;
+  --color-ink-950: #0D1117;
+}
+
+/* Tailwind ink-* utilities generated from tokens */
+@layer utilities {
+  .text-ink-50  { color: var(--color-ink-50);  }
+  .text-ink-100 { color: var(--color-ink-100); }
+  .text-ink-200 { color: var(--color-ink-200); }
+  .text-ink-300 { color: var(--color-ink-300); }
+  .text-ink-400 { color: var(--color-ink-400); }
+  .text-ink-500 { color: var(--color-ink-500); }
+  .text-ink-600 { color: var(--color-ink-600); }
+  .text-ink-700 { color: var(--color-ink-700); }
+  .text-ink-800 { color: var(--color-ink-800); }
+  .text-ink-900 { color: var(--color-ink-900); }
+  .text-ink-950 { color: var(--text-primary);  } /* maps to design system primary */
+
+  .bg-ink-50   { background-color: var(--color-ink-50);  }
+  .bg-ink-100  { background-color: var(--color-ink-100); }
+  .bg-ink-200  { background-color: var(--color-ink-200); }
+  .bg-ink-950  { background-color: var(--bg-elevated);   }
+
+  .border-ink-200 { border-color: var(--border-subtle); }
+  .border-ink-900 { border-color: var(--border-strong); }
+
+  /* dark: overrides — in dark theme these map to proper dark tokens */
+  .dark .text-ink-50  { color: var(--text-tertiary); }
+  .dark .text-ink-100 { color: var(--text-secondary); }
+  .dark .text-ink-200 { color: var(--text-secondary); }
+  .dark .text-ink-300 { color: var(--text-secondary); }
+  .dark .text-ink-400 { color: var(--text-tertiary);  }
+  .dark .text-ink-500 { color: var(--text-tertiary);  }
+  .dark .text-ink-600 { color: var(--text-secondary); }
+  .dark .text-ink-950 { color: var(--text-primary);   }
+  .dark .bg-ink-50    { background-color: var(--bg-elevated);  }
+  .dark .bg-ink-100   { background-color: var(--bg-elevated);  }
+  .dark .bg-ink-950   { background-color: var(--bg-floating);  }
 }

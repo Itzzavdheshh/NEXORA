@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
-  Filter,
   Users,
   Compass,
   Star,
@@ -16,11 +15,11 @@ import {
 } from "lucide-react";
 import { mentorService } from "../../services/mentorService";
 import { Button } from "../../components/ui/Button";
-import { FormField } from "../../components/ui/FormField";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { formatHourlyRate } from "../../utils/currency";
+import { cn } from "../../utils/cn";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -265,6 +264,18 @@ export default function ExploreMentorsPage() {
                   .toUpperCase();
 
                 const skills = mentor.profile?.skills || [];
+                const hourlyRate = mentor.profile?.hourly_rate ?? 0;
+                const isFree = hourlyRate === 0;
+
+                // #5 Compute available slot count from the slot data already cached in slotsQuery (per mentor)
+                // We show a quick availability badge using the mentor's availability summary if available
+                const availableSlotCount = mentor.available_slot_count ?? mentor.profile?.available_slot_count ?? null;
+                const hasAvailabilityData = availableSlotCount !== null;
+                const hasSlots = !hasAvailabilityData || availableSlotCount > 0;
+
+                // #1 Star rating: use review_score if available, else show experience stars
+                const rating = mentor.profile?.review_score ?? null;
+                const ratingStars = rating !== null ? rating : Math.min(5, Math.round((mentor.profile?.experience_years ?? 0) / 4 * 5 * 10) / 10);
 
                 return (
                   <motion.div
@@ -274,35 +285,59 @@ export default function ExploreMentorsPage() {
                     initial="hidden"
                     animate="visible"
                     layout
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] border border-border-subtle bg-bg-surface p-5 transition-all duration-300 hover:-translate-y-1 hover:border-accent-primary/30 hover:shadow-accent/15"
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] border border-border-subtle bg-bg-surface p-5 transition-all duration-300 hover:-translate-y-1 hover:border-accent-primary/30 hover:shadow-accent/15 min-h-[340px]"
                   >
-                    <div>
-                      {/* Avatar Row */}
-                      <div className="flex items-center gap-4">
-                        {mentor.avatar_url ? (
-                          <img
-                            src={mentor.avatar_url}
-                            alt=""
-                            className="h-14 w-14 rounded-2xl border border-border-subtle object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-primary/10 text-base font-extrabold text-accent-primary ring-2 ring-accent-primary/20">
-                            {initials}
+                    <div className="flex flex-col h-full">
+                      {/* #5 Availability badge — top-right layout matching image 2 */}
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        {/* Avatar & Name Row */}
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          {mentor.avatar_url ? (
+                            <img
+                              src={mentor.avatar_url}
+                              alt=""
+                              className="h-12 w-12 shrink-0 rounded-2xl border border-border-subtle object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent-primary/10 text-sm font-extrabold text-accent-primary ring-2 ring-accent-primary/20">
+                              {initials}
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <h3 className="truncate text-sm font-extrabold text-text-primary">
+                              {mentor.full_name}
+                            </h3>
+                            <p className="mt-0.5 truncate text-[11px] font-bold text-text-secondary flex items-center gap-1">
+                              <Briefcase className="h-3 w-3 shrink-0 text-text-tertiary" />
+                              <span className="truncate">{mentor.profile?.job_title || "Expert Mentor"}</span>
+                            </p>
                           </div>
-                        )}
-                        <div className="min-w-0">
-                          <h3 className="truncate text-sm font-extrabold text-text-primary">
-                            {mentor.full_name}
-                          </h3>
-                          <p className="mt-0.5 truncate text-[11px] font-bold text-text-secondary flex items-center gap-1">
-                            <Briefcase className="h-3 w-3 text-text-tertiary" />
-                            {mentor.profile?.job_title || "Expert Mentor"}
-                          </p>
                         </div>
+                        {/* #5 Slot availability badge */}
+                        <span className={cn(
+                          "shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider",
+                          hasSlots
+                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                            : "bg-red-500/15 text-red-400 border border-red-500/30"
+                        )}>
+                          <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", hasSlots ? "bg-emerald-400 animate-pulse" : "bg-red-400")} />
+                          {hasSlots ? "Slots Open" : "Fully Booked"}
+                        </span>
+                      </div>
+
+                      {/* #1 Star rating row */}
+                      <div className="flex items-center gap-1 mb-2">
+                        {[1,2,3,4,5].map((s) => (
+                          <Star
+                            key={s}
+                            className={cn("h-3 w-3", s <= Math.round(ratingStars) ? "fill-amber-400 text-amber-400" : "text-text-tertiary")}
+                          />
+                        ))}
+                        <span className="ml-1 text-[10px] font-bold text-text-tertiary">{ratingStars.toFixed(1)}</span>
                       </div>
 
                       {/* Bio */}
-                      <p className="mt-4 text-xs leading-relaxed text-text-secondary line-clamp-3">
+                      <p className="text-xs leading-relaxed text-text-secondary line-clamp-2 flex-shrink-0">
                         {mentor.profile?.bio || "Experienced mentor offering targeted tutoring, technical reviews, and strategic guidance."}
                       </p>
 
@@ -310,42 +345,63 @@ export default function ExploreMentorsPage() {
                       <div className="mt-4 grid grid-cols-2 gap-2 border-y border-border-subtle/50 py-3 text-[11px]">
                         <div className="flex items-center gap-1.5 text-text-secondary font-semibold">
                           <Star className="h-3.5 w-3.5 text-text-tertiary" />
-                          <span>{mentor.profile?.experience_years || 0} years exp</span>
+                          <span>{mentor.profile?.experience_years || 0} yrs exp</span>
                         </div>
-                        <div className="flex items-center gap-1 text-text-primary font-bold justify-end">
-                          <DollarSign className="h-3.5 w-3.5 text-text-tertiary" />
-                          <span>{formatHourlyRate(mentor.profile?.hourly_rate, { freeLabel: "Free sessions", compact: true })}</span>
+                        {/* #2 Free sessions label clarification */}
+                        <div className="flex items-center gap-1 font-bold justify-end">
+                          {isFree ? (
+                            <span className="text-emerald-400">🎁 Free</span>
+                          ) : (
+                            <>
+                              <DollarSign className="h-3.5 w-3.5 text-text-tertiary" />
+                              <span className="text-text-primary">{formatHourlyRate(hourlyRate, { freeLabel: "Free", compact: true })}</span>
+                            </>
+                          )}
                         </div>
                       </div>
 
-                      {/* Skills expertise area */}
+                      {/* #4 Skills chips with expandable tooltip on hover */}
                       {skills.length > 0 && (
-                        <div className="mt-4 flex flex-wrap gap-1">
+                        <div className="mt-3 flex flex-wrap gap-1">
                           {skills.slice(0, 3).map((skill) => (
                             <span
                               key={skill}
-                              className="rounded px-2 py-0.5 text-[10px] font-bold bg-bg-elevated text-text-secondary"
+                              title={skill}
+                              className="rounded px-2 py-0.5 text-[10px] font-bold bg-bg-elevated text-text-secondary max-w-[100px] truncate"
                             >
                               {skill}
                             </span>
                           ))}
                           {skills.length > 3 && (
-                            <span className="rounded px-2 py-0.5 text-[10px] font-bold bg-bg-elevated text-text-tertiary">
+                            <span
+                              className="relative group/skills rounded px-2 py-0.5 text-[10px] font-bold bg-accent-primary/10 text-accent-primary cursor-default"
+                              title={skills.slice(3).join(", ")}
+                            >
                               +{skills.length - 3} more
+                              {/* Tooltip */}
+                              <span className="pointer-events-none absolute bottom-full left-0 mb-2 hidden group-hover/skills:block w-max max-w-[200px] rounded-xl border border-border-subtle bg-bg-floating px-3 py-2 text-[10px] font-semibold text-text-primary shadow-lg z-50 leading-relaxed">
+                                {skills.slice(3).join(" · ")}
+                              </span>
                             </span>
                           )}
                         </div>
                       )}
-                    </div>
 
-                    {/* Booking button */}
-                    <div className="mt-5 pt-1">
-                      <Link to={`/student/mentors/${mentor.id}`} className="w-full">
-                        <Button variant="primary" className="w-full group/btn" id={`mentor-card-btn-${mentor.id}`}>
-                          View Availability
-                          <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
-                        </Button>
-                      </Link>
+                      <div className="flex-1" />
+
+                      {/* Booking button */}
+                      <div className="mt-5 pt-1">
+                        <Link to={`/student/mentors/${mentor.id}`} className="w-full">
+                          <Button
+                            variant="primary"
+                            className={cn("w-full group/btn", !hasSlots && "opacity-60")}
+                            id={`mentor-card-btn-${mentor.id}`}
+                          >
+                            {hasSlots ? "View Availability" : "View Profile"}
+                            <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
                   </motion.div>
                 );
