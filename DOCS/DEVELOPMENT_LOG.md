@@ -1,0 +1,59 @@
+# Nexora Development Log
+
+## Sprint 1 - Backend Foundation & Registration
+
+### Completed
+
+- Initialized Express backend
+- Configured Supabase
+- Created project structure
+- Added Health APIs
+- Configured environment variables
+- Created `users` table
+- Enabled Row Level Security (RLS)
+- Added registration validation
+- Implemented user registration with Supabase Authentication
+- Stored user details in `public.users`
+
+
+## Sprint 3 - Student Profile
+
+### Completed
+
+- Created student_profiles table
+- Added Student Profile Service
+- Added Student Profile Controller
+- Added Student Profile Routes
+- Added Student Profile Validation
+- Prevented duplicate profile creation
+
+
+## Sprint 4 - Mentor Profile
+
+### Completed
+
+- Created mentor_profiles table
+- Added Mentor Profile Service
+- Added Mentor Profile Controller
+- Added Mentor Profile Routes
+- Added Mentor Profile Validation
+
+
+## Sprint 5 - Authentication & Student Profile
+
+### Completed
+- Implemented user registration
+- Implemented user login
+- Added JWT authentication middleware
+- Added /me endpoint
+- Created student profile APIs
+- Integrated Supabase Authentication
+- Successfully tested complete authentication flow
+
+
+### Git Commits
+
+- chore: initialize backend project with express setup
+- feat: add health check routes and Supabase integration
+- feat: add users database schema
+- feat(auth): implement user registration with Supabase
