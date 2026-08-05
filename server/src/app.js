@@ -151,3 +151,5 @@ app.use(errorHandler);
 
 module.exports = app;
 // Router mount: auth and user routes
+
+// Router mount: mentor and availability routes
