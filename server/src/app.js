@@ -150,3 +150,4 @@ app.use("/api/v1/user", userRoutes);
 app.use(errorHandler);
 
 module.exports = app;
+// Router mount: auth and user routes
