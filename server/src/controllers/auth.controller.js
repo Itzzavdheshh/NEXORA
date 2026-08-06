@@ -123,3 +123,5 @@ module.exports = {
   changePassword,
   oauthSync,
 };
+
+// Auth: refresh token handler logic
