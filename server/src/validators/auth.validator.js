@@ -67,3 +67,4 @@ module.exports = {
   validateRegister,
   validateLogin,
 };
+// Validation: password complexity rules
