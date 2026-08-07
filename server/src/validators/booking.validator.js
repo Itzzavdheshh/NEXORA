@@ -36,3 +36,4 @@ const validateBooking = (req, res, next) => {
 module.exports = {
   validateBooking,
 };
+// Validation: session duration checks
