@@ -240,3 +240,5 @@ export default function AppRoutes({ location }) {
     </Routes>
   );
 }
+
+// Routing: dynamic route definitions
