@@ -1158,3 +1158,5 @@ export function LandingPage() {
 }
 
 export default LandingPage;
+
+// Landing: gradient accents and typography
