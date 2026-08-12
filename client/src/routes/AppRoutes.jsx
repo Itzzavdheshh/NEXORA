@@ -248,3 +248,5 @@ export default function AppRoutes({ location }) {
 // Security: MentorRoute guard
 
 // Security: AdminRoute protection
+
+// Perf: lazy load route components
