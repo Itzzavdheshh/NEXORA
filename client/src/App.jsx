@@ -13,3 +13,5 @@ export default function App() {
 }
 
 // Context: AuthProvider wrapped
+
+// Fix: fail-safe JWT decoding from hash
