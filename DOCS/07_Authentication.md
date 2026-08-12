@@ -141,3 +141,5 @@ const requiredEnvVars = [
 ];
 ```
 If any required variable is missing, the backend process logs an error via Winston and exits immediately with process code 1.
+
+<!-- Auth sequence flow notes -->
