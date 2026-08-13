@@ -215,3 +215,5 @@ Database seed script [server/src/database/seed.js](file:///c:/Users/itzza/OneDri
    - **Availability Slots:** 3 recurring weekly slots for each verified mentor.
    - **Sample Bookings:** 5 active session bookings in `pending` and `confirmed` states.
    - **System Notifications:** Initial notifications in mentor and student inboxes.
+
+<!-- Database schema details -->
