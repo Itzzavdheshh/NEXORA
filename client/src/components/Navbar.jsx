@@ -560,3 +560,5 @@ export function Navbar({ onMenuClick }) {
 // UI: notification badge counter
 
 // Perf: memoize component render
+
+// UI: spinner animation tuning
