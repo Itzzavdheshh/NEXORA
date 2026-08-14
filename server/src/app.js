@@ -165,3 +165,5 @@ module.exports = app;
 // Logging: morgan and cors configured
 
 // API: standard response envelope
+
+// Auth: cookie cleanup on logout
