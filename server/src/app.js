@@ -167,3 +167,5 @@ module.exports = app;
 // API: standard response envelope
 
 // Auth: cookie cleanup on logout
+
+// Test: health endpoint check
