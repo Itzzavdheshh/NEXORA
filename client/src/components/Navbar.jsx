@@ -562,3 +562,5 @@ export function Navbar({ onMenuClick }) {
 // Perf: memoize component render
 
 // UI: spinner animation tuning
+
+// CSS: responsive badge alignment
