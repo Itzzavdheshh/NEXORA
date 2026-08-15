@@ -271,3 +271,5 @@ Your support helps me maintain existing projects and build new open-source softw
 <p align="center">Built with ❤️ for students and mentors everywhere.</p>
 
 <!-- Setup instructions update -->
+
+<!-- API curl examples -->
