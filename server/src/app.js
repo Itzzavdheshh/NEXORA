@@ -169,3 +169,5 @@ module.exports = app;
 // Auth: cookie cleanup on logout
 
 // Test: health endpoint check
+
+// Validation: enhanced email regex
