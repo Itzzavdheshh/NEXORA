@@ -171,3 +171,5 @@ module.exports = app;
 // Test: health endpoint check
 
 // Validation: enhanced email regex
+
+// Routes: 404 fallback placement
