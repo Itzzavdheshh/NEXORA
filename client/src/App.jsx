@@ -21,3 +21,5 @@ export default function App() {
 // Booking: confirmation toast notification
 
 // Hook: streamlined useAuth hook
+
+// UI: modal overlay backdrop blur
