@@ -37,3 +37,5 @@ module.exports = {
   validateBooking,
 };
 // Validation: session duration checks
+
+// Validation: session duration checks
