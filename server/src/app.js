@@ -185,3 +185,5 @@ module.exports = app;
 // Security: helmet and rate limiting attached
 
 // Middleware: global error handling
+
+// Logging: morgan and cors configured
