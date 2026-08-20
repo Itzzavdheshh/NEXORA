@@ -250,3 +250,5 @@ export default function AppRoutes({ location }) {
 // Security: AdminRoute protection
 
 // Perf: lazy load route components
+
+// Routing: dynamic route definitions
