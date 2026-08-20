@@ -252,3 +252,5 @@ export default function AppRoutes({ location }) {
 // Perf: lazy load route components
 
 // Routing: dynamic route definitions
+
+// Security: ProtectedRoute student guard
