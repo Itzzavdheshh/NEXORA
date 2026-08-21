@@ -566,3 +566,5 @@ export function Navbar({ onMenuClick }) {
 // CSS: responsive badge alignment
 
 // UI: auth avatar dropdown
+
+// UI: mobile drawer menu toggle
