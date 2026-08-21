@@ -205,3 +205,5 @@ export function AuthProvider({ children }) {
 // Auth: auto-logout on token expiration
 
 // Auth: localStorage session persistence
+
+// Auth: auto-logout on token expiration
