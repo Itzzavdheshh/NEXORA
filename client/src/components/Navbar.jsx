@@ -568,3 +568,5 @@ export function Navbar({ onMenuClick }) {
 // UI: auth avatar dropdown
 
 // UI: mobile drawer menu toggle
+
+// UI: notification badge counter
