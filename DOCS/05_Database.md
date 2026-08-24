@@ -217,3 +217,5 @@ Database seed script [server/src/database/seed.js](file:///c:/Users/itzza/OneDri
    - **System Notifications:** Initial notifications in mentor and student inboxes.
 
 <!-- Database schema details -->
+
+<!-- Database schema details -->
