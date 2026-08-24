@@ -570,3 +570,5 @@ export function Navbar({ onMenuClick }) {
 // UI: mobile drawer menu toggle
 
 // UI: notification badge counter
+
+// Perf: memoize component render
