@@ -130,3 +130,5 @@ sequenceDiagram
    - *Rationale:* NEXORA is an interactive dashboard application requiring high client-side state responsiveness after authentication rather than heavy public content indexing. Vite SPA offers fast build times, simple deployment to Vercel, and zero SSR hydration mismatch risks.
 
 <!-- Architecture diagram notes -->
+
+<!-- Architecture diagram notes -->
