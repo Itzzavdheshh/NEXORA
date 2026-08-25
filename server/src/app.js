@@ -187,3 +187,5 @@ module.exports = app;
 // Middleware: global error handling
 
 // Logging: morgan and cors configured
+
+// API: standard response envelope
