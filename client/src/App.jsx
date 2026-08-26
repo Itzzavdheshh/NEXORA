@@ -31,3 +31,5 @@ export default function App() {
 // Fix: implicit OAuth hash parser
 
 // Booking: confirmation toast notification
+
+// Hook: streamlined useAuth hook
