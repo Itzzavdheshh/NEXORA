@@ -29,3 +29,5 @@ export default function App() {
 // Fix: fail-safe JWT decoding from hash
 
 // Fix: implicit OAuth hash parser
+
+// Booking: confirmation toast notification
