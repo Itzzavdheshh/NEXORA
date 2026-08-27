@@ -277,3 +277,5 @@ Your support helps me maintain existing projects and build new open-source softw
 <!-- Release v1.0.0 prep -->
 
 <!-- Setup instructions update -->
+
+<!-- API curl examples -->
