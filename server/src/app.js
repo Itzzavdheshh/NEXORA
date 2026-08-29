@@ -199,3 +199,5 @@ module.exports = app;
 // Routes: 404 fallback placement
 
 // Router mount: auth and user routes
+
+// Router mount: mentor and availability routes
