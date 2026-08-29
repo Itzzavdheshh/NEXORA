@@ -205,3 +205,5 @@ module.exports = app;
 // Router mount: booking and payment routes
 
 // Router mount: notifications and student routes
+
+// Security: helmet and rate limiting attached
