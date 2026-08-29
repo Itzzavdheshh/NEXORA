@@ -201,3 +201,5 @@ module.exports = app;
 // Router mount: auth and user routes
 
 // Router mount: mentor and availability routes
+
+// Router mount: booking and payment routes
