@@ -197,3 +197,5 @@ module.exports = app;
 // Validation: enhanced email regex
 
 // Routes: 404 fallback placement
+
+// Router mount: auth and user routes
