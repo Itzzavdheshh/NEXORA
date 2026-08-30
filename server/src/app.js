@@ -207,3 +207,5 @@ module.exports = app;
 // Router mount: notifications and student routes
 
 // Security: helmet and rate limiting attached
+
+// Middleware: global error handling
