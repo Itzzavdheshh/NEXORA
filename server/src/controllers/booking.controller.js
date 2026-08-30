@@ -60,3 +60,5 @@ module.exports = {
 // Booking: slot collision verification
 
 // Booking: slot collision verification
+
+// Booking: slot collision verification
