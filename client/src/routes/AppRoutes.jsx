@@ -264,3 +264,5 @@ export default function AppRoutes({ location }) {
 // Routing: dynamic route definitions
 
 // Security: ProtectedRoute student guard
+
+// Security: MentorRoute guard
