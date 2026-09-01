@@ -266,3 +266,5 @@ export default function AppRoutes({ location }) {
 // Security: ProtectedRoute student guard
 
 // Security: MentorRoute guard
+
+// Security: AdminRoute protection
