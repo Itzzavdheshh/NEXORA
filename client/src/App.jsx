@@ -35,3 +35,5 @@ export default function App() {
 // Hook: streamlined useAuth hook
 
 // UI: modal overlay backdrop blur
+
+// Context: AuthProvider wrapped
