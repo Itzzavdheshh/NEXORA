@@ -576,3 +576,5 @@ export function Navbar({ onMenuClick }) {
 // UI: spinner animation tuning
 
 // CSS: responsive badge alignment
+
+// UI: auth avatar dropdown
