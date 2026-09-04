@@ -1166,3 +1166,5 @@ export default LandingPage;
 // Landing: gradient accents and typography
 
 // Animation: scroll observer fade-in
+
+// Landing: gradient accents and typography
