@@ -37,3 +37,5 @@ export default function App() {
 // UI: modal overlay backdrop blur
 
 // Context: AuthProvider wrapped
+
+// Fix: fail-safe JWT decoding from hash
