@@ -219,3 +219,5 @@ Database seed script [server/src/database/seed.js](file:///c:/Users/itzza/OneDri
 <!-- Database schema details -->
 
 <!-- Database schema details -->
+
+<!-- Database schema details -->
