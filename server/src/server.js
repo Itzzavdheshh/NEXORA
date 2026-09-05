@@ -10,8 +10,3 @@ app.listen(PORT, () => {
 });
 
 // Trigger reload of environment variables
-// Process: handle uncaughtException and unhandledRejection
-
-// Process: handle uncaughtException and unhandledRejection
-
-// Process: handle uncaughtException and unhandledRejection

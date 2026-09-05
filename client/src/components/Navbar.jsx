@@ -552,35 +552,3 @@ export function Navbar({ onMenuClick }) {
     </>
   );
 }
-
-// UI: auth avatar dropdown
-
-// UI: mobile drawer menu toggle
-
-// UI: notification badge counter
-
-// Perf: memoize component render
-
-// UI: spinner animation tuning
-
-// CSS: responsive badge alignment
-
-// UI: auth avatar dropdown
-
-// UI: mobile drawer menu toggle
-
-// UI: notification badge counter
-
-// Perf: memoize component render
-
-// UI: spinner animation tuning
-
-// CSS: responsive badge alignment
-
-// UI: auth avatar dropdown
-
-// UI: mobile drawer menu toggle
-
-// UI: notification badge counter
-
-// Perf: memoize component render

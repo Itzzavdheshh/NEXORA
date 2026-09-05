@@ -240,33 +240,3 @@ export default function AppRoutes({ location }) {
     </Routes>
   );
 }
-
-// Routing: dynamic route definitions
-
-// Security: ProtectedRoute student guard
-
-// Security: MentorRoute guard
-
-// Security: AdminRoute protection
-
-// Perf: lazy load route components
-
-// Routing: dynamic route definitions
-
-// Security: ProtectedRoute student guard
-
-// Security: MentorRoute guard
-
-// Security: AdminRoute protection
-
-// Perf: lazy load route components
-
-// Routing: dynamic route definitions
-
-// Security: ProtectedRoute student guard
-
-// Security: MentorRoute guard
-
-// Security: AdminRoute protection
-
-// Perf: lazy load route components

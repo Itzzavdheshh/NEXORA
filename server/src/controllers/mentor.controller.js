@@ -128,8 +128,3 @@ module.exports = {
   reject,
   explore,
 };
-// Mentor: optimized query filters
-
-// Mentor: optimized query filters
-
-// Mentor: optimized query filters

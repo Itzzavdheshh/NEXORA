@@ -67,8 +67,3 @@ module.exports = {
   read,
   readAll,
 };
-// Notification: email dispatch trigger
-
-// Notification: email dispatch trigger
-
-// Notification: email dispatch trigger

@@ -11,33 +11,3 @@ export default function App() {
     </AnimatePresence>
   );
 }
-
-// Context: AuthProvider wrapped
-
-// Fix: fail-safe JWT decoding from hash
-
-// Fix: implicit OAuth hash parser
-
-// Booking: confirmation toast notification
-
-// Hook: streamlined useAuth hook
-
-// UI: modal overlay backdrop blur
-
-// Context: AuthProvider wrapped
-
-// Fix: fail-safe JWT decoding from hash
-
-// Fix: implicit OAuth hash parser
-
-// Booking: confirmation toast notification
-
-// Hook: streamlined useAuth hook
-
-// UI: modal overlay backdrop blur
-
-// Context: AuthProvider wrapped
-
-// Fix: fail-safe JWT decoding from hash
-
-// Fix: implicit OAuth hash parser

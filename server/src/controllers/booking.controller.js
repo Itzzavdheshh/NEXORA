@@ -57,8 +57,3 @@ module.exports = {
   getAll,
   updateStatus,
 };
-// Booking: slot collision verification
-
-// Booking: slot collision verification
-
-// Booking: slot collision verification

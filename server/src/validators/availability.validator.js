@@ -14,9 +14,3 @@ const validateAvailability = (req, res, next) => {
 module.exports = {
   validateAvailability,
 };
-
-// Validation: availability time format sanitizer
-
-// Validation: availability time format sanitizer
-
-// Validation: availability time format sanitizer

@@ -186,15 +186,3 @@ export function Sidebar({ open, onClose }) {
     </>
   );
 }
-
-// Nav: student dashboard links
-
-// Nav: mentor dashboard tabs
-
-// Nav: student dashboard links
-
-// Nav: mentor dashboard tabs
-
-// Nav: student dashboard links
-
-// Nav: mentor dashboard tabs

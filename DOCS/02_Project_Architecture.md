@@ -128,9 +128,3 @@ sequenceDiagram
    - *Rationale:* Email delivery APIs can introduce 500ms–2000ms latency. The backend invokes `sendEmail()` asynchronously in a fire-and-forget pattern inside try-catch blocks so an email delivery issue never fails a database state commit or blocks user response times.
 4. **Vite SPA over SSR Framework (Next.js):**
    - *Rationale:* NEXORA is an interactive dashboard application requiring high client-side state responsiveness after authentication rather than heavy public content indexing. Vite SPA offers fast build times, simple deployment to Vercel, and zero SSR hydration mismatch risks.
-
-<!-- Architecture diagram notes -->
-
-<!-- Architecture diagram notes -->
-
-<!-- Architecture diagram notes -->
